@@ -11,6 +11,7 @@ const menuItems = [
   { name: "Parqueo",                        path: "/parqueo",                       icon: "fa-car" },
   { name: "Pagos Alumnos",                  path: "/pagos-alumnos",                 icon: "fa-money" },
   { name: "Servicios Móviles e Integrador", path: "/servicios-moviles-integrador",  icon: "fa-mobile" },
+  { name: "Otras Actividades",              path: "/otas-actividades",              icon: "fa-cogs"},
   { name: "Administración",                 path: "/administracion",                icon: "fa-cogs" },
 ];
 

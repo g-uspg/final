@@ -51,6 +51,13 @@ const modules = [
     bg: "bg-dark",
   },
   {
+    href: "/otras-actividades",
+    title: "Otras Actividades",
+    description: "Actividades extra curriculares.",
+    icon: "fa-star",
+    bg: "bg-dark",
+  },
+  {
     href: "/administracion",
     title: "Administración",
     description: "Planta física, aulas, auditorio, mantenimiento y logística.",
@@ -65,7 +72,7 @@ export default function Home() {
 
       <div className="row clearfix">
         {modules.map((m) => (
-          <div key={m.href} className="col-lg-3 col-md-6 col-sm-12">
+          <div key={m.href} className="col-lg-3 col-md-6 col-sm-12 mb-3">
             <Link href={m.href} style={{textDecoration: 'none'}}>
               <div className="card dashboard-card">
                 <div className="card-body">
