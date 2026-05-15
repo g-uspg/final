@@ -1,0 +1,3178 @@
+{
+  "/Users/javierestrada/Downloads/final/prisma.config.ts": {
+    "mtime": 1778555506.3506773,
+    "hash": "f6143a6083213d512c0beaa8d98daf63"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/postcss.config.mjs": {
+    "mtime": 1778555506.3518178,
+    "hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/next.config.mjs": {
+    "mtime": 1778555506.351483,
+    "hash": "82998e3eb4631fc9fad35a3386ecbcef"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/next.config.js": {
+    "mtime": 1778555506.351417,
+    "hash": "7f991c892b0452c0873807afd118fed7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/eslint.config.mjs": {
+    "mtime": 1778555506.3512776,
+    "hash": "bcb00e240634dd9448e57386fdff1902"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/prismjs/plugin.js": {
+    "mtime": 1778555506.4437125,
+    "hash": "60613a415794cb5f896ccce9079afac5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/prismjs/js/prism.pack.js": {
+    "mtime": 1778555506.4436538,
+    "hash": "205ac5361569cd27a16f1258884c5a52"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js": {
+    "mtime": 1778555506.403465,
+    "hash": "280611a47d34145f688739c2cf0aa29b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.js": {
+    "mtime": 1778555506.4033859,
+    "hash": "096ed2c7eec99236cc2bb60bc2ddfa77"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/parsleyjs/js/parsley.min.js": {
+    "mtime": 1778555506.4434655,
+    "hash": "a7cc5610adc91ee08992533bd3854728"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/parsleyjs/js/parsley.js": {
+    "mtime": 1778555506.4433594,
+    "hash": "9762c3d08beb8169822d63b44a4a9a42"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap/js/bootstrap.bundle.js": {
+    "mtime": 1778555506.4123485,
+    "hash": "a9247b1fe21ee409d0b37e74100de687"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap/js/bootstrap.js": {
+    "mtime": 1778555506.4135807,
+    "hash": "7f827fe484ec04346553202782b0664b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap/js/bootstrap.bundle.min.js": {
+    "mtime": 1778555506.4129977,
+    "hash": "a454220fc07088bf1fdd19313b6bfd50"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap/js/bootstrap.min.js": {
+    "mtime": 1778555506.4138484,
+    "hash": "e1d98d47689e00f8ecbc5d9f61bdb42e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/chartjs/chart.min.js": {
+    "mtime": 1778555506.414409,
+    "hash": "2c4e378daf762ad888c654de1e9230e9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/echart/echarts.js": {
+    "mtime": 1778555506.418665,
+    "hash": "72de0b767e854e0b919a49df6e853246"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/echart/echarts.min.js": {
+    "mtime": 1778555506.4197247,
+    "hash": "0f4c7d35e3479a3d70b5580a1d21b058"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.stack.js": {
+    "mtime": 1778555506.42117,
+    "hash": "76945205e6094cc16871aef9b27606d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.symbol.js": {
+    "mtime": 1778555506.4212244,
+    "hash": "ca6ad22013ca6285353f1cf0ed07b90e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/excanvas.js": {
+    "mtime": 1778555506.4200745,
+    "hash": "e5b3968f64661f1893cf740191e959c5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.categories.js": {
+    "mtime": 1778555506.420393,
+    "hash": "b404141c778bcfa27d02f943352fbc4e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.time.js": {
+    "mtime": 1778555506.4214318,
+    "hash": "6a49d955cbc76f5c2fecce8a185f6291"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.errorbars.js": {
+    "mtime": 1778555506.4205227,
+    "hash": "73fcfdc8eb3b79de42e4e9a009749127"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.navigate.js": {
+    "mtime": 1778555506.4208982,
+    "hash": "0fd6d20c90a468fd43d5573542cfab4b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flotscripts.bundle.js": {
+    "mtime": 1778555506.4215598,
+    "hash": "a8c7365c40be9bce7fd61c1a04bdc5b9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.pie.js": {
+    "mtime": 1778555506.4209776,
+    "hash": "62dbbef98865feaa20a7f936c56ab931"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.image.js": {
+    "mtime": 1778555506.4206548,
+    "hash": "2947d3bde8e2384bd85e3faf6f44c433"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.threshold.js": {
+    "mtime": 1778555506.4212952,
+    "hash": "acee3dea7eab3e1637f64ee5fa5adb98"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.canvas.js": {
+    "mtime": 1778555506.4203231,
+    "hash": "a8710d08b758015617c9518fcad90a69"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/excanvas.min.js": {
+    "mtime": 1778555506.4201772,
+    "hash": "ee9e3fee14270b7b27fcaa0e2cf2e042"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.fillbetween.js": {
+    "mtime": 1778555506.4205868,
+    "hash": "84e8ec6c5278063e64ee6e574190303a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.selection.js": {
+    "mtime": 1778555506.4211032,
+    "hash": "6e4a2701adaf2ace52c100aba5c3eace"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.js": {
+    "mtime": 1778555506.4208212,
+    "hash": "89bc8ea971e99653717fa69a73d70bb4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/colorhelpers.js": {
+    "mtime": 1778555506.419959,
+    "hash": "88e3b66abe16e03c573a0c969dde3f3c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.resize.js": {
+    "mtime": 1778555506.4210372,
+    "hash": "826b0d2739932ac103bf420dbadd048e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/flot-charts/flot.crosshair.js": {
+    "mtime": 1778555506.4204586,
+    "hash": "78077b855f710839538571453a245a33"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-world.js": {
+    "mtime": 1778555506.439928,
+    "hash": "96f42d477a4b108d9ecdd2bd2f61ca07"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-us.js": {
+    "mtime": 1778555506.4393768,
+    "hash": "9043f2fb5180a7100369a0029ff38012"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-uk.js": {
+    "mtime": 1778555506.439191,
+    "hash": "463b0a49dd95b10c25bb29d27db3a382"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap.bundle.js": {
+    "mtime": 1778555506.4404309,
+    "hash": "9fdd9aeb963951bf2e25208a95d28d47"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-2.0.3.min.js": {
+    "mtime": 1778555506.4387496,
+    "hash": "804ac7d540636c9858ed4e2cd2754951"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-in.js": {
+    "mtime": 1778555506.4390535,
+    "hash": "63aac29bfe08f2f6505c0d81b87984b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jvectormap/jvectormap-au.js": {
+    "mtime": 1778555506.4388633,
+    "hash": "ceeb1411af6cdc1bb1d8e2f309d4adbc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/fullcalendar/jqueryui.min.js": {
+    "mtime": 1778555506.4255373,
+    "hash": "3600dbf27d737ca78da78ea8959659fb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/fullcalendar/fullcalendar.js": {
+    "mtime": 1778555506.4248335,
+    "hash": "98914525a98db786aab0ecd056dc94b2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/fullcalendar/fullcalendar.min.js": {
+    "mtime": 1778555506.4252043,
+    "hash": "6c6cad1ac091ee3c57552592d4c98ba1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/fullcalendar/moment.min.js": {
+    "mtime": 1778555506.4256682,
+    "hash": "8999b8b5d07e9c6077ac5ac6bc942968"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/markdown/markdown-plugins.js": {
+    "mtime": 1778555506.4413104,
+    "hash": "a515465eccc7302848b459aaffc2eef0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/markdown/to-markdown.js": {
+    "mtime": 1778555506.4414828,
+    "hash": "adb33ea973440310b889c2e8fa502565"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/markdown/markdown-page.js": {
+    "mtime": 1778555506.4412677,
+    "hash": "89930b1ea377334e58dd9d068a79138e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/markdown/bootstrap-markdown.js": {
+    "mtime": 1778555506.4411654,
+    "hash": "8be03608e0ff5555f064374718100b64"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/markdown/markdown.js": {
+    "mtime": 1778555506.4414115,
+    "hash": "f1543dd6ae2ffd2e0ae39f0f975c0e4d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/table-dragger/table-dragger.min.js": {
+    "mtime": 1778555506.4507675,
+    "hash": "a0a2e69b97eda94a788cc767094715b6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/table-dragger/table-dragger.js": {
+    "mtime": 1778555506.4506168,
+    "hash": "2cb0745e32de14bc2ab42a1d98ee3793"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/counterjs/jquery.waypoints.js": {
+    "mtime": 1778555506.4159265,
+    "hash": "5f059965cebb133ff85495a3ec2a2f04"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/counterjs/jquery.counterup.min.js": {
+    "mtime": 1778555506.4158664,
+    "hash": "ef36cca760bf1cd76cfcd0e4dc10cef1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery-3.3.1.min.js": {
+    "mtime": 1778555506.4370387,
+    "hash": "a09e13ee94d51c524b7e2a728c7d4039"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery.slim.min.js": {
+    "mtime": 1778555506.4383218,
+    "hash": "5f48fc77cac90c4778fa24ec9c57f37d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery.slim.js": {
+    "mtime": 1778555506.4381728,
+    "hash": "697a794a74f337c4302e2d1ff299f402"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/core.js": {
+    "mtime": 1778555506.436782,
+    "hash": "0303ee2d8f211aa93f872eb045e51d7f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery-3.4.1.min.js": {
+    "mtime": 1778555506.437127,
+    "hash": "f832e36068ab203a3f89b1795480d0d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery.min.js": {
+    "mtime": 1778555506.4376302,
+    "hash": "2f6b11a7e914718e0290410e85366fe9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery/jquery.js": {
+    "mtime": 1778555506.4374614,
+    "hash": "888d4551b8db7c41cda28d95e494f998"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/input-mask/plugin.js": {
+    "mtime": 1778555506.4323113,
+    "hash": "f9178907d49338b98ee5e0acf8e5a7c3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/input-mask/js/jquery.mask.min.js": {
+    "mtime": 1778555506.4322627,
+    "hash": "7cf822dfabcf03f507100695b88df84b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/multi-select/js/jquery.multi-select.js": {
+    "mtime": 1778555506.442502,
+    "hash": "20749e3b4c7470cd83bef59e442883b3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-steps/jquery.steps.js": {
+    "mtime": 1778555506.4332805,
+    "hash": "f42e2573c9d5aa23443a37cd5604dc86"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-steps/jquery.steps.min.js": {
+    "mtime": 1778555506.4333572,
+    "hash": "4c5e9f4e84d32b7df69af7420b355e03"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/morrisjs/morris.js": {
+    "mtime": 1778555506.4419317,
+    "hash": "c33aff9ca10315c7f9a9aa320b69abba"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/morrisjs/morris.min.js": {
+    "mtime": 1778555506.4420972,
+    "hash": "fadac462637afd6cdc0cb0a0137629af"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/dropify/js/dropify.js": {
+    "mtime": 1778555506.418441,
+    "hash": "ad4d3e4024fec6cdf711da59e20d61c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/dropify/js/dropify.min.js": {
+    "mtime": 1778555506.4185755,
+    "hash": "c33a6db4b01955bf1dc4a2a433e37001"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-multiselect/bootstrap-multiselect.js": {
+    "mtime": 1778555506.4086804,
+    "hash": "d39b84bca8e3ae14b1aa61bba669d8f6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js": {
+    "mtime": 1778555506.4330719,
+    "hash": "4cdb996bdab47aca1ba5ae1f874d9ed3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.phone.extensions.js": {
+    "mtime": 1778555506.4328275,
+    "hash": "a025bb1b8220c4a30701914a46f337c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.regex.extensions.js": {
+    "mtime": 1778555506.4328918,
+    "hash": "a88da3e61483a117990e31a32ab9502b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.js": {
+    "mtime": 1778555506.4326942,
+    "hash": "23c575fd282126dafc85e5e84e3d0e41"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.dependencyLib.jquery.js": {
+    "mtime": 1778555506.4324954,
+    "hash": "db4a3c3124dc4f729f3e6d097affd74e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.extensions.js": {
+    "mtime": 1778555506.4325585,
+    "hash": "dda3165e0eac5fd9579081b0b9cf9d04"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/jquery.inputmask.js": {
+    "mtime": 1778555506.432939,
+    "hash": "9e63e501c0a891d9784961d9c5a02baf"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.numeric.extensions.js": {
+    "mtime": 1778555506.4327703,
+    "hash": "e2faf331627be9bc08ad2022a0278868"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-inputmask/inputmask/inputmask.date.extensions.js": {
+    "mtime": 1778555506.4324358,
+    "hash": "f9999287c16d81e9582f11776e0c734b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js": {
+    "mtime": 1778555506.4141228,
+    "hash": "3a1e9d38f82bcae8877e1b33a80c51e1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/metisMenu/metisMenu.js": {
+    "mtime": 1778555506.441719,
+    "hash": "6e842b5437ec7bbbff7c8e86b58f9f88"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/sparkline/sparkline.min.js": {
+    "mtime": 1778555506.4446483,
+    "hash": "f3b800a40d751e6f61e0d17e7777e180"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/sparkline/sparkline.js": {
+    "mtime": 1778555506.444535,
+    "hash": "4063c411b139d9be4753bac13a86ed0c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/knobjs/knob.min.js": {
+    "mtime": 1778555506.440599,
+    "hash": "e708020309de1747a08957f691324ac8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/bootstrap-datepicker.min.js": {
+    "mtime": 1778555506.4036264,
+    "hash": "4b68703c76a917c3d440fe15576fb857"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/bootstrap-datetimepicker.js": {
+    "mtime": 1778555506.4039114,
+    "hash": "2e7d55009fcb7c71c9d4070df76d094b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-TW.min.js": {
+    "mtime": 1778555506.4085023,
+    "hash": "7c30c64ca6cebaa76e783c22988f39bc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.it-CH.min.js": {
+    "mtime": 1778555506.4064882,
+    "hash": "29a2e65ee680766d46522fd5b885f1c1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sq.min.js": {
+    "mtime": 1778555506.408005,
+    "hash": "998eeef54bf839c6470da58e285a1237"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.da.min.js": {
+    "mtime": 1778555506.405225,
+    "hash": "4618274b5408a27294af1b0b4133534d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.eo.min.js": {
+    "mtime": 1778555506.4054832,
+    "hash": "f278d2b5d00aeeaad81ae6a30561dfb3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.rs.min.js": {
+    "mtime": 1778555506.4077919,
+    "hash": "9d7f340bb0b1f94c6ebe29ca4f17cd08"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.th.min.js": {
+    "mtime": 1778555506.4082522,
+    "hash": "6ecf92ecfc65cd7cb1ba60a32aa950c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.fi.min.js": {
+    "mtime": 1778555506.4057941,
+    "hash": "3b2ea6b77ec81a3b049ad67fbd61da65"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.tr.min.js": {
+    "mtime": 1778555506.4083009,
+    "hash": "96d8b009eebbd4a96fd3c99977dc9ecb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ar.min.js": {
+    "mtime": 1778555506.4048662,
+    "hash": "35d26b024f96e3fb2af435c7c0f31190"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sk.min.js": {
+    "mtime": 1778555506.4078975,
+    "hash": "ed7d6fc7c720724a01cf06b4c9987b23"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.eu.min.js": {
+    "mtime": 1778555506.4056656,
+    "hash": "2cea5a417e54dd16189a79d48532eaa5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.hr.min.js": {
+    "mtime": 1778555506.4061742,
+    "hash": "5eeab995783abb983baa504e9ad38d4b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.id.min.js": {
+    "mtime": 1778555506.4063604,
+    "hash": "77beed0d1402226bdaec79a8423c6bef"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.fo.min.js": {
+    "mtime": 1778555506.4058678,
+    "hash": "542de91da4d0304fdd2f85dd25c259fa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sw.min.js": {
+    "mtime": 1778555506.4082017,
+    "hash": "660f1add7129dd1e357d349e51e9ba3b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ru.min.js": {
+    "mtime": 1778555506.4078429,
+    "hash": "54c6aa69effea960877094695f403d30"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.az.min.js": {
+    "mtime": 1778555506.4049184,
+    "hash": "000e804c2c7e399be57a934139d0d4b0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ms.min.js": {
+    "mtime": 1778555506.4072363,
+    "hash": "558e364314f7a6f1e8ff552af45289a0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.it.min.js": {
+    "mtime": 1778555506.4065366,
+    "hash": "7440f71697670ae6215d6f1f68bf6eac"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.mk.min.js": {
+    "mtime": 1778555506.4071207,
+    "hash": "8ad641a1b0df58643675e914757222d6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.kh.min.js": {
+    "mtime": 1778555506.4066956,
+    "hash": "4176a7944ccde5f13d463cb3d62dacfb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.kr.min.js": {
+    "mtime": 1778555506.406888,
+    "hash": "e51eb36be5d0009b5bc8234eab371f65"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.no.min.js": {
+    "mtime": 1778555506.407471,
+    "hash": "cbe9d87ffe7c3a8b93cfe1baee7dfdb2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sr-latin.min.js": {
+    "mtime": 1778555506.4080527,
+    "hash": "a00919b4647f5082db5030577152c94a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.me.min.js": {
+    "mtime": 1778555506.407067,
+    "hash": "ee094dcc6b080440ae648f0b5f551fd7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.fa.min.js": {
+    "mtime": 1778555506.4057338,
+    "hash": "f9dca456507865d74367df2ec21442d2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.pt-BR.min.js": {
+    "mtime": 1778555506.4075983,
+    "hash": "d89e56a0947bc625e6d0afa7336388bc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ro.min.js": {
+    "mtime": 1778555506.407698,
+    "hash": "7ef7c427e5a6dadf980ca012a929fce8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.es.min.js": {
+    "mtime": 1778555506.4055347,
+    "hash": "0c240809f25d1bf69a78e589d81b15fd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.fr-CH.min.js": {
+    "mtime": 1778555506.405941,
+    "hash": "8e16f409b6c4cd9f89dc39e328f0a804"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.de.min.js": {
+    "mtime": 1778555506.4052792,
+    "hash": "e379a61bac6fb9cb1432ae048c00a2d4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.cy.min.js": {
+    "mtime": 1778555506.4051738,
+    "hash": "4c19733f05237657eadc42cead63607c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.uk.min.js": {
+    "mtime": 1778555506.4083495,
+    "hash": "ff0781daf30ebf3a9bff3e2c29e3bc36"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ca.min.js": {
+    "mtime": 1778555506.4050734,
+    "hash": "140d8ef13cbaa5915be82edca7b2e9ea"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.he.min.js": {
+    "mtime": 1778555506.4061131,
+    "hash": "7e36ca89762611a0fac1d8d3d03b4235"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.lv.min.js": {
+    "mtime": 1778555506.407013,
+    "hash": "5ddb0f077a652836582daf9b297b819c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.is.min.js": {
+    "mtime": 1778555506.4064217,
+    "hash": "8d2b24a898aa0a026f38e41ea25295e9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ja.min.js": {
+    "mtime": 1778555506.4065852,
+    "hash": "458a858a3d60a0a11bdaa1da796c0d95"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ko.min.js": {
+    "mtime": 1778555506.406823,
+    "hash": "4cd53b7aaff6c01d5476db7ef36b15b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.lt.min.js": {
+    "mtime": 1778555506.4069533,
+    "hash": "1d075794044f3c1f8097b7411cb160ea"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.rs-latin.min.js": {
+    "mtime": 1778555506.4077432,
+    "hash": "1792f11adb32653e6a38a30fa026e55f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.mn.min.js": {
+    "mtime": 1778555506.407176,
+    "hash": "9053a24b169a02078f62c87db61929e0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.ka.min.js": {
+    "mtime": 1778555506.4066389,
+    "hash": "9c7b2a6b2b224210f425556fc46fb4ff"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.en-AU.min.js": {
+    "mtime": 1778555506.4053795,
+    "hash": "c547ee603fe716b417fa3318703e1775"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.pt.min.js": {
+    "mtime": 1778555506.4076507,
+    "hash": "5fac70c505674c265acd14fe205fc28c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.et.min.js": {
+    "mtime": 1778555506.4055996,
+    "hash": "bdc157716069be8880b19d5e1663d131"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.fr.min.js": {
+    "mtime": 1778555506.4060068,
+    "hash": "d69412ba9c9add964acbd11f0c7ab3d4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.en-GB.min.js": {
+    "mtime": 1778555506.405435,
+    "hash": "0aff1a27d7e87aa4d7162b0928415adc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.el.min.js": {
+    "mtime": 1778555506.4053307,
+    "hash": "9a8c3f87f7e656bae9d7f4f495d34ad0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.pl.min.js": {
+    "mtime": 1778555506.4075305,
+    "hash": "6e5d48470a01fe340e8aab7d07bdf36c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sr.min.js": {
+    "mtime": 1778555506.4081,
+    "hash": "b8db81ddacac2fe29227b2f3b104feda"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.nl-BE.min.js": {
+    "mtime": 1778555506.407354,
+    "hash": "d102d2544ac0c83ae7becd89db845a3e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.nl.min.js": {
+    "mtime": 1778555506.4074144,
+    "hash": "7ea61899ebdc63516fa9390c2960422c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sv.min.js": {
+    "mtime": 1778555506.4081502,
+    "hash": "4e14590b2ac964e211853079aeb5bc32"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.cs.min.js": {
+    "mtime": 1778555506.405124,
+    "hash": "0b84b83453d3eb32085a196ec1e45162"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.gl.min.js": {
+    "mtime": 1778555506.4060588,
+    "hash": "570781c190a59487dd5fdf037df3f46c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.bg.min.js": {
+    "mtime": 1778555506.4049735,
+    "hash": "54d489f29cbff19d419a47d9373d4528"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.vi.min.js": {
+    "mtime": 1778555506.408396,
+    "hash": "8be76c0d0e10acd89d19249e5830d072"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.sl.min.js": {
+    "mtime": 1778555506.4079485,
+    "hash": "8b97accd7dccbaac6119fec87fe2a09a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.bs.min.js": {
+    "mtime": 1778555506.4050217,
+    "hash": "09824a399a5a7a07c41c3bfccb767b66"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.hu.min.js": {
+    "mtime": 1778555506.406234,
+    "hash": "2fca7eb28145674f456a59186c8acd4e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.kk.min.js": {
+    "mtime": 1778555506.4067547,
+    "hash": "66e7ca803db3b023413cb3a2257c2ed9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.hy.min.js": {
+    "mtime": 1778555506.4062986,
+    "hash": "bd397db07229b0126e2168f6aa38191d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js": {
+    "mtime": 1778555506.4084508,
+    "hash": "4a616de93d45ec1d42f9bfab4ea2689e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/locales/bootstrap-datepicker.nb.min.js": {
+    "mtime": 1778555506.4072924,
+    "hash": "977b71a3cd932b731c138f8e705d101f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js": {
+    "mtime": 1778555506.4047825,
+    "hash": "4b68703c76a917c3d440fe15576fb857"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js": {
+    "mtime": 1778555506.404685,
+    "hash": "be74d5befb57a55bcf71d5af775f8dfb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/editable/ditabletable.js": {
+    "mtime": 1778555506.4198105,
+    "hash": "3c058870bd47ccf792651965613d27c8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/editable/ditabletable.min.js": {
+    "mtime": 1778555506.4198635,
+    "hash": "d9d0ec4180395507812e02fc14e5e19d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/maps-google/plugin.js": {
+    "mtime": 1778555506.4410162,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/charts-c3/d3.v3.min.js": {
+    "mtime": 1778555506.415061,
+    "hash": "5bc245068b1b70d4c3eaef79045023e4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/charts-c3/c3.min.js": {
+    "mtime": 1778555506.4147778,
+    "hash": "da19d09f40d6602b5234d17e833e54a1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/charts-c3/d3.v5.min.js": {
+    "mtime": 1778555506.4154422,
+    "hash": "6422cecb9407dae02ca533c0d873633c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js": {
+    "mtime": 1778555506.4092338,
+    "hash": "b0fd53fc5fbae7ce5304035d7e2086a8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-tagsinput/bootstrap-tagsinput-angular.js": {
+    "mtime": 1778555506.4088492,
+    "hash": "0841271817ef1931c891fa477cebe500"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-tagsinput/bootstrap-tagsinput.js": {
+    "mtime": 1778555506.409098,
+    "hash": "3590c738650aac8bf867f95dc2cd2164"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-tagsinput/bootstrap-tagsinput-angular.min.js": {
+    "mtime": 1778555506.4089074,
+    "hash": "8682d71998726db8d088c760836155d6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/gauge/gauge.min.js": {
+    "mtime": 1778555506.4257822,
+    "hash": "af9c4779537c722ab87144f501d471cd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/apexcharts/apexcharts.min.js": {
+    "mtime": 1778555506.402549,
+    "hash": "918d75c3d380f9b74aabfa157fa8a063"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/raphael/raphael.min.js": {
+    "mtime": 1778555506.4443455,
+    "hash": "1e206e9edf7754ba42e8ece9f4b42ac8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/raphael/raphael.js": {
+    "mtime": 1778555506.4441507,
+    "hash": "8e7db946e08100539c911804fb55b64c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery.maskedinput/jquery.maskedinput.js": {
+    "mtime": 1778555506.4365652,
+    "hash": "1cdeafe84120b621dcd953592a94c998"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery.maskedinput/jquery.maskedinput.min.js": {
+    "mtime": 1778555506.4366271,
+    "hash": "bb2a5846df151c66877e0c198b61b684"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/additional-methods.js": {
+    "mtime": 1778555506.4334767,
+    "hash": "7b60c0c752150e806622b428535ebefd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/jquery.validate.js": {
+    "mtime": 1778555506.4335759,
+    "hash": "d1c94754618a989d3c259b89bc58a920"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_kk.js": {
+    "mtime": 1778555506.4349787,
+    "hash": "8344c44987e700765823ca8d23f0c5aa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_vi.js": {
+    "mtime": 1778555506.4360814,
+    "hash": "2edf154edf3d064decf16874e59a7a7d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_lv.js": {
+    "mtime": 1778555506.4351149,
+    "hash": "8d435651ff1f9a5ca8f43d928381b9df"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_gl.js": {
+    "mtime": 1778555506.4345012,
+    "hash": "8826c3cb90a8b2f5f292629f9abb50f6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_pl.js": {
+    "mtime": 1778555506.4353442,
+    "hash": "85ab83c7bc6445d816838704093c06b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_el.js": {
+    "mtime": 1778555506.4340374,
+    "hash": "beaaa9b0f720f449398d4dd61fc895e2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_et.js": {
+    "mtime": 1778555506.4342175,
+    "hash": "a0b222735dee99933da3f11bac107ce6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ko.js": {
+    "mtime": 1778555506.435023,
+    "hash": "a43a21dcdd700b8794b330136fb50cb2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_is.js": {
+    "mtime": 1778555506.4347906,
+    "hash": "8b8ecd4000d01602c058525eb7e9a546"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_sl.js": {
+    "mtime": 1778555506.435706,
+    "hash": "02987e7c6c5901f73f32ee6829437ab2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_sr_lat.js": {
+    "mtime": 1778555506.435798,
+    "hash": "a3799ef38d31b919aa5fe16fa7c8012d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_es_PE.js": {
+    "mtime": 1778555506.434172,
+    "hash": "39d6589393b8393ad60b805fcea9f2be"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_hr.js": {
+    "mtime": 1778555506.4345984,
+    "hash": "b424efa657c546910e938b74cdda0fde"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_fi.js": {
+    "mtime": 1778555506.4343598,
+    "hash": "76ad809c97c9d3bea894adc9426f8b0b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_th.js": {
+    "mtime": 1778555506.4358907,
+    "hash": "833d87670dc24f4278c3a4252c1d6c20"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ru.js": {
+    "mtime": 1778555506.435556,
+    "hash": "c5835944cdef8613eea58a365625542b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_eu.js": {
+    "mtime": 1778555506.4342659,
+    "hash": "6c5f6ec3824f37d02a521edfc7492ea2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_mk.js": {
+    "mtime": 1778555506.4351652,
+    "hash": "15534346656ae45a8b0eaf17dd22ff56"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_no.js": {
+    "mtime": 1778555506.4352953,
+    "hash": "d9de9f310d05d9ebe62a69b163672665"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_si.js": {
+    "mtime": 1778555506.4356122,
+    "hash": "51d67989d6a182ade076a9dfe9b6cbc2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ja.js": {
+    "mtime": 1778555506.4348836,
+    "hash": "f23a11943cd164e66963b213f4132943"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ka.js": {
+    "mtime": 1778555506.4349344,
+    "hash": "2fa9bb1f5257be500ea12287c961ba5e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_bg.js": {
+    "mtime": 1778555506.4337468,
+    "hash": "4522ac63cb6e66602c6c8efc7a257833"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_he.js": {
+    "mtime": 1778555506.4345543,
+    "hash": "8800a6079975077138d9998c9a6c458e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_pt_PT.js": {
+    "mtime": 1778555506.435452,
+    "hash": "2bc1dc15e4d3dc563902ff0a21685d51"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_es_AR.js": {
+    "mtime": 1778555506.4341285,
+    "hash": "1d90cc906d4e85b0958e9e3ecebd727c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/methods_pt.js": {
+    "mtime": 1778555506.4364066,
+    "hash": "2aa1893f11c658fd7abb2b3659ffb916"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/methods_es_CL.js": {
+    "mtime": 1778555506.4362683,
+    "hash": "005314cad997bf594a6dd5078de031d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_my.js": {
+    "mtime": 1778555506.4352074,
+    "hash": "bd997bf903a7f21fd91d5c0b4b5111d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_id.js": {
+    "mtime": 1778555506.4347446,
+    "hash": "d1ae6a7f4535e4768bb00a5064ff9595"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/methods_fi.js": {
+    "mtime": 1778555506.4363136,
+    "hash": "c85298413b41485574e2e1b6533a7b72"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ca.js": {
+    "mtime": 1778555506.4338388,
+    "hash": "2bd86f71824a4530b6639c25f8ab8c66"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/methods_nl.js": {
+    "mtime": 1778555506.4363606,
+    "hash": "095884a859e6f4c10823f115a935a307"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_zh_TW.js": {
+    "mtime": 1778555506.4361775,
+    "hash": "d0d648eb533f29d7ea504f61d31cc2b8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_pt_BR.js": {
+    "mtime": 1778555506.4354079,
+    "hash": "131b61bcb205707049bc0c2ebe6084fa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_da.js": {
+    "mtime": 1778555506.4339402,
+    "hash": "af1ba7b2840b3b65b203a6e37731778c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ge.js": {
+    "mtime": 1778555506.4344509,
+    "hash": "056d4ed887c01106a3972ec86c5a7392"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_fa.js": {
+    "mtime": 1778555506.4343162,
+    "hash": "cdc0008c76f12ec98a192c5bacd9127f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_de.js": {
+    "mtime": 1778555506.4339883,
+    "hash": "fc0ba996284b592c80a3d2282539cbae"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_sv.js": {
+    "mtime": 1778555506.435844,
+    "hash": "c986908e402e24732860d7dbee5758e5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_uk.js": {
+    "mtime": 1778555506.4360313,
+    "hash": "8211a96fda32c63a2e3c1d4704c2de9c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_zh.js": {
+    "mtime": 1778555506.4361277,
+    "hash": "460c238c5b8d466e71ab62715b36e157"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_cs.js": {
+    "mtime": 1778555506.4338858,
+    "hash": "7b56cc608b82208200bc87b7506b58f6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_fr.js": {
+    "mtime": 1778555506.4344046,
+    "hash": "d00d2d5a3bd25c2451f91337fa965ec8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_nl.js": {
+    "mtime": 1778555506.4352498,
+    "hash": "032e262a7cee8d794154080d1ff06715"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_sr.js": {
+    "mtime": 1778555506.4357524,
+    "hash": "31c5fcc22370b4f9057571399243c800"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_hu.js": {
+    "mtime": 1778555506.4346464,
+    "hash": "09b233f286e34f99470a495eb950a44e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_lt.js": {
+    "mtime": 1778555506.4350662,
+    "hash": "23251f65d7d32dda8fd6805c06e25915"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/methods_de.js": {
+    "mtime": 1778555506.436224,
+    "hash": "6b7122396194bbd88d92a8d53b6033f7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ar.js": {
+    "mtime": 1778555506.433656,
+    "hash": "f7232b019d3a151b3b7fed1040e27a04"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_sk.js": {
+    "mtime": 1778555506.4356608,
+    "hash": "5e5fa885861113795214be50c455a27f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_it.js": {
+    "mtime": 1778555506.434835,
+    "hash": "542ce07837eb059a0e56ef01a1fbd578"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_es.js": {
+    "mtime": 1778555506.4340851,
+    "hash": "e36e339a5fe2d3792def2c03cd4a89d5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_hy_AM.js": {
+    "mtime": 1778555506.4346955,
+    "hash": "e60479939b8202ff4d613401692437ec"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_ro.js": {
+    "mtime": 1778555506.4355056,
+    "hash": "3c6682b179e41424f37fccf224466cf9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_tj.js": {
+    "mtime": 1778555506.4359372,
+    "hash": "dbb07e56b663116c13c0c66ff4a657c2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_bn_BD.js": {
+    "mtime": 1778555506.4337926,
+    "hash": "8dd9f725c089fc2423c6370d6a57c12a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/jquery-validation/localization/messages_tr.js": {
+    "mtime": 1778555506.4359834,
+    "hash": "3a3948e15fdbcd3b8e8f46bad6725fd5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/nestable/jquery.nestable.js": {
+    "mtime": 1778555506.4426808,
+    "hash": "eb5545f81d16e25f8b61c2e0187d55df"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/sweetalert/sweetalert.min.js": {
+    "mtime": 1778555506.450533,
+    "hash": "df3a0ec595ced31b80458722e07ab0ea"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/sweetalert/sweetalert-dev.js": {
+    "mtime": 1778555506.4503906,
+    "hash": "800cbdcad6a26e06fc9471102d8c50c4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/dataTables.bootstrap4.min.js": {
+    "mtime": 1778555506.4165442,
+    "hash": "3d899ecefb62c060c4eb5fc658dd4145"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/datatablescripts.bundle.js": {
+    "mtime": 1778555506.4167035,
+    "hash": "08f660950c208883eaaca67e12386d98"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/jquery.dataTables.min.js": {
+    "mtime": 1778555506.4176824,
+    "hash": "114c26084cb472c6a5f8b58908472ad7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/jquery.dataTables.js": {
+    "mtime": 1778555506.4175076,
+    "hash": "7d2896d1e2b49f26ca0a223c861ac132"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/fixedeader/dataTables.fixedHeader.min.js": {
+    "mtime": 1778555506.41689,
+    "hash": "9d3ba9ac7a9a52e647c605509b5612e4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/fixedeader/dataTables.fixedColumns.min.js": {
+    "mtime": 1778555506.416815,
+    "hash": "330a3d695954457173eef53565c81891"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/buttons.print.min.js": {
+    "mtime": 1778555506.4163184,
+    "hash": "c18cbe3bda10908b5e29d23235881392"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/buttons.bootstrap4.min.js": {
+    "mtime": 1778555506.416048,
+    "hash": "1d3b54b51c396e5ae38e67ef3dc39ed1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/buttons.colVis.min.js": {
+    "mtime": 1778555506.416101,
+    "hash": "18d718d978cfb584abc937475b62357d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/dataTables.buttons.min.js": {
+    "mtime": 1778555506.4163952,
+    "hash": "dbf6da6cc1559032ca75d0592ee614f4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/buttons.html5.min.js": {
+    "mtime": 1778555506.4162579,
+    "hash": "adbaca2f0275a04a0c99df4e11cedf26"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/datatable/buttons/buttons.flash.min.js": {
+    "mtime": 1778555506.4161758,
+    "hash": "f4ccae978101a790629323a137f774e6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/listjs/list.min.js": {
+    "mtime": 1778555506.4409616,
+    "hash": "69b60bc29a0554523767949686b4d089"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/listjs/list.js": {
+    "mtime": 1778555506.4407094,
+    "hash": "ab9eab3e0b79e8a762a38e2c3a5d67fe"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/nouislider/nouislider.min.js": {
+    "mtime": 1778555506.4430585,
+    "hash": "eec731f0afc75db94584ca89ab39d838"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/nouislider/nouislider.js": {
+    "mtime": 1778555506.442907,
+    "hash": "42192e54f0e78aa39c0232c067175194"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/js/core.js": {
+    "mtime": 1778555506.40153,
+    "hash": "9266a93a66b61880c63a39b75ea38891"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/nestable.bundle.js": {
+    "mtime": 1778555506.3588593,
+    "hash": "283cf8b8bd90f63e43cfe0660ed1ef21"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/morris.bundle.js": {
+    "mtime": 1778555506.3587418,
+    "hash": "6aca64c08ceb5ca2c47b3d68cb9a6658"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/summernote.bundle.js": {
+    "mtime": 1778555506.3592257,
+    "hash": "20994cb78d7c384c6046f879a49509d4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/sweetalert.bundle.js": {
+    "mtime": 1778555506.3593392,
+    "hash": "c92c434db088154fc247f7819c76cb0d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/c3.bundle.js": {
+    "mtime": 1778555506.3534703,
+    "hash": "5e48d5e09b8584b026665c03cbe7c131"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/echarts.bundle.js": {
+    "mtime": 1778555506.3555777,
+    "hash": "4f91eac1428b172411f654c612efbf69"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/counterup.bundle.js": {
+    "mtime": 1778555506.3536818,
+    "hash": "2ff5b70a101423893976a463a3920832"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/dataTables.bundle.js": {
+    "mtime": 1778555506.3540068,
+    "hash": "5288d48cd116b9ba964e9fe6278bca46"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/jvectormap2.bundle.js": {
+    "mtime": 1778555506.3576865,
+    "hash": "76559a2ebdca47cc7a6a2e62d7596e51"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/markdown.bundle.js": {
+    "mtime": 1778555506.3584468,
+    "hash": "e8d5b163fa053102a6b4c8d56c46b639"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/flot.bundle.js": {
+    "mtime": 1778555506.3558059,
+    "hash": "890dd934f9b01e9ca6705f351c4d6771"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/selectize.bundle.js": {
+    "mtime": 1778555506.3590024,
+    "hash": "6ca378b750b3b14fbc69f0aa8a98304c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/apexcharts.bundle.js": {
+    "mtime": 1778555506.3527336,
+    "hash": "37e83a59d7cbffb0a5d5f7f52a8a71fe"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/jvectormap1.bundle.js": {
+    "mtime": 1778555506.3572016,
+    "hash": "388b66b3c2adbd13a284e6113b72ce2a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/knobjs.bundle.js": {
+    "mtime": 1778555506.3578544,
+    "hash": "6d46941e3eea80d4fe5a827b1ce69d95"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/fullcalendar.bundle.js": {
+    "mtime": 1778555506.3563175,
+    "hash": "512288e82f367bef17ab996dc1d9cc6d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/bundles/lib.vendor.bundle.js": {
+    "mtime": 1778555506.358302,
+    "hash": "003a9108f4cfa631c2368f03bab712c8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/layout.js": {
+    "mtime": 1778555506.4579866,
+    "hash": "d1e7c169c75b06e93a15418d030a83c6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/page.js": {
+    "mtime": 1778555506.4582098,
+    "hash": "07827e55d43761f6133f1a6a6f9a4a6b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/servicios-moviles-integrador/page.js": {
+    "mtime": 1778555506.458412,
+    "hash": "fcbda885b8f635cdb92a87755f149952"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/biblioteca/page.js": {
+    "mtime": 1778555506.4576678,
+    "hash": "38006c890b2db82501813cfe8ca84172"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/control-de-notas/page.js": {
+    "mtime": 1778555506.4577353,
+    "hash": "dcaf08896a2fe7cdfd4f214148cc8eef"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/otras-actividades/page.js": {
+    "mtime": 1778555506.4581523,
+    "hash": "e747c928758c8e121d0b4283e4c4385b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/administracion/page.js": {
+    "mtime": 1778555506.4576015,
+    "hash": "3aed98c083c11e1ca035034947551b7d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/sistema-academico/page.js": {
+    "mtime": 1778555506.4584746,
+    "hash": "ff4f51bb629c22acacdcd069a9dde7ba"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/salida/route.js": {
+    "mtime": 1778557413.808978,
+    "hash": "d513a5e49f6482129a5f798417fab3b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/acceso/route.js": {
+    "mtime": 1778557404.330426,
+    "hash": "a9dd10a39812e0159afc7f30110928f8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/reportes/morosos/route.js": {
+    "mtime": 1778557494.6334445,
+    "hash": "ca0d4c08dcfb336800532441ed67e97a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/solvencia/[carnet]/route.js": {
+    "mtime": 1778557459.4714143,
+    "hash": "bf8a24934f04972c0ac826d26a0ed11c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/webhooks/pago-recibido/route.js": {
+    "mtime": 1778557473.2315004,
+    "hash": "81e8ea026c57ff288b9f03418752c3ea"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/webhooks/baja-estudiante/route.js": {
+    "mtime": 1778557482.7996554,
+    "hash": "61243f0d806e4e264ac8b5e9227f3f8b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/api/parqueo/ocupacion/stream/route.js": {
+    "mtime": 1778557428.7864015,
+    "hash": "580eac2a0b75623b120a5991f6a96c32"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/pagos-alumnos/page.js": {
+    "mtime": 1778555506.4582763,
+    "hash": "7c07aec7e0bcd5b4b585730c830068f5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/parqueo/page.js": {
+    "mtime": 1778558163.568689,
+    "hash": "397baeb6d7c98c876ce5ba1bfcf19c10"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/laboratorios/page.js": {
+    "mtime": 1778555506.4579413,
+    "hash": "0ea92ab31f95c298b42109399d81facb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/app/login/page.js": {
+    "mtime": 1778555506.4580727,
+    "hash": "7c3273d9842eedeac7213219423aee2c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/ModulePlaceholder.js": {
+    "mtime": 1778555506.4585886,
+    "hash": "c91b016ca6fed91070b7d52886800ed4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/Sidebar.js": {
+    "mtime": 1778555506.458641,
+    "hash": "e9ed2df697ab4482370f140574b33826"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/Header.js": {
+    "mtime": 1778555506.4585419,
+    "hash": "d0f7d0e7b8bf0592493e2e6d0b777123"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/TemplateShell.js": {
+    "mtime": 1778555506.4587035,
+    "hash": "b075d2336410bb31135fc498bbeb52f8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/ui/checkbox.js": {
+    "mtime": 1778555506.458815,
+    "hash": "802b540016612dda0a7d8971decc9492"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/ui/button.js": {
+    "mtime": 1778555506.458772,
+    "hash": "8c95c3e289e84af2780cd917450d5a7d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/ui/label.js": {
+    "mtime": 1778555506.4588976,
+    "hash": "ced69dc0cbc43b56f04aad06b3db7369"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/components/ui/input.js": {
+    "mtime": 1778555506.4588563,
+    "hash": "710e3fed8d8aecb1cae559092506cc2f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/src/lib/utils.js": {
+    "mtime": 1778555506.4589658,
+    "hash": "cb4f9fd8b5ad9d8ce6012628f6265c9c"
+  },
+  "/Users/javierestrada/Downloads/final/prisma/seed.ts": {
+    "mtime": 1778556079.7347841,
+    "hash": "65609cd889566c70952b8943ae3a0eef"
+  },
+  "/Users/javierestrada/Downloads/final/prisma/migrations/001_initial.sql": {
+    "mtime": 1778557545.283195,
+    "hash": "5c63a28188dd76884075aec7435ccb37"
+  },
+  "/Users/javierestrada/Downloads/final/iot/firmware/main.cpp": {
+    "mtime": 1778557019.162383,
+    "hash": "567ad14f43c5eadcbf5547b127c2ee29"
+  },
+  "/Users/javierestrada/Downloads/final/iot/mqtt_bridge/index.js": {
+    "mtime": 1778557057.261274,
+    "hash": "9b4d95f6850e403ee435f438288346b4"
+  },
+  "/Users/javierestrada/Downloads/final/lib/redis/cache.js": {
+    "mtime": 1778556397.724194,
+    "hash": "95ae968b0d40e93505eb26d660d50d42"
+  },
+  "/Users/javierestrada/Downloads/final/lib/validations/parqueo.js": {
+    "mtime": 1778556428.8551722,
+    "hash": "2a646bfe1a9da55fec978699c80f027c"
+  },
+  "/Users/javierestrada/Downloads/final/lib/db/stored-procedures.sql": {
+    "mtime": 1778556131.9110773,
+    "hash": "ec5df44c7ac1b6c73c646b2127bf740f"
+  },
+  "/Users/javierestrada/Downloads/final/lib/db/triggers.sql": {
+    "mtime": 1778556176.8945222,
+    "hash": "4f01053df30d9f16d79674125d69ad10"
+  },
+  "/Users/javierestrada/Downloads/final/lib/db/views.sql": {
+    "mtime": 1778556327.2806528,
+    "hash": "26042defaf0364bd2b04c14427ba50a1"
+  },
+  "/Users/javierestrada/Downloads/final/lib/db/queries.js": {
+    "mtime": 1778556381.3476918,
+    "hash": "015eb2e41af9c4b79160b3af1308540a"
+  },
+  "/Users/javierestrada/Downloads/final/GUIA_PRISMA_ESTRUCTURA.md": {
+    "mtime": 1778555506.3500516,
+    "hash": "84e81a75e8f91f586dc3cc6e5d2c1043"
+  },
+  "/Users/javierestrada/Downloads/final/CLAUDE.md": {
+    "mtime": 1778555714.7248006,
+    "hash": "c928df22247dd35c832754fe3aa545fa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/SKILL_BRANDING.md": {
+    "mtime": 1778555506.3511927,
+    "hash": "6c5d6f33980ade09f843a220d5cd1896"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/README.md": {
+    "mtime": 1778555506.3511117,
+    "hash": "ff47271e53637b2ba6ba72ad2b70f6d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/AGENTS.md": {
+    "mtime": 1778555506.3509781,
+    "hash": "9e09241799026ac05be315a2f0b50055"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/CLAUDE.md": {
+    "mtime": 1778555506.3510373,
+    "hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "/Users/javierestrada/Downloads/final/docs/requerimientos.md": {
+    "mtime": 1778556470.6309822,
+    "hash": "645c0667cae63206e429b75c1abaa05e"
+  },
+  "/Users/javierestrada/Downloads/final/docs/arquitectura.md": {
+    "mtime": 1778556650.4184809,
+    "hash": "15238241011639478de61db5c931bb0c"
+  },
+  "/Users/javierestrada/Downloads/final/docs/arquitectura_servidores.md": {
+    "mtime": 1778556725.952323,
+    "hash": "7a1721c7de1c4eff1f3ab4a6fa708493"
+  },
+  "/Users/javierestrada/Downloads/final/docs/integracion_ecosistema.md": {
+    "mtime": 1778556879.3211412,
+    "hash": "90e11f3c5d7f8ace67e60e2bfe06208b"
+  },
+  "/Users/javierestrada/Downloads/final/docs/plan_pruebas.md": {
+    "mtime": 1778556794.2798216,
+    "hash": "c96d4cbe3945933582edefe7cd10d26c"
+  },
+  "/Users/javierestrada/Downloads/final/docs/casos_de_uso.md": {
+    "mtime": 1778556522.6205125,
+    "hash": "709447916d33edd525116384906a23cf"
+  },
+  "/Users/javierestrada/Downloads/final/docs/diagramas.md": {
+    "mtime": 1778556578.3580582,
+    "hash": "ef72080f2df762d094ab498c544df940"
+  },
+  "/Users/javierestrada/Downloads/final/iot/prototipo_demo.md": {
+    "mtime": 1778557116.4555166,
+    "hash": "3085fc4b1ecf9bd88201543a739e5d6c"
+  },
+  "/Users/javierestrada/Downloads/final/iot/sistema_embebido.md": {
+    "mtime": 1778556938.1172807,
+    "hash": "0876e1fd4c20cb315f07534689011f0f"
+  },
+  "/Users/javierestrada/Downloads/final/iot/sensores_ocupacion.md": {
+    "mtime": 1778557336.1450672,
+    "hash": "d319e7d067dd94cfa11d149e7ae8ee1d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/counterjs/HDFC Bank Credit Card-may-2019.pdf": {
+    "mtime": 1778555506.4158034,
+    "hash": "b2f770f3540c437e6bfd8c56315370ba"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/file.svg": {
+    "mtime": 1778555506.4550965,
+    "hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/vercel.svg": {
+    "mtime": 1778555506.4574308,
+    "hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/next.svg": {
+    "mtime": 1778555506.4573903,
+    "hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/logou.png": {
+    "mtime": 1778555506.4573224,
+    "hash": "4014be723d37f8799e6d9947cf804fe1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/globe.svg": {
+    "mtime": 1778555506.455141,
+    "hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/window.svg": {
+    "mtime": 1778555506.4574723,
+    "hash": "a2760511c65806022ad20adf74370ff3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/search.svg": {
+    "mtime": 1778555506.3994045,
+    "hash": "2291ec240b3e936ffc456a51bf1a09fa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/we-released.svg": {
+    "mtime": 1778555506.400846,
+    "hash": "ae67fcdd4c51207c745128afeded9827"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/slider2.svg": {
+    "mtime": 1778555506.3996599,
+    "hash": "b5d8b4f9233f35e53b89cfe6ae9e3d1c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/slider3.svg": {
+    "mtime": 1778555506.3997307,
+    "hash": "d6eb638401c36e7cdecb7340732d7cf5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/slider1.svg": {
+    "mtime": 1778555506.3994925,
+    "hash": "cda5da6b2753ff509b446d3bda291d2a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/chart-report-.svg": {
+    "mtime": 1778555506.3673234,
+    "hash": "ca8c2e36c07140bcac9660a4bf3beaec"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/logo-icon.svg": {
+    "mtime": 1778555506.3891068,
+    "hash": "92622603f6cadb07fc1de9be4e09b9c3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/staticmap.png": {
+    "mtime": 1778555506.4003644,
+    "hash": "afbd364c6752afee53bf67b63d4227d9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/user.png": {
+    "mtime": 1778555506.400717,
+    "hash": "f5c196ffb9497c1c68ca50254cdf489d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/chart-report.svg": {
+    "mtime": 1778555506.3674476,
+    "hash": "4fe935beb1599529efd4761cbfba9d00"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/group-chat.svg": {
+    "mtime": 1778555506.3890433,
+    "hash": "c8df51ec4ed0027d9e22d96f86cd00d9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/no-email.svg": {
+    "mtime": 1778555506.389239,
+    "hash": "6704400409d5d654bc7222b805774a9f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/logo.svg": {
+    "mtime": 1778555506.3891618,
+    "hash": "bf13fcfb073fff750190790f7e57bbca"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/ETH.svg": {
+    "mtime": 1778555506.3677917,
+    "hash": "dc5e72fea20b336a297d8071a1786274"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/neo.svg": {
+    "mtime": 1778555506.3679914,
+    "hash": "3e76b17d9fb1c1798fb0cbc24ca0e017"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/stellar.svg": {
+    "mtime": 1778555506.368209,
+    "hash": "6961915515cd90fb2a6dd2faba915296"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/LTC.svg": {
+    "mtime": 1778555506.3678524,
+    "hash": "192f7b484e7b0307a47170be54beb5e2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/qtum.svg": {
+    "mtime": 1778555506.3681035,
+    "hash": "c63ee1302c553140ae46256f301d5ef9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/DASH.svg": {
+    "mtime": 1778555506.3676822,
+    "hash": "0dd27ece8d7ddcaf2012322886ca6d3d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/BTG.svg": {
+    "mtime": 1778555506.3676271,
+    "hash": "1191955671c263b49d06f7cce179b6d0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/XRP.svg": {
+    "mtime": 1778555506.367912,
+    "hash": "8a09b50aa332a0ba17c2399b9ea39606"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/BTC.svg": {
+    "mtime": 1778555506.3675685,
+    "hash": "0eb9dca19f1ba4fa810f25d799bbbd1a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/crypto/ETC.svg": {
+    "mtime": 1778555506.3677416,
+    "hash": "6c29077fcdd4b0bdade069425f259f9e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar9.jpg": {
+    "mtime": 1778555506.4003022,
+    "hash": "3e688efaa7cb46e41a8c00f79429fe20"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar8.jpg": {
+    "mtime": 1778555506.4002528,
+    "hash": "44cfcefe39db0cb5c50f137f299be63b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar5.jpg": {
+    "mtime": 1778555506.4001,
+    "hash": "48291b3b6bdb543183b54bf026681701"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar4.jpg": {
+    "mtime": 1778555506.4000468,
+    "hash": "16362d564fc662473b7ad837d96d913c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar6.jpg": {
+    "mtime": 1778555506.4001546,
+    "hash": "3a3f792a4777a16383e490939bc4480e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar7.jpg": {
+    "mtime": 1778555506.400205,
+    "hash": "a543b596f0f08c9bb9f94e6ac27e22ca"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar3.jpg": {
+    "mtime": 1778555506.3999908,
+    "hash": "ef7620032b1cf4da363c046cef0e2d2b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar2.jpg": {
+    "mtime": 1778555506.399935,
+    "hash": "aad6f02553daa152f997f68bbd429341"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar10.jpg": {
+    "mtime": 1778555506.3998747,
+    "hash": "c0e12adc2f6b5f9adfd02e15f47140fd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/sm/avatar1.jpg": {
+    "mtime": 1778555506.399819,
+    "hash": "811d4ada85117d7fd810df7f6fd51e2f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/americanexpress-dark.svg": {
+    "mtime": 1778555506.3899238,
+    "hash": "c2ea2d77ce452a928487e9d62737ad4c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/eway-dark.svg": {
+    "mtime": 1778555506.3923128,
+    "hash": "bbf15466f81b7a24e9cc9e9522a2a709"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/eway.svg": {
+    "mtime": 1778555506.3923817,
+    "hash": "54d6e672e8609e0b77d49f18c06430c7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/applepay.svg": {
+    "mtime": 1778555506.3901875,
+    "hash": "1ff3d3f0d176196bbd3aaf4a6ecf7dac"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/worldpay-dark.svg": {
+    "mtime": 1778555506.399018,
+    "hash": "a99e6d1ce661b5ec0118fa5e211dbdb1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ukash.svg": {
+    "mtime": 1778555506.398049,
+    "hash": "7a542b9ee5e6c96713e790bbd3854c85"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/cirrus-dark.svg": {
+    "mtime": 1778555506.3908885,
+    "hash": "243a362ebddb29c473ace764e5b11e6b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ripple.svg": {
+    "mtime": 1778555506.396507,
+    "hash": "44f32f32a552d578ccb68df55740c84b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ingenico-dark.svg": {
+    "mtime": 1778555506.392757,
+    "hash": "5bef38951708ad075ebcd89dbed8d8d9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/clickandbuy-dark.svg": {
+    "mtime": 1778555506.3911536,
+    "hash": "f7d38984e9cfaa1bf3f98a0046862667"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/amazon-dark.svg": {
+    "mtime": 1778555506.3896766,
+    "hash": "b178a57fcddb6156a5ec639d1b5d5a24"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/visa-dark.svg": {
+    "mtime": 1778555506.3985872,
+    "hash": "f6a55e1d4fc96499269717a964bc3984"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/sage.svg": {
+    "mtime": 1778555506.3966525,
+    "hash": "c962e60b37391f1d7dd0a0ffacad256b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payu-dark.svg": {
+    "mtime": 1778555506.3960233,
+    "hash": "80265cc7c79041d66e9437374b08894c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/visa.svg": {
+    "mtime": 1778555506.3986435,
+    "hash": "a09152e75acbfee13fe82e13c54a77ad"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/westernunion-dark.svg": {
+    "mtime": 1778555506.3988745,
+    "hash": "5f3974a30d3ead800491befb7af540a8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/giropay-dark.svg": {
+    "mtime": 1778555506.3924596,
+    "hash": "ff3c753ae34a95d2b30a9089319f29aa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/maestro-dark.svg": {
+    "mtime": 1778555506.3938465,
+    "hash": "0d91ff8fa73e4822b3df8578f6f90708"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/laser.svg": {
+    "mtime": 1778555506.3937101,
+    "hash": "4642dfb3bacbec31479381e4800275b2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/laser-dark.svg": {
+    "mtime": 1778555506.393643,
+    "hash": "758bd7b66e03b7b4f0feb8195ac30124"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ogone.svg": {
+    "mtime": 1778555506.3945704,
+    "hash": "8832c251bab55b7228f17ad1dcd93bcd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/okpay.svg": {
+    "mtime": 1778555506.3947225,
+    "hash": "72f763a2ab7a69dcd6f92a1f448ff251"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/americanexpress.svg": {
+    "mtime": 1778555506.390043,
+    "hash": "b89abdaf46ce1b76d1f382de92ed7c0e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/maestro.svg": {
+    "mtime": 1778555506.3939776,
+    "hash": "31a202b40107161647c50fac56384c29"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/directdebit.svg": {
+    "mtime": 1778555506.3918524,
+    "hash": "37695b626fb35b01215987cd7865ca7b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/mastercard-dark.svg": {
+    "mtime": 1778555506.394048,
+    "hash": "b1695f2bf43376465adea7252ec7837f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/unionpay-dark.svg": {
+    "mtime": 1778555506.3981194,
+    "hash": "22beb1a2dc02dd5b8ecd72b776937af0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/2checkout-dark.svg": {
+    "mtime": 1778555506.3893278,
+    "hash": "65d58d809466b33a779ff1b029046730"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payone-dark.svg": {
+    "mtime": 1778555506.3951418,
+    "hash": "992480f1d3c42a07ddcc81ef819277d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bancontact.svg": {
+    "mtime": 1778555506.3903265,
+    "hash": "8c0a0fa2bc07c9102ff49218b0ca9145"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/solo-dark.svg": {
+    "mtime": 1778555506.3973384,
+    "hash": "17da28b916977064d74363481913b58b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/coinkite-dark.svg": {
+    "mtime": 1778555506.3913472,
+    "hash": "f50deb17e6e13ff02fe1f4c149d3166c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/jcb-dark.svg": {
+    "mtime": 1778555506.3930752,
+    "hash": "f9bf701dcacbc6a9e40cc626153d6ff9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/shopify.svg": {
+    "mtime": 1778555506.3971188,
+    "hash": "2a87d23fcf628021ed81203dc2305938"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ripple-dark.svg": {
+    "mtime": 1778555506.3963833,
+    "hash": "a741b2b1463ca0e5cc9fd430004319b2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ogone-dark.svg": {
+    "mtime": 1778555506.3944874,
+    "hash": "5fa709fb52bd0947dc6ddd33eab567fc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/solo.svg": {
+    "mtime": 1778555506.3974085,
+    "hash": "f7fcc525735b4166573bc49f7c418161"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payoneer-dark.svg": {
+    "mtime": 1778555506.3953457,
+    "hash": "8d95de50838be9eb99e9db6eb23a3610"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/monero-dark.svg": {
+    "mtime": 1778555506.3942208,
+    "hash": "29d40dee70c67525aa54c6d462843f4a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/sepa-dark.svg": {
+    "mtime": 1778555506.3967495,
+    "hash": "3834e619996af0dec773a242f6fbf77c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/skrill-dark.svg": {
+    "mtime": 1778555506.3971853,
+    "hash": "a1a4a38c94505ac4c80974b84591059e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/dinersclub-dark.svg": {
+    "mtime": 1778555506.391561,
+    "hash": "baff56e3fdcd57bc731c02c4878e7441"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/neteller.svg": {
+    "mtime": 1778555506.3944123,
+    "hash": "798e0b4b9b2b5b2a6966e3160c8652d1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/googlewallet.svg": {
+    "mtime": 1778555506.3926785,
+    "hash": "7f0e39ad58186b6fdbe5878970192668"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/stripe-dark.svg": {
+    "mtime": 1778555506.3976133,
+    "hash": "025afc3556434d9a218b3de9ae6aab11"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/discover.svg": {
+    "mtime": 1778555506.391999,
+    "hash": "2f4fe159d3189ca05916f3ad46cb1a6c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paysafecard-dark.svg": {
+    "mtime": 1778555506.3957114,
+    "hash": "2a3832c3bea2d4ad9b01ea999cbea582"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bitcoin.svg": {
+    "mtime": 1778555506.390502,
+    "hash": "d9ac7b6156a3498ad0fd300b98f2f605"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/verifone.svg": {
+    "mtime": 1778555506.3983412,
+    "hash": "012caff4df8cce6f2ea751366a4d0804"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payoneer.svg": {
+    "mtime": 1778555506.395483,
+    "hash": "e460ab6b6da17bf959f8d123cfeb4e2e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bancontact-dark.svg": {
+    "mtime": 1778555506.3902545,
+    "hash": "6e78609075a295f1627cd785a2005837"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bitpay.svg": {
+    "mtime": 1778555506.3907602,
+    "hash": "ffb94e65905ea7a299e8ee52944abef1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/googlewallet-dark.svg": {
+    "mtime": 1778555506.3926096,
+    "hash": "7cbe03bef872c536d6dbaa1f274ae0dc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/worldpay.svg": {
+    "mtime": 1778555506.3990893,
+    "hash": "d63620a3337795f043b232846be946f8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/dwolla.svg": {
+    "mtime": 1778555506.3921328,
+    "hash": "36f577700982f8fb3542d92a6c362650"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/applepay-dark.svg": {
+    "mtime": 1778555506.3901155,
+    "hash": "e044dbdb76e1805843ae429c3c16bdd9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payone.svg": {
+    "mtime": 1778555506.3952112,
+    "hash": "2c68e11e3f322e662dc62c4700d2e835"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ingenico.svg": {
+    "mtime": 1778555506.3928359,
+    "hash": "20a24d68389a7dfe17336496dc3e51b3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bitcoin-dark.svg": {
+    "mtime": 1778555506.3904092,
+    "hash": "edaf60e16ce0cc50bf2d0b7a499036e4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/verifone-dark.svg": {
+    "mtime": 1778555506.398272,
+    "hash": "e7b2a0bc53907540e752d6cfd9e95930"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/monero.svg": {
+    "mtime": 1778555506.3942957,
+    "hash": "7df16d088d2d3fafc742fc011ab39191"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payza.svg": {
+    "mtime": 1778555506.3962572,
+    "hash": "057164517322929b8b277ef36a63da87"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/sage-dark.svg": {
+    "mtime": 1778555506.3965814,
+    "hash": "1560c69d3cf081291eb13f477dc9e043"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/verisign-dark.svg": {
+    "mtime": 1778555506.398419,
+    "hash": "1f0c2c56a34c8dce6fdbeaa80579e2c4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/square.svg": {
+    "mtime": 1778555506.3975468,
+    "hash": "48f113984b06dd75617b37d6d764a02b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paypal.svg": {
+    "mtime": 1778555506.3956344,
+    "hash": "aa9749d2dbfa5fce884c050157002e4f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/2checkout.svg": {
+    "mtime": 1778555506.3893833,
+    "hash": "e14c0f5e3d367693fa699906a02119c6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/giropay.svg": {
+    "mtime": 1778555506.3925323,
+    "hash": "7337d9d063907f6fd8d49214982e18a6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/unionpay.svg": {
+    "mtime": 1778555506.39819,
+    "hash": "285de38e64669e7d6fdb6b88092a7adb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/skrill.svg": {
+    "mtime": 1778555506.3972483,
+    "hash": "b0d31271e85a4ee845ff91eeb2dc1ab4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/amazon.svg": {
+    "mtime": 1778555506.3897996,
+    "hash": "5c500045ab6cd762cd5f9abd393c2577"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payza-dark.svg": {
+    "mtime": 1778555506.3961835,
+    "hash": "aaf8d63fe0f20e267e21c89f0824edbf"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/switch-dark.svg": {
+    "mtime": 1778555506.3977342,
+    "hash": "54599ad9cc5b0c3afea5db6b3d996e32"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/mastercard.svg": {
+    "mtime": 1778555506.394132,
+    "hash": "a6684d9315e2ded55b8ee33df8c370d5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/klarna.svg": {
+    "mtime": 1778555506.3935778,
+    "hash": "c05b3bbaa7150d0b60d6dfa8c602f70f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/bitpay-dark.svg": {
+    "mtime": 1778555506.3906395,
+    "hash": "f86a15dac57d28c89e0b69ac3eee63f8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paysafecard.svg": {
+    "mtime": 1778555506.395946,
+    "hash": "0db2bc557a5ea15b0ba7f83b463776d3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/stripe.svg": {
+    "mtime": 1778555506.3976748,
+    "hash": "77c6af283968828069b3720792640fa9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paypal-dark.svg": {
+    "mtime": 1778555506.3955572,
+    "hash": "2abbaed44b22cd9ad7e423e88e9640f7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/alipay-dark.svg": {
+    "mtime": 1778555506.3894827,
+    "hash": "b6a651d2cd0063d0e83b505c40f24dd7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/jcb.svg": {
+    "mtime": 1778555506.3933158,
+    "hash": "2646bc518e3540d4639365448d02b23d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/discover-dark.svg": {
+    "mtime": 1778555506.3919299,
+    "hash": "00f5c21f4be89a46de82c69e6259781c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/verisign.svg": {
+    "mtime": 1778555506.3985057,
+    "hash": "3684cf8229ff28f3054fa1d2a6095077"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/dinersclub.svg": {
+    "mtime": 1778555506.391698,
+    "hash": "45249b1dd66c3b8425f9ce67f014d9ee"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/alipay.svg": {
+    "mtime": 1778555506.389552,
+    "hash": "31580e28ff89814332255e3f3ad510d6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paybox.svg": {
+    "mtime": 1778555506.3948708,
+    "hash": "46f8af3b7129313668e112509e361f0d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/dwolla-dark.svg": {
+    "mtime": 1778555506.3920698,
+    "hash": "ccae276756a625bc248c34c7c49ddcf4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ebay-dark.svg": {
+    "mtime": 1778555506.3921921,
+    "hash": "bd7ccde1aba2b3502e43a20b0dad4152"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/okpay-dark.svg": {
+    "mtime": 1778555506.3946505,
+    "hash": "26eabf7a3b75ddbb402d926bb9510afa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/cirrus.svg": {
+    "mtime": 1778555506.391017,
+    "hash": "983db5f2256f8e24e520ef7d1146ed3f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/switch.svg": {
+    "mtime": 1778555506.3978004,
+    "hash": "c1a0e47dde0e275f4284a1e5b07a9219"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paymill.svg": {
+    "mtime": 1778555506.395068,
+    "hash": "6f9066168c1fdf21bb40228737af2d9b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/sepa.svg": {
+    "mtime": 1778555506.3968484,
+    "hash": "45d27bde30e9dcbf03da95a54dbe5720"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/webmoney-dark.svg": {
+    "mtime": 1778555506.3987205,
+    "hash": "5c559c4c11d8fda02a9f9e86e1615b41"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/shopify-dark.svg": {
+    "mtime": 1778555506.3969886,
+    "hash": "937412fda731ef86a0a3658eb6b1044f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/square-dark.svg": {
+    "mtime": 1778555506.39748,
+    "hash": "4db9c83cfd89dfc89536c33d2065ae16"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/klarna-dark.svg": {
+    "mtime": 1778555506.3934588,
+    "hash": "3a666a1e1aeba0c533c35132129e65db"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paybox-dark.svg": {
+    "mtime": 1778555506.3947887,
+    "hash": "321bd555c37290b6a89acc1922a3e3ad"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/paymill-dark.svg": {
+    "mtime": 1778555506.3949933,
+    "hash": "d8737b880a495605fed0d53b1a17100c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ebay.svg": {
+    "mtime": 1778555506.3922508,
+    "hash": "862b611ad759b765022ea1cac513bbfa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/ukash-dark.svg": {
+    "mtime": 1778555506.3979285,
+    "hash": "89b7d2ae90e9df97aa9e3a9940bac2c1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/clickandbuy.svg": {
+    "mtime": 1778555506.3912747,
+    "hash": "eb61d075dbf8722029027b09b39cc3a8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/payu.svg": {
+    "mtime": 1778555506.3961015,
+    "hash": "ece9e63914c3f788968b357cf6189e95"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/directdebit-dark.svg": {
+    "mtime": 1778555506.3917825,
+    "hash": "bf510996f9f817b97d4618a413373998"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/webmoney.svg": {
+    "mtime": 1778555506.398797,
+    "hash": "c77724f331e1053188a5aa0d796ffc3b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/neteller-dark.svg": {
+    "mtime": 1778555506.39436,
+    "hash": "63736caca924eb35fb9104d4f432cfb0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/westernunion.svg": {
+    "mtime": 1778555506.398943,
+    "hash": "4082e1b1ac8f311463c064a0875a8e5a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/payments/coinkite.svg": {
+    "mtime": 1778555506.3914165,
+    "hash": "b60982772ca2538902574c9790def63b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/hn.svg": {
+    "mtime": 1778555506.376661,
+    "hash": "3d726baafa62f8f9fee22363226fb75c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/dm.svg": {
+    "mtime": 1778555506.3730097,
+    "hash": "89c91dc6769c54e9971dcda38bc747ef"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fr.svg": {
+    "mtime": 1778555506.3747354,
+    "hash": "a178bcfbbbc26cb995fa19241b7a12a2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/dz.svg": {
+    "mtime": 1778555506.373481,
+    "hash": "333db1efebf7b037389acd563050c357"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ga.svg": {
+    "mtime": 1778555506.3747873,
+    "hash": "33442fb979e8f4f40b093bb4d6a39a7e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ph.svg": {
+    "mtime": 1778555506.3826122,
+    "hash": "8b5fbe69f9da3819f4887f6a01b8648e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ss.svg": {
+    "mtime": 1778555506.3848033,
+    "hash": "0c7c9ffcd96a318fe1ed195441a6c2a9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/rw.svg": {
+    "mtime": 1778555506.3838606,
+    "hash": "46fb809f4912001f48fdc2b878e80f17"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sd.svg": {
+    "mtime": 1778555506.384074,
+    "hash": "a14badd55e756d1248fb262f896a6a84"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/se.svg": {
+    "mtime": 1778555506.3841348,
+    "hash": "22475f5224df5500aa75813ba7608a23"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sr.svg": {
+    "mtime": 1778555506.38476,
+    "hash": "65cdb1de480732b66f6a3675f49f2596"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/eh.svg": {
+    "mtime": 1778555506.3738072,
+    "hash": "e4f13505f93239f55cf1bf1615297172"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gw.svg": {
+    "mtime": 1778555506.3763716,
+    "hash": "e1d47aa4658950ee3f11d125f19a604a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/jp.svg": {
+    "mtime": 1778555506.3779695,
+    "hash": "fd2646810e3b7a16d5ff0e16401fcf94"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/hm.svg": {
+    "mtime": 1778555506.3765948,
+    "hash": "b43f38576524ed7038b5afd6337d5759"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/je.svg": {
+    "mtime": 1778555506.3777902,
+    "hash": "6a9e1b932b348bea888a9cb0a21ad581"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gu.svg": {
+    "mtime": 1778555506.3763123,
+    "hash": "ad34e604908c0fd1e96af29a7e9b983f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gb.svg": {
+    "mtime": 1778555506.375202,
+    "hash": "5638bbd9874edd22c39b0c4a54b1de21"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pk.svg": {
+    "mtime": 1778555506.3826594,
+    "hash": "db891066a9bf98fd99cfa111abe7d535"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sg.svg": {
+    "mtime": 1778555506.3841846,
+    "hash": "22b0739e53b62deb793917e7ba4c1892"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ru.svg": {
+    "mtime": 1778555506.3838108,
+    "hash": "517e32a1f8c51260abfd28e65123eac8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/do.svg": {
+    "mtime": 1778555506.3734112,
+    "hash": "d8ab6db91dc2db4b36c7b91bb1b4ebf6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gt.svg": {
+    "mtime": 1778555506.3762002,
+    "hash": "0b689ffe012a208dbd4609b8e7a6ce4c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kw.svg": {
+    "mtime": 1778555506.3786433,
+    "hash": "3e24a94a1aee5cfa3c34f2fa6f8f1845"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/il.svg": {
+    "mtime": 1778555506.3771958,
+    "hash": "0ea7e9dad5f9fce9cdee314eea294da8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gg.svg": {
+    "mtime": 1778555506.375422,
+    "hash": "d339aeb27fefd04b3c8238b7d8f26473"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gp.svg": {
+    "mtime": 1778555506.37575,
+    "hash": "a178bcfbbbc26cb995fa19241b7a12a2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/dk.svg": {
+    "mtime": 1778555506.3729382,
+    "hash": "44761537674d28555c1985159c2b2e88"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sb.svg": {
+    "mtime": 1778555506.383976,
+    "hash": "115ce3e59fc48f4e9307e69329ed0a85"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/py.svg": {
+    "mtime": 1778555506.3832433,
+    "hash": "abc5b39643482e82cb856bf160fa50fe"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pn.svg": {
+    "mtime": 1778555506.3828192,
+    "hash": "bf813bfe31876e1a07e61f7ecdafd5a6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/st.svg": {
+    "mtime": 1778555506.384849,
+    "hash": "230410b519c6205157002ce21ff8d629"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sc.svg": {
+    "mtime": 1778555506.384023,
+    "hash": "fdc11a48b5b254f92ffc220dc1935963"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/dj.svg": {
+    "mtime": 1778555506.3728852,
+    "hash": "f4c086cc100130afc0642dc7bf1357de"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gq.svg": {
+    "mtime": 1778555506.3758347,
+    "hash": "6bbb0e7695e648aa9d7e25eff7165284"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gf.svg": {
+    "mtime": 1778555506.375372,
+    "hash": "4ea8e1590ad37f3d4fb8c58c7906a73c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kr.svg": {
+    "mtime": 1778555506.378583,
+    "hash": "32f23fafe64cce64d0e30c1d80e761ae"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/im.svg": {
+    "mtime": 1778555506.3772733,
+    "hash": "19884f0c27b6b1a57a12fdb7b682eed2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ke.svg": {
+    "mtime": 1778555506.378029,
+    "hash": "15b698f31b8bec3028bea1726cea84fb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kg.svg": {
+    "mtime": 1778555506.378112,
+    "hash": "de33c0489053970bffc24559744aaae3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gb-nir.svg": {
+    "mtime": 1778555506.3749588,
+    "hash": "943d406aa047964df31a94fc5a5021bc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/hk.svg": {
+    "mtime": 1778555506.376528,
+    "hash": "fb606eb1063380a1c9d858161cf5f0a7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kp.svg": {
+    "mtime": 1778555506.378522,
+    "hash": "b2729dfae51752a2cb41de576c90b6bb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/io.svg": {
+    "mtime": 1778555506.3774228,
+    "hash": "2e0c61df4402b9748b394cf508f1a0c7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gd.svg": {
+    "mtime": 1778555506.3752642,
+    "hash": "c17d779e8552e59c9ef032f0a432fcfb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gs.svg": {
+    "mtime": 1778555506.376024,
+    "hash": "3721691749ae1da7133203472974ea5f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sa.svg": {
+    "mtime": 1778555506.3839297,
+    "hash": "67b058aefae79a7a8273c3a3ece09dae"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/re.svg": {
+    "mtime": 1778555506.383373,
+    "hash": "a2dc66505c31b7096ba48bac4557855c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pm.svg": {
+    "mtime": 1778555506.3827515,
+    "hash": "a2dc66505c31b7096ba48bac4557855c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sv.svg": {
+    "mtime": 1778555506.3850632,
+    "hash": "a21150d5864835c762dd3bdb21e61320"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/rs.svg": {
+    "mtime": 1778555506.3837464,
+    "hash": "426b1d470b7392ef3ea723342a138c6f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pl.svg": {
+    "mtime": 1778555506.3827083,
+    "hash": "2257cff690948088abf92a799e89544e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gr.svg": {
+    "mtime": 1778555506.3758934,
+    "hash": "9a9a62a1f4f53cc87d02925098293360"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ge.svg": {
+    "mtime": 1778555506.3753197,
+    "hash": "334a8275142fd63934abf3a8f8c5a913"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/in.svg": {
+    "mtime": 1778555506.3773315,
+    "hash": "2d667fbb3870fa62aa27eece3a00196c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mv.svg": {
+    "mtime": 1778555506.380944,
+    "hash": "e343afe8028575ea736d2677db4f7744"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lr.svg": {
+    "mtime": 1778555506.3793657,
+    "hash": "5485e606cf2dcf18e30b88581f14a459"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ma.svg": {
+    "mtime": 1778555506.3797102,
+    "hash": "8c27c49311f54ab8d011b8eacf6c63cb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nz.svg": {
+    "mtime": 1778555506.382233,
+    "hash": "03d7410ae73601f5ec7122019a2ab888"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/au.svg": {
+    "mtime": 1778555506.3694422,
+    "hash": "b853c2ebc123eab5abe5e71a6b329863"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bn.svg": {
+    "mtime": 1778555506.3704019,
+    "hash": "51104069fc2f5264f3f1b6a020457dd6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/by.svg": {
+    "mtime": 1778555506.3713472,
+    "hash": "6fd2caab051b0d3e51cf99d32c67bbf9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tt.svg": {
+    "mtime": 1778555506.3860555,
+    "hash": "f09daa6dc55999ef79edf7d708ad1f90"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ug.svg": {
+    "mtime": 1778555506.3863003,
+    "hash": "1e070275fe2eb891e7a1b90ac3c3ee13"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tc.svg": {
+    "mtime": 1778555506.3854134,
+    "hash": "2f7d308e80bd8a87fa1d2c63aa74fc5a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ye.svg": {
+    "mtime": 1778555506.387396,
+    "hash": "55897575e3e0001ebfb8dcfba390495d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ck.svg": {
+    "mtime": 1778555506.372023,
+    "hash": "869edc7171502fe62f15951ab9ab51ea"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bo.svg": {
+    "mtime": 1778555506.3707302,
+    "hash": "e02afe0476bb357aebde18136fda06e0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/at.svg": {
+    "mtime": 1778555506.3693798,
+    "hash": "511e196f2b286fc220c83221b3bb8a01"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ls.svg": {
+    "mtime": 1778555506.379427,
+    "hash": "700ddad000d732b2603dcde0195ea3e7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mw.svg": {
+    "mtime": 1778555506.381016,
+    "hash": "5b33db847ef48920cfec09f0c2926e90"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nl.svg": {
+    "mtime": 1778555506.3819587,
+    "hash": "de2a39a27acc28aebde8173acc4bdf6d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mu.svg": {
+    "mtime": 1778555506.3808985,
+    "hash": "974b9e6c380a062b6504150999965d5f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ci.svg": {
+    "mtime": 1778555506.3719633,
+    "hash": "1334b221487d5b445f6802ddd024a5c8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bm.svg": {
+    "mtime": 1778555506.3702986,
+    "hash": "6339387e4c3410f4bceb103b8ac0b7ec"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bz.svg": {
+    "mtime": 1778555506.3715265,
+    "hash": "e86e9bd2426bbbbe2bba12fb641c185c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tw.svg": {
+    "mtime": 1778555506.3861465,
+    "hash": "7baefd1c21ecb97a0a48a0d738bf79dc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/us.svg": {
+    "mtime": 1778555506.3865416,
+    "hash": "2382ea7ec7cc55bfe1cc7a3ea8326989"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/vi.svg": {
+    "mtime": 1778555506.3871186,
+    "hash": "b3c0a20f217b35d1cf1111736130dac8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tv.svg": {
+    "mtime": 1778555506.3861017,
+    "hash": "1a077ad0ee7788a6a1688dbfc5c12526"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bl.svg": {
+    "mtime": 1778555506.3702054,
+    "hash": "a5c508b2ab0cdb85d5f22d40d2c3b97b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/aw.svg": {
+    "mtime": 1778555506.3695161,
+    "hash": "dc91764d503d73913f176521a3303166"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ch.svg": {
+    "mtime": 1778555506.3719034,
+    "hash": "d51618940f7f8df58cae92f4acb930fd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mc.svg": {
+    "mtime": 1778555506.3797536,
+    "hash": "4241d3ff964cfdb68da07bb0f78520f4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mt.svg": {
+    "mtime": 1778555506.3808482,
+    "hash": "cffcad7981a89128ffef6ec871c5ef96"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/no.svg": {
+    "mtime": 1778555506.3820179,
+    "hash": "8331157c241082c3ad0f499b47737ac2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lc.svg": {
+    "mtime": 1778555506.3790536,
+    "hash": "6c2940dae95d15b98cf38bcf44816d21"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mg.svg": {
+    "mtime": 1778555506.380163,
+    "hash": "0c0da5f0631b226d95fd57929b9e4b4b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lt.svg": {
+    "mtime": 1778555506.3794873,
+    "hash": "14b63eab7de31bd29ffcdc4002433cd6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mp.svg": {
+    "mtime": 1778555506.3805556,
+    "hash": "fcdc8e3981178bdf4bf5f382fa7e7dab"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ad.svg": {
+    "mtime": 1778555506.3684123,
+    "hash": "30f99f820aca3d60dd8ecf3d5ee75764"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cl.svg": {
+    "mtime": 1778555506.3720858,
+    "hash": "9d5227cbd7309dd8801518e8f3d9a7de"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/as.svg": {
+    "mtime": 1778555506.3693235,
+    "hash": "e18a59539f200660f10252a72f54ae08"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bh.svg": {
+    "mtime": 1778555506.3700469,
+    "hash": "805f2682e67e457f15d50fb7576fd477"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ua.svg": {
+    "mtime": 1778555506.3862355,
+    "hash": "acc88be0743859f3c1d499c3117cfdcd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tr.svg": {
+    "mtime": 1778555506.3860097,
+    "hash": "aabe02c21bdc96b4499f10c7ead37008"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/yt.svg": {
+    "mtime": 1778555506.3874383,
+    "hash": "a2dc66505c31b7096ba48bac4557855c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/td.svg": {
+    "mtime": 1778555506.3854687,
+    "hash": "079a252552085195fa1e74c55965d960"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bi.svg": {
+    "mtime": 1778555506.3701,
+    "hash": "bc8085f9a17e392f05c127dc50293578"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ar.svg": {
+    "mtime": 1778555506.3691828,
+    "hash": "2ed2ee2a0b02519ffee732e3d9d6f9fb"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cm.svg": {
+    "mtime": 1778555506.3721433,
+    "hash": "17f2e2c9827f7a093f9b94921ed16638"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ae.svg": {
+    "mtime": 1778555506.3684943,
+    "hash": "1f331bd9d935496c9d7466390edf3718"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cz.svg": {
+    "mtime": 1778555506.3727593,
+    "hash": "6731f87258db1b3310d7c8b86efa97e6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mq.svg": {
+    "mtime": 1778555506.3806133,
+    "hash": "4c4286cd431a0194e7d35bcc875537b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lu.svg": {
+    "mtime": 1778555506.3795514,
+    "hash": "06956a1377123bf7bf98076217a07361"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mf.svg": {
+    "mtime": 1778555506.3801136,
+    "hash": "a178bcfbbbc26cb995fa19241b7a12a2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lb.svg": {
+    "mtime": 1778555506.37899,
+    "hash": "4981974031355cb8cb9fa6ae351ec6cf"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/md.svg": {
+    "mtime": 1778555506.379818,
+    "hash": "f9aceffb03e9764fac60e5aafe3743ec"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ms.svg": {
+    "mtime": 1778555506.3807814,
+    "hash": "8b73c710b4a9a2c91ed2683bd2ba2a41"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ag.svg": {
+    "mtime": 1778555506.3687031,
+    "hash": "7cb635f05c1ed0924a1316940bfb4726"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cx.svg": {
+    "mtime": 1778555506.3725662,
+    "hash": "5180dbe51ead0d4850f3cc2db94d4cf9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/co.svg": {
+    "mtime": 1778555506.3722637,
+    "hash": "433d22ad5949ca9376e7fee2398cf908"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tf.svg": {
+    "mtime": 1778555506.3855178,
+    "hash": "adc24fb28bb1688520b8ee3272929644"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/vn.svg": {
+    "mtime": 1778555506.3871772,
+    "hash": "0b7571b87f2faaa3d8e3b5662636d574"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/zm.svg": {
+    "mtime": 1778555506.3875566,
+    "hash": "625866342c77dcf827cdc22d004c6227"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gb-sct.svg": {
+    "mtime": 1778555506.3750389,
+    "hash": "772350bf81e7b44332b5585cd15dfa3c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tg.svg": {
+    "mtime": 1778555506.385565,
+    "hash": "b96ee5428e8c67d6b1fc8bf73925af34"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cn.svg": {
+    "mtime": 1778555506.3722084,
+    "hash": "c2814ac0b9d72075571409689b113eb9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bj.svg": {
+    "mtime": 1778555506.3701525,
+    "hash": "ea52986c752328b2ca8ce558cab8a98f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/aq.svg": {
+    "mtime": 1778555506.3691008,
+    "hash": "fb98f0e65ec013a1920944ecc3826df3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cy.svg": {
+    "mtime": 1778555506.3726926,
+    "hash": "657ef7aa34eb389fbf5217f52522e07f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/af.svg": {
+    "mtime": 1778555506.3686182,
+    "hash": "a8df755f8fdc9111d7b737b33529db81"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lv.svg": {
+    "mtime": 1778555506.379608,
+    "hash": "83353fa9cde68c8e128f85724e743e75"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/om.svg": {
+    "mtime": 1778555506.3823087,
+    "hash": "9b7a06b9a821841e7a5fd0f3e3ab8cc4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mr.svg": {
+    "mtime": 1778555506.3806612,
+    "hash": "6b3d082dde2cd6355e7dd6194b258da7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ni.svg": {
+    "mtime": 1778555506.3819,
+    "hash": "2b983496dce81d0805a0d92443e8000c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/la.svg": {
+    "mtime": 1778555506.3789217,
+    "hash": "bdfc4ab5e964e3466fcf31b5ec4bf87b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/me.svg": {
+    "mtime": 1778555506.3800492,
+    "hash": "399015d8b358e8c3c2c1a3e699752e63"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mh.svg": {
+    "mtime": 1778555506.3802161,
+    "hash": "a3bb001b15d05e4a8974729fa75f9247"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gb-wls.svg": {
+    "mtime": 1778555506.3751376,
+    "hash": "2831a6dd51c5a036e31203cd6faef1f7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cc.svg": {
+    "mtime": 1778555506.3716772,
+    "hash": "ec7f382086e8fcb4ac6fb02d1c4117fd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bg.svg": {
+    "mtime": 1778555506.3699949,
+    "hash": "bc04745d5b10f157bac0f3c721133844"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tj.svg": {
+    "mtime": 1778555506.3856704,
+    "hash": "b6533ad31f2b20a30bba38b0f2de1d9b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/un.svg": {
+    "mtime": 1778555506.3864512,
+    "hash": "1519b6c631d063c9e495cd9f3dfd0f66"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/vu.svg": {
+    "mtime": 1778555506.3872488,
+    "hash": "9a6c3abc25acb7444923135ab30b7cb9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/wf.svg": {
+    "mtime": 1778555506.3873003,
+    "hash": "4b4f5462b60b559d729a55f8719cf005"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/uy.svg": {
+    "mtime": 1778555506.3865986,
+    "hash": "a7e91b404efc4ad91c1360efd8e9cb4a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/za.svg": {
+    "mtime": 1778555506.387488,
+    "hash": "d8ffed672eb363336a1ad1ad4dc965be"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/zw.svg": {
+    "mtime": 1778555506.387606,
+    "hash": "e223cee52ee80138dfc25a1885c83186"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/vc.svg": {
+    "mtime": 1778555506.3868387,
+    "hash": "f3912357d0a5339a1f402efefc89a8e7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tk.svg": {
+    "mtime": 1778555506.3857183,
+    "hash": "22d4831b30e7a7ffa78d23628db3bdab"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bf.svg": {
+    "mtime": 1778555506.3699405,
+    "hash": "f88288fa14a3979b34582b6018a62e35"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bq.svg": {
+    "mtime": 1778555506.3708103,
+    "hash": "4cac15edfcf9d342d21a46e5ee9cb2c2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cu.svg": {
+    "mtime": 1778555506.3723779,
+    "hash": "050058cb15f5c99a8710f96da1461357"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ne.svg": {
+    "mtime": 1778555506.3816335,
+    "hash": "bad21adca6cd1a7c0498752de207dcbd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nr.svg": {
+    "mtime": 1778555506.3821273,
+    "hash": "f2afa5b9c3bb5ff4eac025d6a9e3e5ff"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mk.svg": {
+    "mtime": 1778555506.3802621,
+    "hash": "29cb0cb257ce61901ab1d97c97200be9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/np.svg": {
+    "mtime": 1778555506.3820705,
+    "hash": "e6de69465e5e1ec155356a0827683a8a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ng.svg": {
+    "mtime": 1778555506.3818064,
+    "hash": "2ddc320beac15d92ffece6345b604540"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bs.svg": {
+    "mtime": 1778555506.370996,
+    "hash": "421969c2bb5a12b8936eacce44a57b24"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cw.svg": {
+    "mtime": 1778555506.3725085,
+    "hash": "07a0d3f998ff4c6e2213fb5a4863325b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bd.svg": {
+    "mtime": 1778555506.3698156,
+    "hash": "b12e306073e83e7fec9d4b20e676b759"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/um.svg": {
+    "mtime": 1778555506.3863578,
+    "hash": "a1fa2de39f9fdbd1e48a965bf697d700"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/va.svg": {
+    "mtime": 1778555506.3867822,
+    "hash": "6b139c75ff4f94335205a2d93dc7e090"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/uz.svg": {
+    "mtime": 1778555506.386652,
+    "hash": "791dfbdae7960b7482e949dfac7c829a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ws.svg": {
+    "mtime": 1778555506.3873491,
+    "hash": "23b64335ac552f3d33e7544da45a2508"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/th.svg": {
+    "mtime": 1778555506.385618,
+    "hash": "502695871e6c9632d23ed1db99f4e102"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ca.svg": {
+    "mtime": 1778555506.3716002,
+    "hash": "af259017cdf3bcf91fa79f3639fff3fc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/be.svg": {
+    "mtime": 1778555506.369878,
+    "hash": "fb18617cede15ad0122419d7f1c74a9c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cv.svg": {
+    "mtime": 1778555506.3724434,
+    "hash": "6b6994926cbbd25d691d0d029999492a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ai.svg": {
+    "mtime": 1778555506.3688169,
+    "hash": "928b5a4f69d8929b73041bdf2ca49770"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/br.svg": {
+    "mtime": 1778555506.3709438,
+    "hash": "fc7b82902896e1b59928e29ac9b75914"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ly.svg": {
+    "mtime": 1778555506.3796635,
+    "hash": "ededce3248f5c7f3e52a48bcfa55ac01"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nf.svg": {
+    "mtime": 1778555506.381754,
+    "hash": "fc2d0f07ea618d781e800bd8cd49d92c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/my.svg": {
+    "mtime": 1778555506.3813958,
+    "hash": "aae5bd9cefde01ece247f58bf89a825c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mn.svg": {
+    "mtime": 1778555506.380404,
+    "hash": "cfd48e450bb31f3dc56b78fdac465bc0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nu.svg": {
+    "mtime": 1778555506.3821816,
+    "hash": "e6bfaa15b7678d8441d4106e06376792"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/az.svg": {
+    "mtime": 1778555506.3696432,
+    "hash": "ba2d1e5e6f743781569d6b671077db3c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ba.svg": {
+    "mtime": 1778555506.3697028,
+    "hash": "a441d8da7d266c9b9d315d06ee5fb429"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bv.svg": {
+    "mtime": 1778555506.3711767,
+    "hash": "58761e89669c1387b966f11c2c1ddca3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/am.svg": {
+    "mtime": 1778555506.3689654,
+    "hash": "af917f4b31ecb7cc539fd89144632782"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cr.svg": {
+    "mtime": 1778555506.3723164,
+    "hash": "20a9e6bf3919e282db3bf53d0e7820e2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tl.svg": {
+    "mtime": 1778555506.3857672,
+    "hash": "f563fdae9a3ca98f28a3c4c03a6d766f"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tm.svg": {
+    "mtime": 1778555506.3858628,
+    "hash": "d2132088d8448cd731e7047c1e432bf2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tz.svg": {
+    "mtime": 1778555506.3861914,
+    "hash": "d5c9c20a3cfbf0c135ea7d58d29684f5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ve.svg": {
+    "mtime": 1778555506.3868916,
+    "hash": "6f48a1b9488fe66e13887fb43304c009"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/al.svg": {
+    "mtime": 1778555506.3689091,
+    "hash": "1c4942df0b4d72faad8672114454bb09"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bw.svg": {
+    "mtime": 1778555506.3712282,
+    "hash": "8ecb0b8e0257d3d0654dc7efd84da4c5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cd.svg": {
+    "mtime": 1778555506.3717299,
+    "hash": "020e3d1ee345ac631a4b463b073b57b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/lk.svg": {
+    "mtime": 1778555506.37929,
+    "hash": "f0a4f4f6d893038aa99ccbcb7f6e5271"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mo.svg": {
+    "mtime": 1778555506.3804562,
+    "hash": "36f1d6f2d8b53af76065ce17e6189104"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mx.svg": {
+    "mtime": 1778555506.3813345,
+    "hash": "184d53d145cbbb2eafe2bc7a3bd66c62"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/nc.svg": {
+    "mtime": 1778555506.3815818,
+    "hash": "a2dc66505c31b7096ba48bac4557855c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/na.svg": {
+    "mtime": 1778555506.381534,
+    "hash": "f38aead1dd402abc43b2e0dddd08ae47"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mz.svg": {
+    "mtime": 1778555506.381474,
+    "hash": "cd1e97af5e343e6d7db5c8f8bbb40cac"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/li.svg": {
+    "mtime": 1778555506.3791873,
+    "hash": "10e0d5b28508b7a92f02b01c8f54bfe7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/mm.svg": {
+    "mtime": 1778555506.380355,
+    "hash": "e6d7c5a4187b1fd8ab643d0e5d2f5bd1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cf.svg": {
+    "mtime": 1778555506.371785,
+    "hash": "f75250a7950f5fb23779d262fd0da81d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bb.svg": {
+    "mtime": 1778555506.3697557,
+    "hash": "c568edd5a2552c5cd6ce15009b8df3e2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/vg.svg": {
+    "mtime": 1778555506.3869832,
+    "hash": "3b3121b285747fdd0ca17486e084c675"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/to.svg": {
+    "mtime": 1778555506.3859634,
+    "hash": "fa884203b4e844943f89c290c02ea246"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/tn.svg": {
+    "mtime": 1778555506.3859224,
+    "hash": "ef273685b23f3978caf97e7fb0b2ea9d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ao.svg": {
+    "mtime": 1778555506.369024,
+    "hash": "fd948d03374b46e183d93dbd3709705c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/bt.svg": {
+    "mtime": 1778555506.371107,
+    "hash": "39149c620356690eaf75a6a32dfba374"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ax.svg": {
+    "mtime": 1778555506.3695843,
+    "hash": "3301f616c5f32ad07226366d2882d9cd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/cg.svg": {
+    "mtime": 1778555506.3718433,
+    "hash": "497d91d1318438d0b128595d371d351e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ml.svg": {
+    "mtime": 1778555506.3803082,
+    "hash": "be076fd925ea2dd5a74f6a552166ba71"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/jo.svg": {
+    "mtime": 1778555506.3779151,
+    "hash": "d14059401101d457efe14ba2495e69c6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/it.svg": {
+    "mtime": 1778555506.3777142,
+    "hash": "bd6b5ff3c79cb3d80d524f342ff99ba4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gh.svg": {
+    "mtime": 1778555506.3754847,
+    "hash": "d4b35e14b2cdd6bb630a7b2c8902d7b7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sm.svg": {
+    "mtime": 1778555506.3845868,
+    "hash": "f3eb4474892199b59c8ca7272069e6ba"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pa.svg": {
+    "mtime": 1778555506.3823764,
+    "hash": "910761356d647746a34206d23e138727"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sz.svg": {
+    "mtime": 1778555506.385339,
+    "hash": "1ae99e458e6568a1297a512ae21b85ba"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gb-eng.svg": {
+    "mtime": 1778555506.3748438,
+    "hash": "a933214c8977a7009219775519a584b4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pw.svg": {
+    "mtime": 1778555506.3831356,
+    "hash": "0557592eea5bfc7ac4a3e3d41bde1e1c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sl.svg": {
+    "mtime": 1778555506.384511,
+    "hash": "835d44f65482fc4d92251cb9eba71fa2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/de.svg": {
+    "mtime": 1778555506.3728278,
+    "hash": "01e89f77d4cd293951a32164b25ced60"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gi.svg": {
+    "mtime": 1778555506.375543,
+    "hash": "c9543d40b95a35ff339fe78d6184b6d1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fm.svg": {
+    "mtime": 1778555506.3746154,
+    "hash": "2bd7d4dffe1fd474663f05041e95e46a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kh.svg": {
+    "mtime": 1778555506.378249,
+    "hash": "bfffb443939dc4de9a1926380b3c99b4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/et.svg": {
+    "mtime": 1778555506.3741767,
+    "hash": "31aa0fc0721b95431f4b0dda48307c50"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fo.svg": {
+    "mtime": 1778555506.3746734,
+    "hash": "dc9ed815f9a4bc59036c5fb3ef3aecca"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ec.svg": {
+    "mtime": 1778555506.3735952,
+    "hash": "918e57b82b2daae8608426807dc39b67"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sn.svg": {
+    "mtime": 1778555506.3846571,
+    "hash": "4dc603d122f3ede3b07bfb751ee3a59c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sy.svg": {
+    "mtime": 1778555506.3852222,
+    "hash": "0fedea0746db6aa80b93dc14293c1754"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sx.svg": {
+    "mtime": 1778555506.3851619,
+    "hash": "d23d18072122ea995d7f4f4bea2300fe"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pt.svg": {
+    "mtime": 1778555506.3830688,
+    "hash": "e129260bc90ab03c1f3b9f5452e0d66c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/so.svg": {
+    "mtime": 1778555506.3847122,
+    "hash": "3bdb1de25c626c766b62e2c1cca11ea9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/eu.svg": {
+    "mtime": 1778555506.3742356,
+    "hash": "17beaf811c76ebaa6bcfdb8b5e8a7325"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/jm.svg": {
+    "mtime": 1778555506.3778532,
+    "hash": "7db0ffd8c9e9717bf8a4e670b8e14de8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/hr.svg": {
+    "mtime": 1778555506.3768601,
+    "hash": "79e564a4cd82e29e24b5a3ff6c6d914e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ki.svg": {
+    "mtime": 1778555506.3783329,
+    "hash": "fbe824dcd1ef2519d2d21f189a345c2a"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kz.svg": {
+    "mtime": 1778555506.3788571,
+    "hash": "529db212e9de897dc2dd42f4ad7f8fd3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ie.svg": {
+    "mtime": 1778555506.3771381,
+    "hash": "d609c4e7bbb267cc920b9bfacdf8c553"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/km.svg": {
+    "mtime": 1778555506.3783965,
+    "hash": "cd351374021fde2537ae578691612f30"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ir.svg": {
+    "mtime": 1778555506.377597,
+    "hash": "3cb275a7c517640ff251ce419ba5a7be"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gy.svg": {
+    "mtime": 1778555506.3764467,
+    "hash": "19bcfc3477c49626f2f9e4291e3f81bd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gn.svg": {
+    "mtime": 1778555506.375695,
+    "hash": "e472dff761a5641c37c985858a735dc3"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fj.svg": {
+    "mtime": 1778555506.3744242,
+    "hash": "b1ddba6040fc69b7d37591ffb7012787"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pg.svg": {
+    "mtime": 1778555506.3825629,
+    "hash": "e444f903a3056c776d7eb977380fa0c6"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sk.svg": {
+    "mtime": 1778555506.3844664,
+    "hash": "f44daf851804e866328d76cdd0b99074"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ro.svg": {
+    "mtime": 1778555506.3834367,
+    "hash": "552b5d9744e1cb43fe34d598cc391113"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sj.svg": {
+    "mtime": 1778555506.3844132,
+    "hash": "8331157c241082c3ad0f499b47737ac2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pf.svg": {
+    "mtime": 1778555506.3825061,
+    "hash": "28a15c37093a6700fb9db6c92bb9f714"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fk.svg": {
+    "mtime": 1778555506.3745549,
+    "hash": "5c64395d99f225e9c106c55c4c06ee69"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/eg.svg": {
+    "mtime": 1778555506.3737469,
+    "hash": "07f2e96d05bbcbc1fa02e8d0678c598e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/is.svg": {
+    "mtime": 1778555506.3776662,
+    "hash": "ec1fb8765fe74b0912ab152afe850c38"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/id.svg": {
+    "mtime": 1778555506.3770864,
+    "hash": "ee020a0f5bc9d6586b97f9a9dfea47a0"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ky.svg": {
+    "mtime": 1778555506.3787649,
+    "hash": "f7c3a515e4c61b03f6818233ded0bd8c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/iq.svg": {
+    "mtime": 1778555506.3775163,
+    "hash": "61fca1841f4f8e1b031eeeb7a7708650"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/kn.svg": {
+    "mtime": 1778555506.3784623,
+    "hash": "7ab9462c3019492674aa27c5f42df7f1"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/hu.svg": {
+    "mtime": 1778555506.3770347,
+    "hash": "a8abaf3779c44dbb5d3604b621d899fc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ee.svg": {
+    "mtime": 1778555506.3736646,
+    "hash": "57f366b0b55cf2fa11e3154e0865daf9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/er.svg": {
+    "mtime": 1778555506.3738832,
+    "hash": "70738db67657a95db078a19581859e69"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/fi.svg": {
+    "mtime": 1778555506.3742902,
+    "hash": "58bcc4aff2131cf9d6eee5e30ec6fd62"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gm.svg": {
+    "mtime": 1778555506.3756454,
+    "hash": "9423800e095be53df9249808ce63306c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/sh.svg": {
+    "mtime": 1778555506.3843052,
+    "hash": "0726abdb26a803057f8e22205c03f172"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ps.svg": {
+    "mtime": 1778555506.3829286,
+    "hash": "225ede3505309835812a31d8cd526332"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pr.svg": {
+    "mtime": 1778555506.3828702,
+    "hash": "e489537c791c5a57f554f17b21b02868"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/si.svg": {
+    "mtime": 1778555506.384369,
+    "hash": "72f83c2946a14767d764c53baca31a7b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/pe.svg": {
+    "mtime": 1778555506.382432,
+    "hash": "4cabbfc6b407981692d9a034c04e3395"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/qa.svg": {
+    "mtime": 1778555506.3833172,
+    "hash": "20a4d7413504b137c05f202bbf385e9b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/gl.svg": {
+    "mtime": 1778555506.3755922,
+    "hash": "d02c42ea2b63c1131bb36da347ac3490"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/es.svg": {
+    "mtime": 1778555506.3741,
+    "hash": "c6ca5440228101c2b83b4eb312a94731"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/flags/ht.svg": {
+    "mtime": 1778555506.376969,
+    "hash": "d0404e4a48a02f0e5b393e7f88d02648"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/8.jpg": {
+    "mtime": 1778555506.388807,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/9.jpg": {
+    "mtime": 1778555506.388896,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/14.jpg": {
+    "mtime": 1778555506.3881247,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/15.jpg": {
+    "mtime": 1778555506.3882096,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/12.jpg": {
+    "mtime": 1778555506.387955,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/13.jpg": {
+    "mtime": 1778555506.3880386,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/11.jpg": {
+    "mtime": 1778555506.3878722,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/10.jpg": {
+    "mtime": 1778555506.3877938,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/4.jpg": {
+    "mtime": 1778555506.3884468,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/5.jpg": {
+    "mtime": 1778555506.3885322,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/7.jpg": {
+    "mtime": 1778555506.3887088,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/6.jpg": {
+    "mtime": 1778555506.3886235,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/2.jpg": {
+    "mtime": 1778555506.388287,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/3.jpg": {
+    "mtime": 1778555506.3883684,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/gallery/1.jpg": {
+    "mtime": 1778555506.387712,
+    "hash": "0fd52d3b1d82084af7819b204db7d3c9"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar9.jpg": {
+    "mtime": 1778555506.4014244,
+    "hash": "18a4aa020e3f7005e909062f8e2894fe"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar8.jpg": {
+    "mtime": 1778555506.4013846,
+    "hash": "d7d12699feefa34b5039613b8fe5d084"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar5.jpg": {
+    "mtime": 1778555506.4012375,
+    "hash": "07e1a5554e1ac61568dbd13ff7ba0334"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar4.jpg": {
+    "mtime": 1778555506.4011836,
+    "hash": "c421f8581c395f2111e68ba5802176d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar6.jpg": {
+    "mtime": 1778555506.4012947,
+    "hash": "d12aa178a99a65a29cfb4bc795857414"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar7.jpg": {
+    "mtime": 1778555506.4013438,
+    "hash": "30251cc9b883caad0f17c12d01b6cb26"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar3.jpg": {
+    "mtime": 1778555506.4011238,
+    "hash": "b0a54593d7b49d9a03770b471c9001d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar2.jpg": {
+    "mtime": 1778555506.4010613,
+    "hash": "b90f8b0ab20bd2d9882c21445fade68d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar10.jpg": {
+    "mtime": 1778555506.4010007,
+    "hash": "bc78413fc18d1db097478f0d143b8859"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/xs/avatar1.jpg": {
+    "mtime": 1778555506.4009445,
+    "hash": "b6987a901b1c09c18238a47190054452"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/aol-explorer.svg": {
+    "mtime": 1778555506.365754,
+    "hash": "f2a4363b794cd6532749f37aafcf80b2"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/netscape.svg": {
+    "mtime": 1778555506.3668113,
+    "hash": "f64e67934b079414af1bf18158c582dd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/camino.svg": {
+    "mtime": 1778555506.3659303,
+    "hash": "23c5c7fa88ed9eea0cec48a03e97787e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/vivaldi.svg": {
+    "mtime": 1778555506.3672018,
+    "hash": "6b04dfda8b985d2bbe4dd4ca1eb81bf8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/maxthon.svg": {
+    "mtime": 1778555506.3666043,
+    "hash": "df51f6f457a137ad3b3a4246639450f7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/mozilla.svg": {
+    "mtime": 1778555506.366744,
+    "hash": "91974b40e86c4b9db2b9bd6ec533bfa7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/dolphin.svg": {
+    "mtime": 1778555506.366173,
+    "hash": "f66d5a061976c8b9bf6e852d9d1e2de7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/edge.svg": {
+    "mtime": 1778555506.3662345,
+    "hash": "abda4ac163b5c9be7f993273f229b735"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/safari.svg": {
+    "mtime": 1778555506.36697,
+    "hash": "ee79ab6acab3d05faeb0df7db2689a2e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/uc-browser.svg": {
+    "mtime": 1778555506.3671303,
+    "hash": "f600350d98a0611ab69a971109c6903c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/android-browser.svg": {
+    "mtime": 1778555506.3656874,
+    "hash": "e1d3686c3d84d0a4de49cbfbcd51f5df"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/sleipnir.svg": {
+    "mtime": 1778555506.3670652,
+    "hash": "1751c6d6fbb09e086eaf46c3897268d7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/opera.svg": {
+    "mtime": 1778555506.3668704,
+    "hash": "438992de4e83d2123b1d9cdf8bb4bd03"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/ie.svg": {
+    "mtime": 1778555506.3665478,
+    "hash": "57c3e539655a13da5d3207594f0b78ed"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/chromium.svg": {
+    "mtime": 1778555506.3661065,
+    "hash": "870087fd8e511c411e5baed4005d5bb7"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/blackberry.svg": {
+    "mtime": 1778555506.365819,
+    "hash": "ead509aef9d7ac89dc55069b4c0acbfd"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/chrome.svg": {
+    "mtime": 1778555506.3660226,
+    "hash": "2bbe801cebc095f84c7d92574ec7214d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/browsers/firefox.svg": {
+    "mtime": 1778555506.3664765,
+    "hash": "e037fac507a72f0149673ba30202ad09"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/themes/dark.png": {
+    "mtime": 1778555506.4004843,
+    "hash": "a7df3a262c855b2d7f60f02e9fde9b6e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/themes/rtl.png": {
+    "mtime": 1778555506.4006557,
+    "hash": "d0b94feea64996332d39ebe683176109"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/themes/default.png": {
+    "mtime": 1778555506.4005735,
+    "hash": "41c15b5954eca62403d475178e9e5e0b"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/pricing/plan2.svg": {
+    "mtime": 1778555506.3992622,
+    "hash": "bdc12865ea4d2d96b655fce12883b3b4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/pricing/plan3.svg": {
+    "mtime": 1778555506.3993301,
+    "hash": "4b04acfcf89573d36c9be026b201a81d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/images/pricing/plan1.svg": {
+    "mtime": 1778555506.3991976,
+    "hash": "16be4271784ade369f129785611171ec"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/img/bootstrap-colorpicker/hue.png": {
+    "mtime": 1778555506.403224,
+    "hash": "e75b2a9cae62d4c2951a9fea86e8fac4"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/img/bootstrap-colorpicker/alpha-horizontal.png": {
+    "mtime": 1778555506.403066,
+    "hash": "1b3c0ada204c72f99386a99545a5ccfc"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/img/bootstrap-colorpicker/alpha.png": {
+    "mtime": 1778555506.403117,
+    "hash": "5278808a4d6b13c98d9484109547b749"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/img/bootstrap-colorpicker/hue-horizontal.png": {
+    "mtime": 1778555506.4031696,
+    "hash": "34a3768e23e11bc227fa6dd3091ff26e"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap-colorpicker/img/bootstrap-colorpicker/saturation.png": {
+    "mtime": 1778555506.4032817,
+    "hash": "668d0a0e7a0189f62898bcc57ab8370c"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/bootstrap/fonts/glyphicons-halflings-regular.svg": {
+    "mtime": 1778555506.411741,
+    "hash": "89889688147bd7575d6327160d64e760"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/multi-select/img/switch.png": {
+    "mtime": 1778555506.4423232,
+    "hash": "d4e3b5748ead183c35509a3f2d10b542"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/dropify/fonts/dropify.svg": {
+    "mtime": 1778555506.418225,
+    "hash": "b321d818cc153b16e739072ea8bc94b8"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/iconfonts/fonts/simple-line-icons/Simple-Line-Icons.svg": {
+    "mtime": 1778555506.4296844,
+    "hash": "99dc523db289bfc5cf52cb0c797c2150"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/iconfonts/fonts/weathericons/weathericons-regular-webfont.svg": {
+    "mtime": 1778555506.4313576,
+    "hash": "9e1a037063bce4527f5baac0b3a96107"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/iconfonts/fonts/materialdesignicons/materialdesignicons-webfont.svg": {
+    "mtime": 1778555506.4281828,
+    "hash": "f89ba2d89e5710c9ff4d03829963cf2d"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/iconfonts/fonts/themify/themify.svg": {
+    "mtime": 1778555506.4306703,
+    "hash": "9c8e96ecc7fa01e6ebcd196495ed2db5"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/plugins/font-awesome/fonts/fontawesome-webfont.svg": {
+    "mtime": 1778555506.4234207,
+    "hash": "912ec66d7572ff821749319396470bde"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/fonts/fontawesome-webfont.svg": {
+    "mtime": 1778555506.3627434,
+    "hash": "912ec66d7572ff821749319396470bde"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/fonts/weathericons-regular-webfont.svg": {
+    "mtime": 1778555506.364947,
+    "hash": "b2233bc1525939550405c87cffede242"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/fonts/simple-Line-Icons.svg": {
+    "mtime": 1778555506.3641722,
+    "hash": "c9c9b5ebc6395eeb83072bf18e3818aa"
+  },
+  "/Users/javierestrada/Downloads/final/webapp/public/assets/fonts/feather/feather-webfont.svg": {
+    "mtime": 1778555506.3610976,
+    "hash": "4a878d5b85f694202ec0ccd16510be9c"
+  }
+}
