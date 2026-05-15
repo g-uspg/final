@@ -274,19 +274,28 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    const validUser = process.env.NEXT_PUBLIC_LOGIN_USER;
-    const validPass = process.env.NEXT_PUBLIC_LOGIN_PASSWORD;
-
-    if (email === validUser && password === validPass) {
-      document.cookie = "auth=true; path=/";
-      router.push("/");
-    } else {
-      setError("Invalid email or password. Please try again.");
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"}/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+      const data = await res.json();
+      if (res.ok && data.data?.access_token) {
+        localStorage.setItem("access_token", data.data.access_token);
+        localStorage.setItem("refresh_token", data.data.refresh_token || "");
+        localStorage.setItem("user", JSON.stringify(data.data.user || {}));
+        document.cookie = "auth=true; path=/";
+        router.push("/parqueo");
+      } else {
+        setError(data.message || "Credenciales inválidas.");
+      }
+    } catch {
+      setError("No se pudo conectar al servidor.");
     }
-
     setIsLoading(false);
   };
 
