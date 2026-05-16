@@ -1,0 +1,79 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Alumno {
+  id          Int           @id @default(autoincrement())
+  carnet      String        @unique
+  nombre      String
+  apellido    String
+  email       String        @unique
+  createdAt   DateTime      @default(now())
+  asignaciones Asignacion[]
+  asistencias  Asistencia[]
+}
+
+model Catedratico {
+  id        Int      @id @default(autoincrement())
+  codigo    String   @unique
+  nombre    String
+  apellido  String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  horarios  Horario[]
+}
+
+model Curso {
+  id          Int          @id @default(autoincrement())
+  codigo      String       @unique
+  nombre      String
+  creditos    Int
+  createdAt   DateTime     @default(now())
+  asignaciones Asignacion[]
+  horarios    Horario[]
+}
+
+model Asignacion {
+  id         Int      @id @default(autoincrement())
+  alumno     Alumno   @relation(fields: [alumnoId], references: [id])
+  alumnoId   Int
+  curso      Curso    @relation(fields: [cursoId], references: [id])
+  cursoId    Int
+  ciclo      String   // Ej: "2026-1"
+  createdAt  DateTime @default(now())
+
+  @@unique([alumnoId, cursoId, ciclo])
+}
+
+model Horario {
+  id            Int         @id @default(autoincrement())
+  curso         Curso       @relation(fields: [cursoId], references: [id])
+  cursoId       Int
+  catedratico   Catedratico @relation(fields: [catedraticoId], references: [id])
+  catedraticoId Int
+  dia           String      // Ej: "Lunes"
+  horaInicio    String      // Ej: "08:00"
+  horaFin       String      // Ej: "10:00"
+  salon         String
+  asistencias   Asistencia[]
+}
+
+model Asistencia {
+  id        Int      @id @default(autoincrement())
+  alumno    Alumno   @relation(fields: [alumnoId], references: [id])
+  alumnoId  Int
+  horario   Horario  @relation(fields: [horarioId], references: [id])
+  horarioId Int
+  fecha     DateTime
+  presente  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([alumnoId, horarioId, fecha])
+}
