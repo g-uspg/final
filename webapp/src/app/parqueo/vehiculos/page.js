@@ -6,23 +6,23 @@ const TIPO_VEH_ES = { STANDARD:"Estándar", MOTORCYCLE:"Motocicleta", HANDICAPPE
 import api from "@/lib/api";
 
 // ── Input de placa con auto-formato ──────────────────────────────────────────
-function PlacaInput({ value, onChange, placeholder = "P-001ABC", className = "form-control form-control-sm" }) {
+function PlacaInput({ value, onChange, placeholder = "P-123ABC", className = "form-control form-control-sm" }) {
+  // Formato Guatemala: X-000XXX (1 letra, guión, 3 dígitos, 3 letras)
   const format = (raw) => {
-    // Quitar todo excepto letras y números, forzar mayúsculas
-    let clean = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
-    // Insertar guión si hay más de 1 carácter y no tiene aún
-    if (clean.length > 1 && !raw.includes("-")) {
-      clean = clean[0] + "-" + clean.slice(1);
+    const clean = raw.toUpperCase().replace(/-/g, "").replace(/[^A-Z0-9]/g, "");
+    let result = "";
+    for (let i = 0; i < clean.length && i < 7; i++) {
+      const c = clean[i];
+      if (i === 0 && /[A-Z]/.test(c))             result += c;
+      else if (i >= 1 && i <= 3 && /[0-9]/.test(c)) result += c;
+      else if (i >= 4 && i <= 6 && /[A-Z]/.test(c)) result += c;
     }
-    return clean;
+    return result.length > 1 ? result[0] + "-" + result.slice(1) : result;
   };
 
-  const handleChange = (e) => {
-    const formatted = format(e.target.value);
-    onChange(formatted);
-  };
+  const handleChange = (e) => onChange(format(e.target.value));
 
-  const isValid = value.length >= 5;
+  const isValid = value.length === 8; // P-123ABC
 
   return (
     <div style={{ position: "relative" }}>
