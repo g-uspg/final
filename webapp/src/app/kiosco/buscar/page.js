@@ -4,6 +4,14 @@ import { useRouter } from "next/navigation";
 
 const ZONE_COLORS = { A: "#21ba45", B: "#2185d0", C: "#f2711c", D: "#a333c8", E: "#fbbd08" };
 
+function getParqueoLabel(zone, space_code) {
+  if (!zone || !space_code) return zone ? `Zona ${zone}` : "—";
+  const num = parseInt(space_code.replace(/[^0-9]/g, ""), 10) || 0;
+  if (zone === "A") return num <= 125 ? "Zona A · Norte" : "Zona A · Oeste";
+  if (zone === "B") return num <= 125 ? "Zona B · Sur"  : "Zona B · Este";
+  return `Zona ${zone}`;
+}
+
 function formatDuration(minutes) {
   if (minutes < 60) return `${minutes} min`;
   const h = Math.floor(minutes / 60);
@@ -182,14 +190,14 @@ export default function BuscarVehiculo() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
                     <div style={{
-                      width: 80, height: 80, borderRadius: 16,
+                      minWidth: 90, height: 80, borderRadius: 16, padding: "0 12px",
                       background: `${zoneColor}22`, border: `3px solid ${zoneColor}`,
                       display: "flex", flexDirection: "column",
                       alignItems: "center", justifyContent: "center", flexShrink: 0,
                     }}>
-                      <div style={{ color: zoneColor, fontSize: 11, fontWeight: 700 }}>ZONA</div>
-                      <div style={{ color: zoneColor, fontSize: 32, fontWeight: 900, lineHeight: 1 }}>
-                        {result.session.zone}
+                      <div style={{ color: zoneColor, fontSize: 10, fontWeight: 700, textAlign: "center" }}>PARQUEO</div>
+                      <div style={{ color: zoneColor, fontSize: 13, fontWeight: 900, textAlign: "center", lineHeight: 1.2, marginTop: 4 }}>
+                        {getParqueoLabel(result.session.zone, result.session.space_code)}
                       </div>
                     </div>
                     <div>
