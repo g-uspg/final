@@ -200,14 +200,15 @@ function AssignModal({ space, onClose, onSubmit }) {
             {/* Búsqueda por placa */}
             <div className="form-group">
               <label style={{ fontSize: 13, fontWeight: 600 }}>Buscar por placa</label>
-              <div className="input-group">
+              <div style={{ display: "flex", gap: 6 }}>
                 <input className="form-control" value={plate}
                   onChange={e => { setPlate(e.target.value.toUpperCase()); setMsg(""); setFound(null); setVehicleId(""); setShowRegister(false); }}
                   onKeyDown={e => e.key === "Enter" && searchVehicle()}
                   placeholder="ABC-123" />
-                <div className="input-group-append">
-                  <button className="btn btn-primary btn-sm" onClick={searchVehicle}>Buscar</button>
-                </div>
+                <button className="btn btn-primary" onClick={searchVehicle}
+                  style={{ whiteSpace: "nowrap", fontWeight: 600, minWidth: 80 }}>
+                  <i className="fa fa-search" style={{ marginRight: 4 }} />Buscar
+                </button>
               </div>
             </div>
 
