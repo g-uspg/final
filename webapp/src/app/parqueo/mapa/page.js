@@ -18,14 +18,31 @@ const TYPE_OVERRIDE = {
 };
 
 // ── Modal de detalle de espacio ───────────────────────────────────────────────
-function SpaceModal({ space, onClose, onAssign }) {
+function SpaceModal({ space, onClose, onAssign, onStatusChange }) {
+  const [toggling, setToggling] = useState(false);
+  const [toggleMsg, setToggleMsg] = useState("");
+
   if (!space) return null;
-  const session = space._session;
+  const session    = space._session;
   const isOccupied = space.status === "OCCUPIED";
+  const isMaint    = space.status === "MAINTENANCE";
   const dur = session
     ? Math.floor((Date.now() - new Date(session.entry_time).getTime()) / 60000)
     : 0;
   const monto = session ? ((dur / 60) * 5).toFixed(2) : "0.00";
+
+  const toggleMaintenance = async () => {
+    setToggling(true); setToggleMsg("");
+    const newStatus = isMaint ? "AVAILABLE" : "MAINTENANCE";
+    try {
+      await api.patch(`/spaces/${space.id}`, { status: newStatus });
+      onStatusChange?.();
+      onClose();
+    } catch (e) {
+      setToggleMsg(e.response?.data?.message || "Error al cambiar estado.");
+      setToggling(false);
+    }
+  };
 
   return (
     <div className="modal" style={{
@@ -45,12 +62,13 @@ function SpaceModal({ space, onClose, onAssign }) {
           <div className="modal-body">
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
               <span className={`badge ${
-                space.status === "AVAILABLE" ? "badge-success" :
-                space.status === "OCCUPIED"  ? "badge-danger"  :
-                space.status === "RESERVED"  ? "badge-warning" : "badge-secondary"
+                space.status === "AVAILABLE"   ? "badge-success"   :
+                space.status === "OCCUPIED"    ? "badge-danger"    :
+                space.status === "RESERVED"    ? "badge-warning"   : "badge-secondary"
               }`}>{STATUS_COLOR[space.status]?.label || space.status}</span>
               <span className="badge badge-default">{space.type}</span>
             </div>
+
             {isOccupied && session ? (
               <table className="table table-sm">
                 <tbody>
@@ -66,6 +84,11 @@ function SpaceModal({ space, onClose, onAssign }) {
                     <td><strong style={{ color: "#21ba45" }}>Q {monto}</strong></td></tr>
                 </tbody>
               </table>
+            ) : isMaint ? (
+              <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
+                <i className="fa fa-wrench fa-3x" style={{ color: "#7d8490", display: "block", marginBottom: 12 }} />
+                <p style={{ color: "#7d8490", marginBottom: 0 }}>Espacio en mantenimiento</p>
+              </div>
             ) : !isOccupied ? (
               <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
                 <i className="fa fa-check-circle fa-3x" style={{ color: "#21ba45", display: "block", marginBottom: 12 }} />
@@ -74,11 +97,23 @@ function SpaceModal({ space, onClose, onAssign }) {
             ) : (
               <p style={{ color: "#7d8490" }}>Sin datos de sesión activa.</p>
             )}
+
+            {toggleMsg && <p style={{ color: "#db2828", fontSize: 12, marginTop: 8 }}>{toggleMsg}</p>}
           </div>
-          <div className="modal-footer" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-            {!isOccupied && (
+
+          <div className="modal-footer" style={{ borderTop: "1px solid rgba(255,255,255,0.08)", flexWrap: "wrap", gap: 6 }}>
+            {!isOccupied && !isMaint && (
               <button className="btn btn-success btn-sm" onClick={() => onAssign(space)}>
                 <i className="fa fa-plus" style={{ marginRight: 6 }} />Asignar manualmente
+              </button>
+            )}
+            {!isOccupied && (
+              <button className="btn btn-warning btn-sm" onClick={toggleMaintenance} disabled={toggling}
+                style={{ background: isMaint ? "#21ba45" : "#fbbd08", borderColor: isMaint ? "#1a9438" : "#d4a007", color: "#fff" }}>
+                {toggling
+                  ? <i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} />
+                  : <i className={`fa ${isMaint ? "fa-check" : "fa-wrench"}`} style={{ marginRight: 6 }} />}
+                {isMaint ? "Marcar disponible" : "Poner en mantenimiento"}
               </button>
             )}
             <button className="btn btn-secondary btn-sm" onClick={onClose}>Cerrar</button>
@@ -91,21 +126,50 @@ function SpaceModal({ space, onClose, onAssign }) {
 
 // ── Modal asignación manual ────────────────────────────────────────────────────
 function AssignModal({ space, onClose, onSubmit }) {
-  const [plate, setPlate]     = useState("");
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg]         = useState("");
+  const [plate,     setPlate]     = useState("");
+  const [loading,   setLoading]   = useState(false);
+  const [msg,       setMsg]       = useState("");
   const [vehicleId, setVehicleId] = useState("");
-  const [found, setFound]     = useState(null);
+  const [found,     setFound]     = useState(null);
+  // registro rápido de visitante
+  const [showRegister, setShowRegister] = useState(false);
+  const [regForm, setRegForm] = useState({ first_name: "", last_name: "", brand: "", model: "", color: "" });
+  const [registering, setRegistering] = useState(false);
 
   const searchVehicle = async () => {
     if (!plate.trim()) return;
+    setMsg(""); setFound(null); setVehicleId(""); setShowRegister(false);
     try {
       const res = await api.get(`/vehicles/search?plate=${plate.toUpperCase()}`);
       const v = res.data.data;
-      setFound(v); setVehicleId(v.id); setMsg("");
+      setFound(v); setVehicleId(v.id);
     } catch {
-      setFound(null); setVehicleId(""); setMsg("Vehículo no encontrado.");
+      setMsg("Vehículo no encontrado.");
+      setShowRegister(true);
     }
+  };
+
+  const registerVisitor = async () => {
+    if (!plate.trim() || !regForm.first_name.trim()) {
+      setMsg("Placa y nombre son requeridos."); return;
+    }
+    setRegistering(true); setMsg("");
+    try {
+      const res = await api.post("/vehicles", {
+        placa:      plate.toUpperCase(),
+        brand:      regForm.brand  || "No especificado",
+        model:      regForm.model  || "No especificado",
+        color:      regForm.color  || "No especificado",
+        visitor:    true,
+        visitor_name: `${regForm.first_name.trim()} ${regForm.last_name.trim()}`.trim(),
+      });
+      const v = res.data.data;
+      setFound(v); setVehicleId(v.id);
+      setShowRegister(false);
+      setMsg("");
+    } catch (e) {
+      setMsg(e.response?.data?.message || "Error al registrar visitante.");
+    } finally { setRegistering(false); }
   };
 
   const submit = async () => {
@@ -124,7 +188,7 @@ function AssignModal({ space, onClose, onSubmit }) {
       display: "flex", position: "fixed", inset: 0, zIndex: 1060,
       background: "rgba(0,0,0,0.7)", alignItems: "center", justifyContent: "center",
     }} onClick={onClose}>
-      <div className="modal-dialog" style={{ maxWidth: 400, width: "100%", margin: 0 }}
+      <div className="modal-dialog" style={{ maxWidth: 420, width: "100%", margin: 0 }}
         onClick={e => e.stopPropagation()}>
         <div className="modal-content">
           <div className="modal-header">
@@ -132,11 +196,13 @@ function AssignModal({ space, onClose, onSubmit }) {
             <button className="close" onClick={onClose}><span>&times;</span></button>
           </div>
           <div className="modal-body">
+
+            {/* Búsqueda por placa */}
             <div className="form-group">
               <label style={{ fontSize: 13, fontWeight: 600 }}>Buscar por placa</label>
               <div className="input-group">
                 <input className="form-control" value={plate}
-                  onChange={e => setPlate(e.target.value.toUpperCase())}
+                  onChange={e => { setPlate(e.target.value.toUpperCase()); setMsg(""); setFound(null); setVehicleId(""); setShowRegister(false); }}
                   onKeyDown={e => e.key === "Enter" && searchVehicle()}
                   placeholder="ABC-123" />
                 <div className="input-group-append">
@@ -144,14 +210,20 @@ function AssignModal({ space, onClose, onSubmit }) {
                 </div>
               </div>
             </div>
+
+            {/* Vehículo encontrado */}
             {found && (
-              <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 6, padding: "10px 14px", marginTop: 8 }}>
-                <div style={{ fontWeight: 700, color: "#800020" }}>{found.placa}</div>
+              <div style={{ background: "rgba(33,186,69,0.08)", border: "1px solid rgba(33,186,69,0.3)", borderRadius: 6, padding: "10px 14px", marginTop: 8 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <i className="fa fa-check-circle" style={{ color: "#21ba45" }} />
+                  <strong style={{ color: "#800020" }}>{found.placa}</strong>
+                  {found.visitor && <span className="badge badge-warning" style={{ fontSize: 10 }}>Visitante</span>}
+                </div>
                 <div style={{ fontSize: 12, color: "#7d8490" }}>
                   {[found.brand, found.model, found.color, found.year].filter(Boolean).join(" · ")}
                 </div>
                 <div style={{ fontSize: 12, marginTop: 4 }}>
-                  Propietario: <strong>{found.user ? `${found.user.first_name} ${found.user.last_name}` : "—"}</strong>
+                  Propietario: <strong>{found.user ? `${found.user.first_name} ${found.user.last_name}` : (found.visitor_name || "—")}</strong>
                 </div>
                 {found.blacklisted && (
                   <div style={{ color: "#db2828", fontWeight: 700, marginTop: 4, fontSize: 12 }}>
@@ -160,12 +232,63 @@ function AssignModal({ space, onClose, onSubmit }) {
                 )}
               </div>
             )}
-            {msg && <p style={{ color: "#db2828", fontSize: 12, marginTop: 8 }}>{msg}</p>}
+
+            {/* Registro rápido de visitante */}
+            {showRegister && (
+              <div style={{ background: "rgba(251,189,8,0.08)", border: "1px solid rgba(251,189,8,0.35)", borderRadius: 6, padding: "14px", marginTop: 10 }}>
+                <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 10, color: "#fbbd08", display: "flex", alignItems: "center", gap: 6 }}>
+                  <i className="fa fa-id-card-o" />
+                  Registrar visitante nuevo
+                </div>
+                <div className="row">
+                  <div className="col-6 form-group" style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 12 }}>Nombre *</label>
+                    <input className="form-control form-control-sm" placeholder="Juan"
+                      value={regForm.first_name}
+                      onChange={e => setRegForm(f => ({ ...f, first_name: e.target.value }))} />
+                  </div>
+                  <div className="col-6 form-group" style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 12 }}>Apellido</label>
+                    <input className="form-control form-control-sm" placeholder="Pérez"
+                      value={regForm.last_name}
+                      onChange={e => setRegForm(f => ({ ...f, last_name: e.target.value }))} />
+                  </div>
+                  <div className="col-4 form-group" style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 12 }}>Marca</label>
+                    <input className="form-control form-control-sm" placeholder="Toyota"
+                      value={regForm.brand}
+                      onChange={e => setRegForm(f => ({ ...f, brand: e.target.value }))} />
+                  </div>
+                  <div className="col-4 form-group" style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 12 }}>Modelo</label>
+                    <input className="form-control form-control-sm" placeholder="Corolla"
+                      value={regForm.model}
+                      onChange={e => setRegForm(f => ({ ...f, model: e.target.value }))} />
+                  </div>
+                  <div className="col-4 form-group" style={{ marginBottom: 8 }}>
+                    <label style={{ fontSize: 12 }}>Color</label>
+                    <input className="form-control form-control-sm" placeholder="Blanco"
+                      value={regForm.color}
+                      onChange={e => setRegForm(f => ({ ...f, color: e.target.value }))} />
+                  </div>
+                </div>
+                <button className="btn btn-warning btn-sm" onClick={registerVisitor} disabled={registering}
+                  style={{ width: "100%", marginTop: 4 }}>
+                  {registering
+                    ? <><i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} />Registrando...</>
+                    : <><i className="fa fa-user-plus" style={{ marginRight: 6 }} />Registrar y continuar</>}
+                </button>
+              </div>
+            )}
+
+            {msg && !showRegister && <p style={{ color: "#db2828", fontSize: 12, marginTop: 8, marginBottom: 0 }}>{msg}</p>}
+            {msg &&  showRegister && <p style={{ color: "#db2828", fontSize: 12, marginTop: 6, marginBottom: 0 }}>{msg}</p>}
           </div>
+
           <div className="modal-footer">
-            <button className="btn btn-success btn-sm" disabled={!vehicleId || loading} onClick={submit}>
-              {loading ? <i className="fa fa-spinner fa-spin" /> : <i className="fa fa-sign-in" />}
-              {" "}Registrar entrada
+            <button className="btn btn-success btn-sm" disabled={!vehicleId || loading || found?.blacklisted} onClick={submit}>
+              {loading ? <i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} /> : <i className="fa fa-sign-in" style={{ marginRight: 6 }} />}
+              Registrar entrada
             </button>
             <button className="btn btn-secondary btn-sm" onClick={onClose}>Cancelar</button>
           </div>
@@ -668,6 +791,7 @@ export default function MapaParqueo() {
           space={selected}
           onClose={() => setSelected(null)}
           onAssign={handleAssignClick}
+          onStatusChange={() => { setSelected(null); load(); }}
         />
       )}
       {assigning && (
