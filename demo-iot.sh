@@ -3,7 +3,9 @@
 # Simula un sensor ultrasónico ESP32 actualizando espacios en tiempo real.
 # Uso: ./demo-iot.sh
 
-SERVER="http://localhost:3000/api/parqueo/spaces/sensor"
+# Cambia a la URL de Vercel para demo en producción, o deja localhost para local
+BASE_URL="${PARQUEO_URL:-http://localhost:3000}"
+SERVER="$BASE_URL/api/parqueo/spaces/sensor"
 SPACES=("A-001" "A-002" "A-130" "B-001" "B-130")
 
 RED='\033[0;31m'
@@ -93,7 +95,7 @@ demo_auto() {
     header
     echo -e "  ${YELLOW}▶ Vehículo detectado — Zona ${LABELS[$space]} (espacio $space)${RESET}\n"
     sensor_anim "$space" "OCCUPIED"
-    echo -e "  ${DIM}Ver cambio en → http://localhost:3000/parqueo/mapa${RESET}"
+    echo -e "  ${DIM}Ver cambio en → $BASE_URL/parqueo/mapa${RESET}"
     sleep 1.5
   done
 
