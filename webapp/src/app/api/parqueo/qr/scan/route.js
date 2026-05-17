@@ -157,12 +157,42 @@ export async function POST(request) {
       });
     }
 
-    // ── Buscar QR de visitante ────────────────────────────────────────────
+    // ── Buscar QR de visitante (entrada o salida) ────────────────────────
     const visitorQr = await prisma.visitorQR.findFirst({
-      where: { qr_code: code, is_used: false, expires_at: { gt: new Date() } },
+      where: { qr_code: code },
     });
 
-    if (visitorQr) {
+    // Segunda pasada: visitante ya ingresó → registrar salida
+    if (visitorQr?.is_used && visitorQr.session_id) {
+      const activeSession = await prisma.parkingSession.findFirst({
+        where: { id: visitorQr.session_id, status: 'ACTIVE' },
+        include: { space: true },
+      });
+      if (activeSession) {
+        const exit_time = new Date();
+        const duration_minutes = Math.ceil((exit_time - new Date(activeSession.entry_time)) / 60000);
+        await prisma.$transaction([
+          prisma.parkingSession.update({
+            where: { id: activeSession.id },
+            data: { status: 'COMPLETED', exit_time, duration_minutes, amount_due: 0, is_paid: true },
+          }),
+          prisma.parkingSpace.update({ where: { id: activeSession.space_id }, data: { status: 'AVAILABLE' } }),
+        ]);
+        return res.ok({
+          action: 'EXIT',
+          placa: visitorQr.vehicle_plate,
+          owner_name: visitorQr.visitor_name,
+          role: 'VISITOR',
+          space_code: activeSession.space?.code,
+          zone: activeSession.space?.zone,
+          duration_minutes,
+          amount_due: 0,
+          is_paid: true,
+        });
+      }
+    }
+
+    if (visitorQr && !visitorQr.is_used && visitorQr.expires_at > new Date()) {
       const space = await prisma.parkingSpace.findFirst({
         where: { status: 'AVAILABLE', is_active: true },
         orderBy: [{ zone: 'asc' }, { code: 'asc' }],
