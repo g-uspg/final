@@ -702,7 +702,7 @@ export default function MapaParqueo() {
 
   useEffect(() => {
     load();
-    const t = setInterval(load, 20000);
+    const t = setInterval(load, 3000);
     return () => clearInterval(t);
   }, [load]);
 
