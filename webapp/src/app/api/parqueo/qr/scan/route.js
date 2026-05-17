@@ -82,19 +82,29 @@ export async function POST(request) {
           if (amount_due === 0) is_paid = true;
         }
 
-        await prisma.$transaction([
-          prisma.parkingSession.update({
+        // Si hay pago pendiente, solo guardamos los datos calculados en la sesión
+        // pero la dejamos ACTIVE. El payments route la completará al confirmar el pago.
+        if (!is_paid) {
+          await prisma.parkingSession.update({
             where: { id: activeSession.id },
-            data: { status: 'COMPLETED', exit_time, duration_minutes, amount_due, is_paid },
-          }),
-          prisma.parkingSpace.update({
-            where: { id: activeSession.space_id },
-            data: { status: 'AVAILABLE' },
-          }),
-        ]);
+            data: { exit_time, duration_minutes, amount_due, is_paid: false },
+          });
+        } else {
+          await prisma.$transaction([
+            prisma.parkingSession.update({
+              where: { id: activeSession.id },
+              data: { status: 'COMPLETED', exit_time, duration_minutes, amount_due, is_paid },
+            }),
+            prisma.parkingSpace.update({
+              where: { id: activeSession.space_id },
+              data: { status: 'AVAILABLE' },
+            }),
+          ]);
+        }
 
         return res.ok({
           action: 'EXIT',
+          session_id: activeSession.id,
           placa: vehicle.placa,
           owner_name: `${user.first_name} ${user.last_name}`,
           role: user.role,
@@ -177,23 +187,33 @@ export async function POST(request) {
       if (activeSession) {
         const exit_time = new Date();
         const duration_minutes = Math.ceil((exit_time - new Date(activeSession.entry_time)) / 60000);
-        await prisma.$transaction([
-          prisma.parkingSession.update({
+        const amount_due = await calcAmount('VISITOR', duration_minutes);
+        const is_paid = amount_due === 0;
+        if (!is_paid) {
+          await prisma.parkingSession.update({
             where: { id: activeSession.id },
-            data: { status: 'COMPLETED', exit_time, duration_minutes, amount_due: 0, is_paid: true },
-          }),
-          prisma.parkingSpace.update({ where: { id: activeSession.space_id }, data: { status: 'AVAILABLE' } }),
-        ]);
+            data: { exit_time, duration_minutes, amount_due, is_paid: false },
+          });
+        } else {
+          await prisma.$transaction([
+            prisma.parkingSession.update({
+              where: { id: activeSession.id },
+              data: { status: 'COMPLETED', exit_time, duration_minutes, amount_due, is_paid },
+            }),
+            prisma.parkingSpace.update({ where: { id: activeSession.space_id }, data: { status: 'AVAILABLE' } }),
+          ]);
+        }
         return res.ok({
           action: 'EXIT',
+          session_id: activeSession.id,
           placa: visitorQr.vehicle_plate,
           owner_name: visitorQr.visitor_name,
           role: 'VISITOR',
           space_code: activeSession.space?.code,
           zone: activeSession.space?.zone,
           duration_minutes,
-          amount_due: 0,
-          is_paid: true,
+          amount_due,
+          is_paid,
         });
       }
     }
@@ -210,13 +230,37 @@ export async function POST(request) {
         where: { placa: visitorQr.vehicle_plate, deleted_at: null },
       });
       if (!vehicle) {
-        // Asignar al primer admin como propietario temporal
-        const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
+        // Crear usuario VISITOR con el nombre del visitante para que aparezca correctamente
+        const nameParts = visitorQr.visitor_name.trim().split(' ');
+        const firstName = nameParts[0] ?? 'Visitante';
+        const lastName  = nameParts.slice(1).join(' ') || ' ';
+        const email     = `visitor-${visitorQr.id}@parqueo.uspg.local`;
+
+        const visitorUser = await prisma.user.upsert({
+          where: { email },
+          update: {},
+          create: {
+            email,
+            password_hash: 'VISITOR_NO_LOGIN',
+            role: 'VISITOR',
+            first_name: firstName,
+            last_name: lastName,
+            qr_code: `VIS-USER-${visitorQr.id}`,
+            is_active: false,
+          },
+        });
+
+        let carDetails = {};
+        try { carDetails = JSON.parse(visitorQr.purpose ?? '{}'); } catch {}
+
         vehicle = await prisma.vehicle.create({
           data: {
             placa: visitorQr.vehicle_plate,
-            user_id: admin.id,
+            user_id: visitorUser.id,
             is_authorized: true,
+            brand: carDetails.brand ?? null,
+            model: carDetails.model ?? null,
+            color: carDetails.color ?? null,
           },
         });
       }

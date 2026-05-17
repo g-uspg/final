@@ -8,7 +8,7 @@ export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
     const dto = await request.json();
-    let generatedByUserId = dto.generated_by_user_id ?? user?.sub ?? null;
+    let generatedByUserId = user?.sub ?? null;
     if (!generatedByUserId) {
       const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
       generatedByUserId = admin?.id ?? null;
@@ -24,7 +24,7 @@ export async function POST(request) {
         qr_code,
         visitor_name: dto.visitor_name,
         vehicle_plate: dto.vehicle_plate.toUpperCase(),
-        purpose: dto.purpose,
+        purpose: JSON.stringify({ brand: dto.vehicle_brand, model: dto.vehicle_model, color: dto.vehicle_color }),
         expires_at,
         generated_by_user_id: generatedByUserId,
       },

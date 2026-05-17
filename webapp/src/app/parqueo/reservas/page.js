@@ -327,6 +327,7 @@ function SendQRModal({ reservation, onClose, onSent }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          userQrCode: reservation.user?.qr_code ?? null,
           reservation: {
             id:                 reservation.id,
             spaceCode,

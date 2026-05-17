@@ -6,10 +6,11 @@ export async function POST(request, { params }) {
   try {
     const { id } = await params;
     const user = getUserFromRequest(request);
+    if (!user) return res.error('No autorizado', 401);
     const reservation = await prisma.reservation.findUnique({ where: { id } });
     if (!reservation) return res.notFound('Reserva no encontrada');
-    const isStaff = !user || ['ADMIN', 'SECURITY'].includes(user.role);
-    if (user && !isStaff && reservation.user_id !== user.sub) return res.error('No autorizado', 403);
+    const isStaff = ['ADMIN', 'SECURITY'].includes(user.role);
+    if (!isStaff && reservation.user_id !== user.sub) return res.error('No autorizado', 403);
     if (!['PENDING', 'CONFIRMED', 'ACTIVE'].includes(reservation.status)) return res.error('La reserva no puede cancelarse');
 
     const space = await prisma.parkingSpace.findUnique({ where: { id: reservation.space_id } });

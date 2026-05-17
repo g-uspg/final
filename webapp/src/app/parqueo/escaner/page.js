@@ -34,7 +34,7 @@ function PlacaInput({ value, onChange, placeholder = "P-001ABC", className = "fo
 
 // ── Modal: Generar QR visitante ───────────────────────────────────────────────
 function VisitorModal({ onClose }) {
-  const [form, setForm]         = useState({ name: "", vehicle_plate: "", max_hours: 2 });
+  const [form, setForm]         = useState({ name: "", vehicle_plate: "", max_hours: 2, brand: "", model: "", color: "" });
   const [loading, setLoading]   = useState(false);
   const [qrData, setQrData]     = useState(null);
   const [error, setError]       = useState("");
@@ -52,6 +52,9 @@ function VisitorModal({ onClose }) {
         visitor_name:  form.name.trim(),
         vehicle_plate: form.vehicle_plate.trim() || "N/A",
         valid_hours:   Number(form.max_hours),
+        vehicle_brand: form.brand.trim() || null,
+        vehicle_model: form.model.trim() || null,
+        vehicle_color: form.color.trim() || null,
       });
       setQrData(res.data.data);
     } catch (e) {
@@ -138,6 +141,23 @@ function VisitorModal({ onClose }) {
                     onChange={v => setForm(f => ({ ...f, vehicle_plate: v }))}
                     placeholder="ABC-123"
                   />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600 }}>Marca</label>
+                    <input className="form-control form-control-sm" placeholder="Toyota"
+                      value={form.brand} onChange={e => setForm(f => ({ ...f, brand: e.target.value }))} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600 }}>Modelo</label>
+                    <input className="form-control form-control-sm" placeholder="Corolla"
+                      value={form.model} onChange={e => setForm(f => ({ ...f, model: e.target.value }))} />
+                  </div>
+                  <div className="form-group" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600 }}>Color</label>
+                    <input className="form-control form-control-sm" placeholder="Blanco"
+                      value={form.color} onChange={e => setForm(f => ({ ...f, color: e.target.value }))} />
+                  </div>
                 </div>
                 <div className="form-group">
                   <label style={{ fontSize: 13, fontWeight: 600 }}>Horas máximas</label>

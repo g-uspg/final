@@ -6,19 +6,19 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request) {
   try {
-    const { email, reservation, qrImageBase64 } = await request.json();
+    const { email, reservation, qrImageBase64, userQrCode } = await request.json();
 
     if (!email || !reservation) {
       return NextResponse.json({ error: "Email y reserva son requeridos." }, { status: 400 });
     }
 
-    // Usar imagen precalculada si viene (garantiza que el email muestre
-    // exactamente el mismo QR que se generó en pantalla)
+    // Prioridad: 1) imagen precalculada, 2) qr_code personal del usuario, 3) fallback JSON reserva
     let qrBase64;
     if (qrImageBase64) {
       qrBase64 = qrImageBase64;
     } else {
-      const qrData = JSON.stringify({
+      // Usar el mismo código que escanea la garita (user.qr_code)
+      const qrData = userQrCode ?? JSON.stringify({
         reservationId: reservation.id,
         spaceCode:     reservation.spaceCode,
         zone:          reservation.zone,

@@ -5,12 +5,10 @@ import { getUserFromRequest } from '@/lib/jwt';
 export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
+    if (!user) return res.error('No autorizado', 401);
     const dto = await request.json();
-    let user_id = dto.user_id ?? user?.sub;
-    if (!user_id) {
-      const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
-      user_id = admin?.id;
-    }
+    const isAdmin = user.role === 'ADMIN';
+    const user_id = (isAdmin && dto.user_id) ? dto.user_id : user.sub;
     if (!user_id) return res.error('No se pudo determinar el usuario');
 
     const start = new Date(dto.start_time);
@@ -75,7 +73,7 @@ export async function GET(request) {
       prisma.reservation.count({ where }),
       prisma.reservation.findMany({
         where, skip: (page - 1) * limit, take: limit,
-        include: { space: true, vehicle: true },
+        include: { space: true, vehicle: true, user: { select: { qr_code: true } } },
         orderBy: { start_time: 'desc' },
       }),
     ]);

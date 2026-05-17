@@ -6,28 +6,55 @@ export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
     const dto = await request.json();
-    const user_id = dto.user_id ?? user?.sub;
-
     const session = await prisma.parkingSession.findUnique({
       where: { id: dto.session_id },
       include: { payment: true },
     });
     if (!session) return res.notFound('Sesión no encontrada');
     if (session.payment) return res.error('Ya existe un pago para esta sesión');
-    if (session.status === 'ACTIVE') return res.error('La sesión aún está activa');
+    // Sesión ACTIVE con exit_time = esperando pago antes de completarse
+    if (session.status === 'ACTIVE' && !session.exit_time) return res.error('La sesión aún está activa');
 
-    const payment = await prisma.payment.create({
-      data: {
-        session_id: dto.session_id,
-        user_id,
-        amount: session.amount_due ?? 0,
-        payment_method: dto.payment_method,
-        transaction_reference: dto.transaction_reference,
-        status: 'PENDING',
-      },
-    });
+    // Resolve user_id: request token > session > admin fallback (kiosk is unauthenticated)
+    let user_id = dto.user_id ?? user?.sub ?? session.user_id;
+    if (!user_id) {
+      const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
+      user_id = admin?.id;
+    }
+    if (!user_id) return res.error('No se pudo determinar el usuario para el pago');
 
-    return res.created(payment, 'Pago creado');
+    // Si la sesión quedó ACTIVE esperando pago, completarla y liberar el espacio ahora
+    const sessionUpdates = session.status === 'ACTIVE'
+      ? { status: 'COMPLETED', is_paid: true }
+      : { is_paid: true };
+
+    const ops = [
+      prisma.payment.create({
+        data: {
+          session_id: dto.session_id,
+          user_id,
+          amount: session.amount_due ?? 0,
+          payment_method: dto.payment_method,
+          transaction_reference: dto.transaction_reference ?? null,
+          status: 'COMPLETED',
+        },
+      }),
+      prisma.parkingSession.update({
+        where: { id: dto.session_id },
+        data: sessionUpdates,
+      }),
+    ];
+
+    if (session.status === 'ACTIVE') {
+      ops.push(prisma.parkingSpace.update({
+        where: { id: session.space_id },
+        data: { status: 'AVAILABLE' },
+      }));
+    }
+
+    const [payment] = await prisma.$transaction(ops);
+
+    return res.created(payment, 'Pago confirmado');
   } catch (e) {
     return res.error(e.message);
   }

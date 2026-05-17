@@ -179,6 +179,103 @@ function SalidaModal({ session, onClose, onDone }) {
   );
 }
 
+// ── Modal de pago ─────────────────────────────────────────────────────────────
+const METODOS = [
+  { value: "CASH",     label: "Efectivo",     icon: "fa-money" },
+  { value: "CARD",     label: "Tarjeta",      icon: "fa-credit-card" },
+  { value: "TRANSFER", label: "Transferencia",icon: "fa-exchange" },
+  { value: "QR_CODE",  label: "QR / Billetera",icon: "fa-qrcode" },
+];
+
+function PagoModal({ session, onClose, onPaid }) {
+  const [metodo,   setMetodo]   = useState("CASH");
+  const [loading,  setLoading]  = useState(false);
+  const [done,     setDone]     = useState(false);
+  const [error,    setError]    = useState("");
+
+  if (!session) return null;
+  const monto = (session.amount_due ?? 0).toFixed(2);
+
+  const confirmar = async () => {
+    setLoading(true); setError("");
+    try {
+      await api.post("/payments", {
+        session_id:     session.id,
+        payment_method: metodo,
+      });
+      setDone(true);
+      setTimeout(() => { onPaid(session.id); onClose(); }, 1500);
+    } catch (e) {
+      setError(e.response?.data?.error || "Error al procesar el pago.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal" style={{ display:"flex", position:"fixed", inset:0, zIndex:1070, background:"rgba(0,0,0,0.65)", alignItems:"center", justifyContent:"center" }} onClick={onClose}>
+      <div style={{ background:"#fff", borderRadius:12, width:"100%", maxWidth:400, padding:28, boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }} onClick={e => e.stopPropagation()}>
+        {done ? (
+          <div style={{ textAlign:"center", padding:"24px 0" }}>
+            <i className="fa fa-check-circle" style={{ fontSize:48, color:"#21ba45" }} />
+            <div style={{ marginTop:12, fontWeight:700, fontSize:18 }}>¡Pago confirmado!</div>
+            <div style={{ color:"#7d8490", marginTop:4 }}>Q {monto} — {METODOS.find(m=>m.value===metodo)?.label}</div>
+          </div>
+        ) : (
+          <>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:20 }}>
+              <i className="fa fa-money" style={{ color:"#800020", fontSize:22 }} />
+              <span style={{ fontWeight:700, fontSize:17, color:"#800020" }}>Registrar pago</span>
+            </div>
+
+            <div style={{ background:"#f8f9fa", borderRadius:8, padding:"12px 16px", marginBottom:20 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                <span style={{ color:"#7d8490", fontSize:13 }}>Vehículo</span>
+                <strong>{session.vehicle?.placa || "—"}</strong>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+                <span style={{ color:"#7d8490", fontSize:13 }}>Espacio</span>
+                <strong>{session.space?.code || "—"}</strong>
+              </div>
+              <div style={{ display:"flex", justifyContent:"space-between" }}>
+                <span style={{ color:"#7d8490", fontSize:13 }}>Duración</span>
+                <strong>{dur2(session.duration_minutes)}</strong>
+              </div>
+            </div>
+
+            <div style={{ textAlign:"center", marginBottom:20 }}>
+              <div style={{ color:"#7d8490", fontSize:13, marginBottom:4 }}>Total a cobrar</div>
+              <div style={{ fontSize:36, fontWeight:800, color:"#800020" }}>Q {monto}</div>
+            </div>
+
+            <div style={{ marginBottom:20 }}>
+              <div style={{ fontSize:13, fontWeight:600, marginBottom:10, color:"#555" }}>Método de pago</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                {METODOS.map(m => (
+                  <button key={m.value} onClick={() => setMetodo(m.value)}
+                    style={{ border:`2px solid ${metodo===m.value?"#800020":"#dee2e6"}`, background:metodo===m.value?"rgba(128,0,32,0.07)":"#fff", borderRadius:8, padding:"10px 8px", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:4, transition:"all 0.15s" }}>
+                    <i className={`fa ${m.icon}`} style={{ fontSize:18, color:metodo===m.value?"#800020":"#7d8490" }} />
+                    <span style={{ fontSize:12, fontWeight:600, color:metodo===m.value?"#800020":"#555" }}>{m.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {error && <div className="alert alert-danger" style={{ padding:"8px 12px", marginBottom:12, fontSize:13 }}>{error}</div>}
+
+            <div style={{ display:"flex", gap:8 }}>
+              <button className="btn btn-outline" style={{ flex:1 }} onClick={onClose} disabled={loading}>Cancelar</button>
+              <button className="btn btn-success" style={{ flex:2, fontWeight:700 }} onClick={confirmar} disabled={loading}>
+                {loading ? <i className="fa fa-spinner fa-spin" /> : <><i className="fa fa-check" style={{ marginRight:6 }} />Confirmar pago</>}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Página principal ──────────────────────────────────────────────────────────
 export default function SesionesActivas() {
   const [sessions, setSessions]   = useState([]);
@@ -191,6 +288,7 @@ export default function SesionesActivas() {
   const [historyLoad,  setHistoryLoad]  = useState(false);
   const [historyPage,  setHistoryPage]  = useState(1);
   const [historyTotal, setHistoryTotal] = useState(0);
+  const [pagoTarget,   setPagoTarget]   = useState(null);
   const HIST_LIMIT = 10;
 
   // Filtros
@@ -244,9 +342,9 @@ export default function SesionesActivas() {
     if (search) {
       const q = search.toUpperCase();
       const plate = (s.vehicle?.placa || "").toUpperCase();
-      const name  = s.user
-        ? `${s.user.first_name || ""} ${s.user.last_name || ""}`.toUpperCase()
-        : (s.notes?.startsWith("Visitante:") ? s.notes.replace("Visitante:", "").trim().toUpperCase() : "");
+      const name  = s.notes?.startsWith("Visitante:")
+        ? s.notes.replace("Visitante:", "").trim().toUpperCase()
+        : `${s.user?.first_name || ""} ${s.user?.last_name || ""}`.toUpperCase();
       if (!plate.includes(q) && !name.includes(q)) return false;
     }
     return true;
@@ -397,10 +495,10 @@ export default function SesionesActivas() {
                             )}
                           </td>
                           <td style={{ fontSize: 13 }}>
-                            {s.user
-                              ? `${s.user.first_name} ${s.user.last_name}`
-                              : s.notes?.startsWith("Visitante:")
-                                ? s.notes.replace("Visitante:", "").trim()
+                            {s.notes?.startsWith("Visitante:")
+                              ? s.notes.replace("Visitante:", "").trim()
+                              : s.user
+                                ? `${s.user.first_name} ${s.user.last_name}`
                                 : "—"}
                           </td>
                           <td>
@@ -504,10 +602,10 @@ export default function SesionesActivas() {
                       <tr key={s.id}>
                         <td><strong style={{ color: "#800020" }}>{s.vehicle?.placa || "—"}</strong></td>
                         <td style={{ fontSize: 13 }}>
-                          {s.user
-                            ? `${s.user.first_name} ${s.user.last_name}`
-                            : s.notes?.startsWith("Visitante:")
-                              ? s.notes.replace("Visitante:", "").trim()
+                          {s.notes?.startsWith("Visitante:")
+                            ? s.notes.replace("Visitante:", "").trim()
+                            : s.user
+                              ? `${s.user.first_name} ${s.user.last_name}`
                               : "—"}
                         </td>
                         <td><span className="badge badge-default">Zona {s.space?.zone || "—"}</span></td>
@@ -531,7 +629,16 @@ export default function SesionesActivas() {
                           Q {(s.amount_due ?? 0).toFixed(2)}
                         </td>
                         <td><MetodoBadge method={s.entry_method} /></td>
-                        <td><PagoBadge paid={s.is_paid} /></td>
+                        <td>
+                          {s.is_paid ? (
+                            <PagoBadge paid={true} />
+                          ) : (
+                            <button className="btn btn-warning btn-sm" style={{ fontWeight:600, fontSize:11, padding:"2px 10px" }}
+                              onClick={() => setPagoTarget(s)}>
+                              <i className="fa fa-money" style={{ marginRight:4 }} />Pagar
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -565,6 +672,16 @@ export default function SesionesActivas() {
       {/* ── Modals ────────────────────────────────────────────────────────────── */}
       {ticket && <TicketModal session={ticket} onClose={() => setTicket(null)} />}
       {salida && <SalidaModal session={salida} onClose={() => setSalida(null)} onDone={handleSalidaDone} />}
+      {pagoTarget && (
+        <PagoModal
+          session={pagoTarget}
+          onClose={() => setPagoTarget(null)}
+          onPaid={(id) => {
+            setHistory(prev => prev.map(s => s.id === id ? { ...s, is_paid: true } : s));
+            setPagoTarget(null);
+          }}
+        />
+      )}
     </>
   );
 }

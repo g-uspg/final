@@ -2,8 +2,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-const ROLE_LABELS  = { ADMIN:"Administrador", TEACHER:"Docente", STUDENT:"Estudiante", VISITOR:"Visitante", SECURITY:"Seguridad" };
-const ROLE_COLORS  = { ADMIN:"#a333c8", TEACHER:"#2185d0", STUDENT:"#21ba45", VISITOR:"#f2711c", SECURITY:"#fbbd08" };
+const ROLE_LABELS = { ADMIN:"Administrador", TEACHER:"Docente", STUDENT:"Estudiante", VISITOR:"Visitante", SECURITY:"Seguridad" };
+const ROLE_COLORS = { ADMIN:"#a333c8", TEACHER:"#2185d0", STUDENT:"#21ba45", VISITOR:"#f2711c", SECURITY:"#fbbd08" };
 
 function formatDuration(min) {
   if (min < 60) return `${min} min`;
@@ -22,17 +22,429 @@ function Row({ icon, label, value, valueColor }) {
   );
 }
 
+// ── Métodos de pago ───────────────────────────────────────────────────────────
+const KIOSKO_METODOS = [
+  { value:"CASH",     label:"Efectivo",       icon:"fa-money-bill" },
+  { value:"CARD",     label:"Tarjeta",        icon:"fa-credit-card" },
+  { value:"TRANSFER", label:"Transferencia",  icon:"fa-exchange-alt" },
+  { value:"QR_CODE",  label:"QR / Billetera", icon:"fa-qrcode" },
+];
+
+// ── Detectar red de tarjeta ───────────────────────────────────────────────────
+function detectBrand(digits) {
+  if (digits.startsWith("4"))                           return { label:"VISA",       accent:"#1a1f71" };
+  if (/^5[1-5]/.test(digits)||/^2[2-7]/.test(digits))  return { label:"MASTERCARD", accent:"#eb001b" };
+  if (/^3[47]/.test(digits))                            return { label:"AMEX",       accent:"#007bc1" };
+  return null;
+}
+
+// ── Tarjeta visual animada ────────────────────────────────────────────────────
+function CardVisual({ num, expiry, cvv, name, field }) {
+  const digits = num.replace(/\D/g,"");
+  const brand  = detectBrand(digits);
+  const groups = [0,1,2,3].map(g => digits.slice(g*4, g*4+4).padEnd(4,"•"));
+
+  const hl = (f) => ({
+    background: field===f ? "rgba(251,189,8,0.18)" : "transparent",
+    borderRadius:4, padding:"2px 6px",
+    color: field===f ? "#fbbd08" : "#fff",
+    transition:"all 0.2s",
+  });
+
+  return (
+    <div style={{
+      width:"100%", maxWidth:340, aspectRatio:"1.586/1",
+      background: brand
+        ? `linear-gradient(135deg,${brand.accent}dd,#0d1a25)`
+        : "linear-gradient(135deg,#1a2a3a,#0d1a25)",
+      borderRadius:20, padding:"18px 22px", position:"relative", overflow:"hidden",
+      boxShadow:"0 16px 48px rgba(0,0,0,0.6)", border:"1px solid rgba(255,255,255,0.08)",
+      transition:"background 0.5s", userSelect:"none",
+    }}>
+      {/* burbujas decorativas */}
+      <div style={{ position:"absolute", top:-50, right:-50, width:180, height:180, borderRadius:"50%", background:"rgba(255,255,255,0.04)" }} />
+      <div style={{ position:"absolute", bottom:-40, left:-40, width:140, height:140, borderRadius:"50%", background:"rgba(255,255,255,0.03)" }} />
+
+      {/* chip EMV */}
+      <div style={{ width:42, height:32, background:"linear-gradient(135deg,#c9a227,#f5d580)", borderRadius:6, marginBottom:18, position:"relative", overflow:"hidden" }}>
+        <div style={{ position:"absolute", top:0, left:"33%", right:"33%", bottom:0, background:"rgba(0,0,0,0.12)" }} />
+        <div style={{ position:"absolute", top:"33%", left:0, right:0, bottom:"33%", background:"rgba(0,0,0,0.12)" }} />
+      </div>
+
+      {/* número */}
+      <div style={{ display:"flex", gap:10, marginBottom:16 }}>
+        {groups.map((g,gi) => (
+          <span key={gi} style={{
+            fontFamily:"monospace", fontSize:16, fontWeight:700, letterSpacing:3,
+            color: gi < Math.ceil(digits.length/4) ? "#fff" : "rgba(255,255,255,0.25)",
+            background: field==="num" && gi===Math.min(3,Math.floor(digits.length/4)) ? "rgba(251,189,8,0.2)" : "transparent",
+            borderRadius:4, padding:"1px 3px", transition:"background 0.2s",
+          }}>{g}</span>
+        ))}
+      </div>
+
+      {/* expiry / cvv / marca */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end" }}>
+        <div>
+          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:8, letterSpacing:1.5, textTransform:"uppercase", marginBottom:2 }}>Válido hasta</div>
+          <div style={{ fontFamily:"monospace", fontSize:14, fontWeight:700, ...hl("exp") }}>
+            {expiry||"MM/AA"}
+          </div>
+        </div>
+        <div style={{ textAlign:"center" }}>
+          <div style={{ color:"rgba(255,255,255,0.35)", fontSize:8, letterSpacing:1.5, textTransform:"uppercase", marginBottom:2 }}>CVV</div>
+          <div style={{ fontFamily:"monospace", fontSize:14, fontWeight:700, ...hl("cvv") }}>
+            {cvv ? "•".repeat(cvv.length) : "•••"}
+          </div>
+        </div>
+        <div style={{ textAlign:"right" }}>
+          {brand
+            ? <div style={{ fontSize:12, fontWeight:900, color:"#fff", letterSpacing:1 }}>{brand.label}</div>
+            : <i className="fas fa-credit-card" style={{ fontSize:18, color:"rgba(255,255,255,0.2)" }} />}
+        </div>
+      </div>
+
+      <div style={{ marginTop:10, fontFamily:"monospace", fontSize:11, letterSpacing:2, textTransform:"uppercase", color:"rgba(255,255,255,0.45)" }}>
+        {name||"NOMBRE DEL TITULAR"}
+      </div>
+    </div>
+  );
+}
+
+// ── Teclado numérico táctil ───────────────────────────────────────────────────
+function NumPad({ onPress }) {
+  const keys = ["1","2","3","4","5","6","7","8","9","⌫","0","→"];
+
+  const tap = (k, e) => {
+    e.preventDefault(); // elimina delay 300ms en iOS Safari
+    onPress(k);
+  };
+
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8, width:"100%", maxWidth:340 }}>
+      {keys.map((k,i) => {
+        const isBack = k === "⌫";
+        const isNext = k === "→";
+        return (
+          <button key={i}
+            onPointerDown={(e) => tap(k, e)}
+            style={{
+              padding:"19px 0", borderRadius:14, border: isNext ? "2px solid #fbbd08" : "none",
+              fontSize: isBack ? 20 : isNext ? 16 : 26, fontWeight:700,
+              background: isNext ? "rgba(251,189,8,0.12)" : isBack ? "rgba(255,100,50,0.08)" : "rgba(255,255,255,0.07)",
+              color: isNext ? "#fbbd08" : isBack ? "#ff9966" : "#fff",
+              cursor:"pointer", touchAction:"manipulation",
+              WebkitTapHighlightColor:"transparent", userSelect:"none",
+              boxShadow:"0 3px 10px rgba(0,0,0,0.35)",
+            }}
+          >
+            {isNext ? <><i className="fas fa-arrow-right" style={{ marginRight:4 }} />Sig.</> : k}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Pantalla tarjeta de crédito ───────────────────────────────────────────────
+const CARD_FIELDS = [
+  { key:"num",    label:"Número de tarjeta",  hint:"16 dígitos",  maxLen:16 },
+  { key:"exp",    label:"Fecha de vencimiento", hint:"MM/AA",     maxLen:4  },
+  { key:"cvv",    label:"CVV",                hint:"3 o 4 dígitos", maxLen:4 },
+  { key:"name",   label:"Nombre del titular", hint:"Como aparece en la tarjeta", maxLen:26 },
+];
+
+function CardScreen({ amountDue, onConfirm, onBack, loading, error }) {
+  const [num,    setNum]    = useState("");
+  const [exp,    setExp]    = useState("");
+  const [cvv,    setCvv]    = useState("");
+  const [name,   setName]   = useState("");
+  const [field,  setField]  = useState("num");
+  const nameRef = useRef(null);
+
+  const fieldIdx   = CARD_FIELDS.findIndex(f => f.key === field);
+  const isLastField = fieldIdx === CARD_FIELDS.length - 1;
+
+  const numDigits = num.replace(/\D/g,"");
+  const expDigits = exp.replace(/\D/g,"");
+  const complete  = numDigits.length === 16 && expDigits.length === 4 && cvv.length >= 3 && name.trim().length >= 2;
+
+  const progress = [
+    numDigits.length === 16,
+    expDigits.length === 4,
+    cvv.length >= 3,
+    name.trim().length >= 2,
+  ];
+
+  const formatNum = (raw) => {
+    const d = raw.replace(/\D/g,"").slice(0,16);
+    return d.replace(/(.{4})/g,"$1 ").trim();
+  };
+  const formatExp = (raw) => {
+    const d = raw.replace(/\D/g,"").slice(0,4);
+    if (d.length > 2) return d.slice(0,2)+"/"+d.slice(2);
+    return d;
+  };
+
+  // teclado físico
+  useEffect(() => {
+    if (field === "name") { nameRef.current?.focus(); return; }
+    const handle = (e) => {
+      if (/^\d$/.test(e.key)) { pressKey(e.key); e.preventDefault(); }
+      else if (e.key === "Backspace") { pressKey("⌫"); e.preventDefault(); }
+      else if (e.key === "Enter" || e.key === "Tab") { pressKey("→"); e.preventDefault(); }
+    };
+    window.addEventListener("keydown", handle);
+    return () => window.removeEventListener("keydown", handle);
+  }, [field, num, exp, cvv]); // eslint-disable-line
+
+  const pressKey = (k) => {
+    if (k === "→") {
+      if (!isLastField) setField(CARD_FIELDS[fieldIdx+1].key);
+      return;
+    }
+    if (field === "num") {
+      const d = num.replace(/\D/g,"");
+      if (k === "⌫") setNum(formatNum(d.slice(0,-1)));
+      else if (d.length < 16) { const nd = d+k; setNum(formatNum(nd)); if (nd.length===16) setField("exp"); }
+    } else if (field === "exp") {
+      const d = exp.replace(/\D/g,"");
+      if (k === "⌫") setExp(formatExp(d.slice(0,-1)));
+      else if (d.length < 4) { const nd = d+k; setExp(formatExp(nd)); if (nd.length===4) setField("cvv"); }
+    } else if (field === "cvv") {
+      if (k === "⌫") setCvv(c => c.slice(0,-1));
+      else if (cvv.length < 4) { const nc = cvv+k; setCvv(nc); if (nc.length>=3) setField("name"); }
+    }
+  };
+
+  const ref4 = `**** **** **** ${numDigits.slice(-4)}`;
+
+  return (
+    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"flex-start", padding:"16px 20px", paddingTop:24, background:"linear-gradient(160deg,#0f1419 60%,#1a0a0f 100%)", overflowY:"auto" }}>
+      {/* header */}
+      <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:16, width:"100%", maxWidth:340 }}>
+        <button onPointerDown={e=>{e.preventDefault();onBack();}} style={{
+          background:"none", border:"1px solid #2e3d4e", borderRadius:8,
+          color:"#aaa", padding:"8px 14px", cursor:"pointer", fontSize:13,
+          touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+        }}>
+          <i className="fas fa-arrow-left" />
+        </button>
+        <div>
+          <div style={{ color:"#fff", fontWeight:700, fontSize:15 }}>Pago con tarjeta</div>
+          <div style={{ color:"#fbbd08", fontSize:13, fontWeight:700 }}>Q {amountDue?.toFixed(2)}</div>
+        </div>
+        <div style={{ marginLeft:"auto", display:"flex", gap:6 }}>
+          {progress.map((ok,i) => (
+            <div key={i} style={{ width:8, height:8, borderRadius:"50%", background: ok?"#21ba45":"#2e3d4e", transition:"background 0.3s" }} />
+          ))}
+        </div>
+      </div>
+
+      {/* tarjeta */}
+      <div style={{ marginBottom:16 }}>
+        <CardVisual num={num} expiry={exp} cvv={cvv} name={name} field={field} />
+      </div>
+
+      {/* pestañas de campo */}
+      <div style={{ display:"flex", gap:6, marginBottom:14, width:"100%", maxWidth:340 }}>
+        {CARD_FIELDS.map(f => (
+          <button key={f.key} onPointerDown={e=>{e.preventDefault();setField(f.key);}} style={{
+            flex:1, padding:"6px 0", borderRadius:8, border:"none",
+            background: field===f.key ? "rgba(251,189,8,0.15)" : "rgba(255,255,255,0.04)",
+            color: field===f.key ? "#fbbd08" : progress[CARD_FIELDS.findIndex(x=>x.key===f.key)] ? "#21ba45" : "#555",
+            fontSize:10, fontWeight:700, cursor:"pointer",
+            touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+            borderBottom: field===f.key ? "2px solid #fbbd08" : "2px solid transparent",
+          }}>
+            {progress[CARD_FIELDS.findIndex(x=>x.key===f.key)] && field!==f.key
+              ? <i className="fas fa-check" />
+              : f.key==="num" ? "Número" : f.key==="exp" ? "Venc." : f.key==="cvv" ? "CVV" : "Nombre"}
+          </button>
+        ))}
+      </div>
+
+      {/* hint */}
+      <div style={{ color:"#555", fontSize:11, marginBottom:12, textAlign:"center" }}>
+        {CARD_FIELDS[fieldIdx].hint}
+        {field!=="name" && <span style={{ marginLeft:8, color:"#2e3d4e" }}>· teclado físico o táctil</span>}
+      </div>
+
+      {/* campo nombre (texto libre) */}
+      {field === "name" ? (
+        <input
+          ref={nameRef}
+          value={name}
+          onChange={e => setName(e.target.value.toUpperCase().slice(0,26))}
+          placeholder="JUAN GARCIA"
+          autoComplete="off"
+          style={{
+            width:"100%", maxWidth:340, padding:"16px", borderRadius:12, border:"2px solid #fbbd08",
+            background:"#1a2430", color:"#fff", fontSize:18, fontWeight:700, fontFamily:"monospace",
+            letterSpacing:2, textAlign:"center", outline:"none", marginBottom:12,
+          }}
+        />
+      ) : (
+        <NumPad onPress={pressKey} />
+      )}
+
+      {error && <div style={{ color:"#ff6b6b", fontSize:13, marginTop:10 }}>{error}</div>}
+
+      {/* botón pagar */}
+      <button
+        onPointerDown={e=>{e.preventDefault(); if(complete&&!loading) onConfirm({num:ref4,exp,cvv});}}
+        disabled={!complete||loading}
+        style={{
+          width:"100%", maxWidth:340, padding:"16px", borderRadius:14, border:"none", marginTop:16,
+          background: complete&&!loading ? "#fbbd08" : "#1e2a36",
+          color: complete&&!loading ? "#000" : "#444",
+          fontSize:17, fontWeight:800,
+          cursor: complete&&!loading ? "pointer" : "not-allowed",
+          touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+          boxShadow: complete&&!loading ? "0 4px 20px rgba(251,189,8,0.3)" : "none",
+          transition:"all 0.2s",
+        }}
+      >
+        {loading
+          ? <><i className="fas fa-spinner fa-spin" style={{ marginRight:8 }} />Procesando…</>
+          : complete
+            ? <><i className="fas fa-lock" style={{ marginRight:8 }} />Pagar Q {amountDue?.toFixed(2)}</>
+            : <span style={{ opacity:0.5 }}>Completa todos los campos</span>}
+      </button>
+
+      <div style={{ color:"#2e3d4e", fontSize:11, marginTop:10, textAlign:"center" }}>
+        <i className="fas fa-shield-alt" style={{ marginRight:6 }} />Simulación de pago seguro · USPG
+      </div>
+    </div>
+  );
+}
+
+// ── Pantalla de pago ──────────────────────────────────────────────────────────
+function PagoKiosco({ result, onPaid }) {
+  const [metodo,  setMetodo]  = useState("CASH");
+  const [step,    setStep]    = useState("method");
+  const [loading, setLoading] = useState(false);
+  const [done,    setDone]    = useState(false);
+  const [error,   setError]   = useState("");
+
+  const pagar = async (cardInfo) => {
+    setLoading(true); setError("");
+    // Simular rechazo: número que empiece con 0000 = tarjeta declinada
+    if (cardInfo && cardInfo.num.startsWith("0000")) {
+      await new Promise(r => setTimeout(r, 1800));
+      setError("Tarjeta declinada. Intenta con otro método de pago.");
+      setLoading(false);
+      return;
+    }
+    try {
+      const r = await fetch("/api/parqueo/payments", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          session_id:            result.session_id,
+          payment_method:        metodo,
+          transaction_reference: cardInfo ? `${cardInfo.num} · ${cardInfo.exp}` : null,
+        }),
+      });
+      const json = await r.json();
+      if (!r.ok) throw new Error(json.message ?? "Error al procesar");
+      setDone(true);
+      setTimeout(onPaid, 2500);
+    } catch (e) {
+      setError(e.message);
+      setLoading(false);
+    }
+  };
+
+  if (done) return (
+    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", background:"linear-gradient(160deg,#0f1419 60%,#051a09 100%)" }}>
+      <i className="fas fa-check-circle" style={{ fontSize:100, color:"#21ba45", marginBottom:24 }} />
+      <div style={{ color:"#21ba45", fontSize:28, fontWeight:800, marginBottom:8 }}>¡Pago confirmado!</div>
+      <div style={{ color:"#aaa", fontSize:16 }}>Q {result.amount_due?.toFixed(2)} · {KIOSKO_METODOS.find(m=>m.value===metodo)?.label}</div>
+    </div>
+  );
+
+  if (step === "card") return (
+    <CardScreen
+      amountDue={result.amount_due}
+      onConfirm={pagar}
+      onBack={() => { setStep("method"); setError(""); }}
+      loading={loading}
+      error={error}
+    />
+  );
+
+  return (
+    <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:28, background:"linear-gradient(160deg,#0f1419 60%,#1a0a0f 100%)" }}>
+      <i className="fas fa-money-bill" style={{ fontSize:60, color:"#fbbd08", marginBottom:16 }} />
+      <div style={{ color:"#fff", fontSize:22, fontWeight:800, marginBottom:4 }}>Pago requerido</div>
+      <div style={{ color:"#aaa", fontSize:14, marginBottom:28 }}>Selecciona el método para completar tu salida</div>
+
+      <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid #1e2a36", borderRadius:16, padding:20, width:"100%", maxWidth:420, marginBottom:24 }}>
+        <Row icon="fa-car"    label="Vehículo" value={result.placa} valueColor="#fff" />
+        <Row icon="fa-clock"  label="Tiempo"   value={formatDuration(result.duration_minutes)} />
+        <div style={{ display:"flex", justifyContent:"space-between", padding:"12px 0", borderBottom:"1px solid #1e2a36" }}>
+          <span style={{ color:"#666", fontSize:14 }}><i className="fas fa-money-bill" style={{ marginRight:8 }} />Total</span>
+          <span style={{ color:"#fbbd08", fontSize:22, fontWeight:900 }}>Q {result.amount_due?.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, width:"100%", maxWidth:420, marginBottom:24 }}>
+        {KIOSKO_METODOS.map(m => (
+          <button key={m.value}
+            onPointerDown={e=>{e.preventDefault();setMetodo(m.value);}}
+            style={{
+              border:`2px solid ${metodo===m.value?"#fbbd08":"#1e2a36"}`,
+              background: metodo===m.value ? "rgba(251,189,8,0.1)" : "rgba(255,255,255,0.03)",
+              borderRadius:12, padding:"16px 8px", cursor:"pointer",
+              display:"flex", flexDirection:"column", alignItems:"center", gap:8,
+              touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+            }}>
+            <i className={`fas ${m.icon}`} style={{ fontSize:24, color: metodo===m.value?"#fbbd08":"#555" }} />
+            <span style={{ fontSize:13, fontWeight:700, color: metodo===m.value?"#fbbd08":"#aaa" }}>{m.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {error && <div style={{ color:"#ff6b6b", fontSize:13, marginBottom:12 }}>{error}</div>}
+
+      <button
+        onPointerDown={e=>{e.preventDefault(); metodo==="CARD" ? setStep("card") : pagar(null);}}
+        disabled={loading}
+        style={{
+          width:"100%", maxWidth:420, padding:"16px", borderRadius:12, border:"none",
+          background: loading ? "#1e2a36" : "#fbbd08", color: loading ? "#aaa" : "#000",
+          fontSize:17, fontWeight:800, cursor: loading ? "not-allowed" : "pointer",
+          touchAction:"manipulation", WebkitTapHighlightColor:"transparent",
+        }}>
+        {loading
+          ? <><i className="fas fa-spinner fa-spin" style={{ marginRight:8 }} />Procesando…</>
+          : metodo==="CARD"
+            ? <><i className="fas fa-credit-card" style={{ marginRight:8 }} />Ingresar tarjeta</>
+            : <><i className="fas fa-check" style={{ marginRight:8 }} />Confirmar pago</>}
+      </button>
+    </div>
+  );
+}
+
 // ── Pantalla de resultado ─────────────────────────────────────────────────────
 function ResultScreen({ result, onReset }) {
   const [countdown, setCountdown] = useState(8);
+  const [pagoDone,  setPagoDone]  = useState(false);
+
+  const needsPago = result.action === "EXIT" && (result.amount_due ?? 0) > 0 && !result.is_paid && !pagoDone;
 
   useEffect(() => {
-    const t = setInterval(() => setCountdown(c => {
-      if (c <= 1) { clearInterval(t); onReset(); return 0; }
-      return c - 1;
-    }), 1000);
+    if (needsPago) return;
+    const t = setInterval(() => setCountdown(c => Math.max(0, c - 1)), 1000);
     return () => clearInterval(t);
-  }, [onReset]);
+  }, [needsPago]);
+
+  useEffect(() => {
+    if (!needsPago && countdown === 0) onReset();
+  }, [countdown, needsPago, onReset]);
+
+  if (needsPago) return <PagoKiosco result={result} onPaid={() => setPagoDone(true)} />;
 
   const isEntry = result.action === "ENTRY";
   const isError = result.action === "ERROR";
@@ -76,8 +488,8 @@ function ResultScreen({ result, onReset }) {
             {isEntry ? (
               <>
                 <Row icon="fa-map-marker-alt" label="Espacio asignado" value={`${result.space_code} · Zona ${result.zone}`} valueColor="#fff" />
-                {result.evento   && <Row icon="fa-calendar"  label="Evento"        value={result.evento} />}
-                {result.suscripcion && <Row icon="fa-id-card" label="Suscripción"  value="Activa — sin cargo" valueColor="#21ba45" />}
+                {result.evento      && <Row icon="fa-calendar" label="Evento"       value={result.evento} />}
+                {result.suscripcion && <Row icon="fa-id-card"  label="Suscripción"  value="Activa — sin cargo" valueColor="#21ba45" />}
               </>
             ) : (
               <>
@@ -102,7 +514,6 @@ function ResultScreen({ result, onReset }) {
         </div>
       )}
 
-      {/* Barra countdown */}
       <div style={{ width:"100%", maxWidth:440 }}>
         <div style={{ height:6, borderRadius:3, background:"#1e2a36", overflow:"hidden", marginBottom:10 }}>
           <div style={{ height:"100%", background:color, width:`${(countdown/8)*100}%`, transition:"width 1s linear" }} />
@@ -122,11 +533,11 @@ export default function AccesoQR() {
   const rafRef      = useRef(null);
   const manualRef   = useRef(null);
 
-  const [camActive,   setCamActive]   = useState(false);
-  const [camError,    setCamError]    = useState("");
-  const [processing,  setProcessing]  = useState(false);
-  const [result,      setResult]      = useState(null);
-  const [manualCode,  setManualCode]  = useState("");
+  const [camActive,  setCamActive]  = useState(false);
+  const [camError,   setCamError]   = useState("");
+  const [processing, setProcessing] = useState(false);
+  const [result,     setResult]     = useState(null);
+  const [manualCode, setManualCode] = useState("");
 
   const stopCamera = useCallback(() => {
     if (rafRef.current)    cancelAnimationFrame(rafRef.current);
@@ -222,7 +633,6 @@ export default function AccesoQR() {
 
       {/* Área cámara */}
       <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:28 }}>
-        {/* Visor */}
         <div style={{
           position:"relative", width:"100%", maxWidth:400, aspectRatio:"1/1",
           background:"#0a0f14", borderRadius:20, overflow:"hidden",
@@ -230,7 +640,6 @@ export default function AccesoQR() {
         }}>
           <video ref={videoRef} style={{ width:"100%", height:"100%", objectFit:"cover" }} playsInline muted />
 
-          {/* Overlay sin cámara */}
           {!camActive && !processing && (
             <div style={{
               position:"absolute", inset:0, display:"flex", flexDirection:"column",
@@ -249,7 +658,6 @@ export default function AccesoQR() {
             </div>
           )}
 
-          {/* Procesando */}
           {processing && (
             <div style={{
               position:"absolute", inset:0, display:"flex", flexDirection:"column",
@@ -260,19 +668,17 @@ export default function AccesoQR() {
             </div>
           )}
 
-          {/* Línea de escaneo animada */}
           {camActive && !processing && (
             <>
-              {/* Esquinas */}
               {[[0,0,"bottom","right"],[0,"auto","bottom","left"],["auto",0,"top","right"],["auto","auto","top","left"]].map(([b,r],i) => (
                 <div key={i} style={{
                   position:"absolute", width:32, height:32,
-                  bottom: b!=="auto"?0:undefined, right: r!=="auto"?0:undefined,
-                  top: b==="auto"?0:undefined,    left: r==="auto"?0:undefined,
-                  borderBottom: b!=="auto"?"3px solid #800020":undefined,
-                  borderRight:  r!=="auto"?"3px solid #800020":undefined,
-                  borderTop:    b==="auto"?"3px solid #800020":undefined,
-                  borderLeft:   r==="auto"?"3px solid #800020":undefined,
+                  bottom:b!=="auto"?0:undefined, right:r!=="auto"?0:undefined,
+                  top:b==="auto"?0:undefined,    left:r==="auto"?0:undefined,
+                  borderBottom:b!=="auto"?"3px solid #800020":undefined,
+                  borderRight: r!=="auto"?"3px solid #800020":undefined,
+                  borderTop:   b==="auto"?"3px solid #800020":undefined,
+                  borderLeft:  r==="auto"?"3px solid #800020":undefined,
                 }} />
               ))}
               <div style={{
@@ -284,7 +690,6 @@ export default function AccesoQR() {
           )}
         </div>
 
-        {/* Error cámara */}
         {camError && (
           <div style={{
             background:"rgba(251,189,8,0.1)", border:"1px solid rgba(251,189,8,0.3)",
@@ -295,7 +700,6 @@ export default function AccesoQR() {
           </div>
         )}
 
-        {/* Input manual */}
         <div style={{ width:"100%", maxWidth:400 }}>
           <div style={{ color:"#444", fontSize:12, textAlign:"center", marginBottom:8 }}>
             — o ingresa el código manualmente —
