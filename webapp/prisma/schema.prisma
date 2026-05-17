@@ -150,16 +150,21 @@ model User {
   updated_at    DateTime  @updatedAt
   deleted_at    DateTime?
 
-  vehicles           Vehicle[]
-  sessions           ParkingSession[]
-  payments           Payment[]
-  reservations       Reservation[]
-  notifications      Notification[]
-  audit_logs         AuditLog[]
-  visitor_qrs        VisitorQR[]    @relation("GeneratedBy")
-  blacklists_added   Blacklist[]    @relation("AddedBy")
-  blacklists_removed Blacklist[]    @relation("RemovedBy")
-  barrier_logs       BarrierLog[]
+  vehicles              Vehicle[]
+  sessions              ParkingSession[]
+  payments              Payment[]
+  reservations          Reservation[]
+  notifications         Notification[]
+  audit_logs            AuditLog[]
+  visitor_qrs           VisitorQR[]          @relation("GeneratedBy")
+  blacklists_added      Blacklist[]          @relation("AddedBy")
+  blacklists_removed    Blacklist[]          @relation("RemovedBy")
+  barrier_logs          BarrierLog[]
+  subscriptions         ParkingSubscription[]
+  events_created        ParkingEvent[]
+  monthly_bills         MonthlyBill[]
+  card_replacements     CardReplacement[]    @relation("CardUser")
+  card_replacements_processed CardReplacement[] @relation("CardProcessor")
 
   @@index([email])
   @@index([role])
@@ -384,4 +389,143 @@ model Camera {
   updated_at DateTime @updatedAt
 
   campus Campus? @relation(fields: [campus_id], references: [id])
+}
+
+// ── TariffConfig — tarifas editables por rol ─────────────────────────────────
+
+model TariffConfig {
+  id                   String   @id @default(uuid())
+  role                 Role     @unique
+  hourly_rate          Decimal  @default(0) @db.Decimal(10, 2)
+  is_free              Boolean  @default(false)
+  max_free_hours       Int?
+  updated_at           DateTime @updatedAt
+  updated_by_user_id   String?
+}
+
+// ── Nuevos modelos — Tarea 1 ──────────────────────────────────────────────────
+
+enum SubscriptionType {
+  MONTHLY
+  SEMESTER
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum TariffMode {
+  HOURLY
+  FLAT_RATE
+}
+
+enum EventStatus {
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum BillStatus {
+  OPEN
+  CLOSED
+  PAID
+  OVERDUE
+}
+
+enum ReplacementReason {
+  LOST
+  DAMAGED
+  STOLEN
+  REASSIGNMENT
+}
+
+model ParkingSubscription {
+  id                 String             @id @default(uuid())
+  user_id            String
+  type               SubscriptionType
+  status             SubscriptionStatus @default(ACTIVE)
+  start_date         DateTime
+  end_date           DateTime
+  amount_paid        Decimal            @db.Decimal(10, 2)
+  payment_reference  String?
+  auto_renew         Boolean            @default(false)
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([status])
+  @@index([end_date])
+}
+
+model ParkingEvent {
+  id                    String      @id @default(uuid())
+  name                  String
+  description           String?
+  event_date            DateTime
+  start_time            DateTime
+  end_time              DateTime
+  tariff_mode           TariffMode  @default(HOURLY)
+  flat_rate             Decimal?    @db.Decimal(10, 2)
+  affected_zones        String
+  status                EventStatus @default(SCHEDULED)
+  created_by_user_id    String
+  notes                 String?
+  uses_external_parking Boolean     @default(false)
+  external_parking_name String?
+  shuttle_available     Boolean     @default(false)
+  capacity_override     Int?
+  created_at            DateTime    @default(now())
+  updated_at            DateTime    @updatedAt
+
+  created_by User @relation(fields: [created_by_user_id], references: [id])
+
+  @@index([event_date])
+  @@index([status])
+}
+
+model MonthlyBill {
+  id                String     @id @default(uuid())
+  user_id           String
+  month             Int
+  year              Int
+  total_sessions    Int        @default(0)
+  total_minutes     Int        @default(0)
+  total_amount      Decimal    @default(0) @db.Decimal(10, 2)
+  status            BillStatus @default(OPEN)
+  due_date          DateTime
+  paid_at           DateTime?
+  payment_reference String?
+  created_at        DateTime   @default(now())
+  updated_at        DateTime   @updatedAt
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, month, year])
+  @@index([user_id])
+  @@index([month, year])
+  @@index([status])
+}
+
+model CardReplacement {
+  id                  String            @id @default(uuid())
+  user_id             String
+  old_nfc_token       String?
+  new_nfc_token       String?
+  reason              ReplacementReason
+  replacement_fee     Decimal           @default(50.00) @db.Decimal(10, 2)
+  fee_paid            Boolean           @default(false)
+  requested_at        DateTime          @default(now())
+  processed_at        DateTime?
+  processed_by_user_id String?
+  notes               String?
+  created_at          DateTime          @default(now())
+
+  user         User  @relation("CardUser", fields: [user_id], references: [id])
+  processed_by User? @relation("CardProcessor", fields: [processed_by_user_id], references: [id])
 }

@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET ?? 'smart_parking_jwt_secret_2026';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET ?? 'smart_parking_refresh_secret_2026';
+if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET no definido en .env.local');
+if (!process.env.JWT_REFRESH_SECRET) throw new Error('JWT_REFRESH_SECRET no definido en .env.local');
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 export function signAccess(payload) {
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });

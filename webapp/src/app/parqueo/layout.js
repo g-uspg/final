@@ -11,6 +11,8 @@ const tabs = [
   { label: "Reservas",   path: "/parqueo/reservas",    icon: "fa-calendar" },
   { label: "Reportes",   path: "/parqueo/reportes",    icon: "fa-bar-chart" },
   { label: "Seguridad",  path: "/parqueo/seguridad",   icon: "fa-shield" },
+  { label: "Tarifas",        path: "/parqueo/tarifas",        icon: "fa-usd"       },
+  { label: "Suscripciones", path: "/parqueo/suscripciones", icon: "fa-id-card"   },
 ];
 
 export default function ParqueoLayout({ children }) {

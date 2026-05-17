@@ -8,7 +8,7 @@ export async function POST(request, { params }) {
     const { id } = await params;
     const user = getUserFromRequest(request);
     const { action, reason } = await request.json();
-    const operator_id = user?.sub ?? 'system';
+    const operator_id = user?.sub ?? null;
 
     const barrier = barriers.get(id);
     if (!barrier) return res.notFound('Barrera no encontrada');

@@ -5,25 +5,46 @@ export async function GET() {
   try {
     const now = new Date();
     const hour = now.getHours();
+    const nextHour = (hour + 1) % 24;
     const dayOfWeek = now.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const is_peak = [7, 8, 9, 12, 13, 17, 18, 19].includes(hour);
+    const isPeak = [7, 8, 9, 12, 13, 17, 18, 19].includes(nextHour);
 
-    const [total_spaces, current_occupancy] = await Promise.all([
+    const [total_spaces, current_occupied] = await Promise.all([
       prisma.parkingSpace.count({ where: { is_active: true } }),
       prisma.parkingSpace.count({ where: { status: 'OCCUPIED' } }),
     ]);
 
-    const occupancy_rate = total_spaces > 0 ? current_occupancy / total_spaces : 0;
-    let predicted_next_hour = Math.round(occupancy_rate * total_spaces);
-    if (is_peak && !isWeekend) predicted_next_hour = Math.min(total_spaces, Math.round(predicted_next_hour * 1.2));
-    if (isWeekend) predicted_next_hour = Math.round(predicted_next_hour * 0.7);
+    const currentRate = total_spaces > 0 ? current_occupied / total_spaces : 0;
+    let predictedOccupied = Math.round(currentRate * total_spaces);
+    if (isPeak && !isWeekend) predictedOccupied = Math.min(total_spaces, Math.round(predictedOccupied * 1.2));
+    if (isWeekend) predictedOccupied = Math.round(predictedOccupied * 0.7);
+
+    const occupancy_pct = total_spaces > 0 ? parseFloat(((predictedOccupied / total_spaces) * 100).toFixed(1)) : 0;
+
+    // Zona más congestionada actualmente
+    const zoneOccupancy = await prisma.parkingSpace.groupBy({
+      by: ['zone'],
+      where: { status: 'OCCUPIED' },
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+      take: 1,
+    });
+    const busiest_zone = zoneOccupancy[0]?.zone ?? null;
+
+    const expected_entries = Math.max(0, predictedOccupied - current_occupied);
+    const expected_exits   = Math.max(0, current_occupied - predictedOccupied);
+    const confidence = isPeak ? 0.82 : isWeekend ? 0.65 : 0.74;
 
     return res.ok({
-      current_occupancy, total_spaces, occupancy_rate: parseFloat((occupancy_rate * 100).toFixed(1)),
-      is_peak_hour: is_peak, is_weekend: isWeekend,
-      predicted_next_hour, predicted_occupancy_rate: parseFloat(((predicted_next_hour / total_spaces) * 100).toFixed(1)),
-      recommendation: occupancy_rate > 0.85 ? 'ALTA_DEMANDA' : occupancy_rate > 0.6 ? 'DEMANDA_MODERADA' : 'BAJA_DEMANDA',
+      hour: nextHour,
+      occupancy_pct,
+      expected_entries,
+      expected_exits,
+      busiest_zone,
+      confidence,
+      current_occupied,
+      total_spaces,
     });
   } catch (e) {
     return res.error(e.message);

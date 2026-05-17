@@ -114,7 +114,7 @@ function SalidaModal({ session, onClose, onDone }) {
   const confirmar = async () => {
     setLoading(true);
     try {
-      await api.post(`/parking-sessions/${session.id}/exit`, {});
+      await api.post(`/sessions/${session.id}/exit`, {});
       onDone();
     } catch (e) {
       setError(e.response?.data?.message || "Error al registrar salida.");
@@ -193,7 +193,7 @@ export default function SesionesActivas() {
 
   const load = useCallback(async () => {
     try {
-      const res = await api.get("/parking-sessions/active");
+      const res = await api.get("/sessions/active");
       setSessions(res.data.data?.sessions || []);
       setLastUpdate(new Date());
     } catch (e) {

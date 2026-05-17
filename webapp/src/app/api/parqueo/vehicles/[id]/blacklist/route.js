@@ -7,7 +7,8 @@ export async function POST(request, { params }) {
     const { id } = await params;
     const user = getUserFromRequest(request);
     const { reason } = await request.json();
-    const addedByUserId = user?.sub ?? 'system';
+    const addedByUserId = user?.sub ?? null;
+    if (!addedByUserId) return res.error('Se requiere autenticación', 401);
 
     const vehicle = await prisma.vehicle.findFirst({ where: { id, deleted_at: null } });
     if (!vehicle) return res.notFound('Vehículo no encontrado');
@@ -27,7 +28,7 @@ export async function DELETE(request, { params }) {
   try {
     const { id } = await params;
     const user = getUserFromRequest(request);
-    const removedByUserId = user?.sub ?? 'system';
+    const removedByUserId = user?.sub ?? null;
 
     const entry = await prisma.blacklist.findFirst({ where: { vehicle_id: id, is_active: true } });
     if (!entry) return res.notFound('Entrada en blacklist no encontrada');

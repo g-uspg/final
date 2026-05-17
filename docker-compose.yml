@@ -18,24 +18,6 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: parqueo_backend
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:admin123@postgres:5432/parqueo_db
-      JWT_SECRET: supersecret_jwt_key_change_in_production
-      JWT_REFRESH_SECRET: supersecret_refresh_key_change_in_production
-      PORT: 3001
-      NODE_ENV: production
-      FRONTEND_URL: http://localhost:3000
-    ports:
-      - '3001:3001'
-    restart: unless-stopped
 
 volumes:
   postgres_data:

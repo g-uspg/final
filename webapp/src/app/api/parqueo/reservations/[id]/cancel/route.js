@@ -8,13 +8,19 @@ export async function POST(request, { params }) {
     const user = getUserFromRequest(request);
     const reservation = await prisma.reservation.findUnique({ where: { id } });
     if (!reservation) return res.notFound('Reserva no encontrada');
-    if (user && reservation.user_id !== user.sub) return res.error('No autorizado', 403);
-    if (!['PENDING', 'CONFIRMED'].includes(reservation.status)) return res.error('La reserva no puede cancelarse');
+    const isStaff = !user || ['ADMIN', 'SECURITY'].includes(user.role);
+    if (user && !isStaff && reservation.user_id !== user.sub) return res.error('No autorizado', 403);
+    if (!['PENDING', 'CONFIRMED', 'ACTIVE'].includes(reservation.status)) return res.error('La reserva no puede cancelarse');
 
-    await prisma.$transaction([
-      prisma.reservation.update({ where: { id }, data: { status: 'CANCELLED' } }),
-      prisma.parkingSpace.update({ where: { id: reservation.space_id }, data: { status: 'AVAILABLE' } }),
-    ]);
+    const space = await prisma.parkingSpace.findUnique({ where: { id: reservation.space_id } });
+    const ops = [prisma.reservation.update({ where: { id }, data: { status: 'CANCELLED' } })];
+
+    // Solo liberar el espacio si estaba bloqueado por esta reserva (no si está ocupado por una sesión activa)
+    if (space && space.status === 'RESERVED') {
+      ops.push(prisma.parkingSpace.update({ where: { id: reservation.space_id }, data: { status: 'AVAILABLE' } }));
+    }
+
+    await prisma.$transaction(ops);
 
     return res.ok(null, 'Reserva cancelada');
   } catch (e) {

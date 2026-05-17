@@ -1,12 +1,14 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+
+const ROL_ES = { STUDENT:"Estudiante", TEACHER:"Docente", ADMIN:"Administrador", SECURITY:"Seguridad", VISITOR:"Visitante" };
+const TIPO_VEH_ES = { STANDARD:"Estándar", MOTORCYCLE:"Motocicleta", HANDICAPPED:"Discapacitado", ELECTRIC:"Eléctrico", VIP:"VIP", TEACHER:"Docente" };
 import api from "@/lib/api";
 
 // ── Modal: Agregar vehículo ───────────────────────────────────────────────────
 function AddVehicleModal({ onClose, onDone }) {
   const [form, setForm] = useState({
-    placa: "", brand: "", model: "", color: "", year: "",
-    type: "STANDARD", owner_carnet: "",
+    placa: "", brand: "", model: "", color: "", year: "", owner_carnet: "",
   });
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState("");
@@ -55,17 +57,6 @@ function AddVehicleModal({ onClose, onDone }) {
                     value={form.placa}
                     onChange={e => set("placa", e.target.value.toUpperCase())}
                   />
-                </div>
-              </div>
-              <div className="col-6">
-                <div className="form-group">
-                  <label style={{ fontSize:13, fontWeight:600 }}>Tipo</label>
-                  <select className="form-control form-control-sm"
-                    value={form.type} onChange={e => set("type", e.target.value)}>
-                    {["STANDARD","MOTORCYCLE","HANDICAPPED","ELECTRIC","VIP","TEACHER"].map(t => (
-                      <option key={t} value={t}>{t}</option>
-                    ))}
-                  </select>
                 </div>
               </div>
               <div className="col-6">
@@ -210,7 +201,7 @@ function DetailModal({ vehicle, onClose }) {
   if (!vehicle) return null;
   const rows = [
     ["Placa",       vehicle.placa],
-    ["Tipo",        vehicle.type],
+    ["Tipo",        TIPO_VEH_ES[vehicle.type] || vehicle.type || "—"],
     ["Marca",       vehicle.brand || "—"],
     ["Modelo",      vehicle.model || "—"],
     ["Color",       vehicle.color || "—"],
@@ -285,7 +276,8 @@ export default function GestionVehiculos() {
   const load = useCallback(async () => {
     try {
       const res = await api.get("/vehicles?limit=500");
-      setVehicles(res.data.data?.vehicles || res.data.data || []);
+      const d = res.data.data;
+      setVehicles(Array.isArray(d) ? d : (d?.data ?? []));
     } catch (e) {
       console.error("Error cargando vehículos:", e);
     } finally {
@@ -381,10 +373,7 @@ export default function GestionVehiculos() {
                 <select className="form-control form-control-sm" style={{ maxWidth:140 }}
                   value={filterRole} onChange={e => setFilterRole(e.target.value)}>
                   <option value="ALL">Todos los roles</option>
-                  <option value="STUDENT">Estudiante</option>
-                  <option value="TEACHER">Docente</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="SECURITY">Seguridad</option>
+                  {Object.entries(ROL_ES).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
                 </select>
 
                 <select className="form-control form-control-sm" style={{ maxWidth:140 }}
@@ -474,14 +463,14 @@ export default function GestionVehiculos() {
                                 v.user.role === "ADMIN"    ? "badge-danger"  :
                                 v.user.role === "TEACHER"  ? "badge-primary" :
                                 v.user.role === "SECURITY" ? "badge-warning" : "badge-default"
-                              }`}>{v.user.role}</span>
+                              }`}>{ROL_ES[v.user.role] || v.user.role}</span>
                             ) : "—"}
                           </td>
                           <td style={{ fontSize:12 }}>
                             {[v.brand, v.model, v.color, v.year].filter(Boolean).join(" · ") || "—"}
                           </td>
                           <td>
-                            <span className="badge badge-default" style={{ fontSize:11 }}>{v.type}</span>
+                            <span className="badge badge-default" style={{ fontSize:11 }}>{TIPO_VEH_ES[v.type] || v.type || "—"}</span>
                           </td>
                           <td style={{ textAlign:"center" }}>
                             {v.is_authorized

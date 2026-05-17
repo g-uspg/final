@@ -120,8 +120,10 @@ export default function Seguridad() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const auditParams = new URLSearchParams({ page: logsPage, limit: PER_PAGE });
+      if (filterType !== "ALL") auditParams.set("action", filterType);
       const [logsRes, blRes, failRes, alertRes] = await Promise.allSettled([
-        api.get(`/security/audit-logs?page=${logsPage}&limit=${PER_PAGE}&severity=${filterSev !== "ALL" ? filterSev : ""}&type=${filterType !== "ALL" ? filterType : ""}&q=${logSearch}`),
+        api.get(`/security/audit?${auditParams.toString()}`),
         api.get("/vehicles?blacklisted=true&limit=200"),
         api.get("/security/failed-attempts?limit=50"),
         api.get("/dashboard/alerts"),
@@ -129,8 +131,9 @@ export default function Seguridad() {
 
       if (logsRes.status === "fulfilled") {
         const d = logsRes.value.data.data;
-        setLogs(d?.logs || d || []);
-        setLogsTotal(d?.total || 0);
+        const arr = Array.isArray(d) ? d : (d?.data ?? []);
+        setLogs(arr);
+        setLogsTotal(d?.total || arr.length || 0);
       } else {
         setLogs(buildDemoLogs());
         setLogsTotal(120);
@@ -138,11 +141,13 @@ export default function Seguridad() {
 
       if (blRes.status === "fulfilled") {
         const d = blRes.value.data.data;
-        setBlacklist((d?.vehicles || d || []).filter(v => v.blacklisted));
+        const arr2 = Array.isArray(d) ? d : (d?.data ?? []);
+        setBlacklist(arr2.filter(v => v.blacklisted));
       }
 
       if (failRes.status === "fulfilled") {
-        setFailed(failRes.value.data.data?.attempts || failRes.value.data.data || []);
+        const fd = failRes.value.data.data;
+        setFailed(Array.isArray(fd) ? fd : (fd?.data ?? []));
       } else {
         setFailed(buildDemoFailed());
       }
@@ -330,13 +335,23 @@ export default function Seguridad() {
                       </tr>
                     </thead>
                     <tbody>
-                      {loading ? (
+                      {(() => {
+                        const visibleLogs = logs.filter(log => {
+                          if (filterSev !== "ALL" && log.severity !== filterSev) return false;
+                          if (logSearch) {
+                            const q = logSearch.toLowerCase();
+                            const text = `${log.event_type} ${log.placa} ${log.description} ${log.operator}`.toLowerCase();
+                            if (!text.includes(q)) return false;
+                          }
+                          return true;
+                        });
+                        return loading ? (
                         <tr>
                           <td colSpan={7} className="text-center" style={{ padding:"2rem" }}>
                             <i className="fa fa-spinner fa-spin" style={{ color:"#800020" }} />
                           </td>
                         </tr>
-                      ) : logs.length === 0 ? (
+                      ) : visibleLogs.length === 0 ? (
                         <tr>
                           <td colSpan={7} className="text-center" style={{ padding:"2.5rem", color:"#7d8490" }}>
                             <i className="fa fa-list-alt fa-2x" style={{ display:"block", marginBottom:8, color:"#343a40" }} />
@@ -344,7 +359,7 @@ export default function Seguridad() {
                           </td>
                         </tr>
                       ) : (
-                        logs.map((log, i) => {
+                        visibleLogs.map((log, i) => {
                           const sv = SEVERITY[log.severity] || SEVERITY.LOW;
                           return (
                             <tr key={log.id || i} style={
@@ -382,7 +397,8 @@ export default function Seguridad() {
                             </tr>
                           );
                         })
-                      )}
+                      );
+                      })()}
                     </tbody>
                   </table>
                 </div>

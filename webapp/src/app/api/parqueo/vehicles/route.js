@@ -32,11 +32,22 @@ export async function POST(request) {
   try {
     const user = getUserFromRequest(request);
     const dto = await request.json();
-    const userId = dto.user_id ?? user?.sub;
     const placa = dto.placa.toUpperCase().replace(/\s/g, '');
     const exists = await prisma.vehicle.findUnique({ where: { placa } });
     if (exists) return res.conflict('Placa ya registrada');
-    const vehicle = await prisma.vehicle.create({ data: { ...dto, placa, user_id: userId } });
+
+    let userId = dto.user_id ?? user?.sub ?? null;
+    if (!userId && dto.owner_carnet) {
+      const owner = await prisma.user.findFirst({ where: { carnet: dto.owner_carnet, deleted_at: null } });
+      if (owner) userId = owner.id;
+    }
+    if (!userId) {
+      const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' }, select: { id: true } });
+      userId = admin?.id;
+    }
+
+    const { owner_carnet, type, ...rest } = dto;
+    const vehicle = await prisma.vehicle.create({ data: { ...rest, placa, user_id: userId } });
     return res.created(vehicle, 'Vehículo registrado');
   } catch (e) {
     return res.error(e.message);

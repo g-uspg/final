@@ -14,6 +14,139 @@ const fmtMin = (m) => {
   return mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h ${mins % 60}m`;
 };
 
+const ROL_ES = { STUDENT:"Estudiante", TEACHER:"Docente", ADMIN:"Administrador", SECURITY:"Seguridad", VISITOR:"Visitante" };
+
+// ── Exportar PDF (ventana de impresión limpia) ────────────────────────────────
+function exportPDF(report, dateFrom, dateTo) {
+  const stats   = report.stats   || {};
+  const byZone  = report.by_zone || {};
+  const topUsers= report.top_users || [];
+  const daily   = report.daily_income || [];
+
+  const fmtQ2   = v => `Q ${Number(v || 0).toFixed(2)}`;
+  const fmtMin2 = m => { const n = Math.round(m||0); return n < 60 ? `${n}m` : `${Math.floor(n/60)}h ${n%60}m`; };
+  const pct     = v => `${Math.round(v || 0)}%`;
+
+  const zonaRows = ["A","B","C","D"].map(z => {
+    const d = byZone[z] || {};
+    return `<tr><td><b>Zona ${z}</b></td><td>${d.entries??0}</td><td>${fmtQ2(d.revenue)}</td><td>${fmtMin2(d.avg_duration)}</td><td>${pct(d.avg_occupancy)}</td></tr>`;
+  }).join("");
+
+  const userRows = topUsers.map((u,i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td>${u.first_name} ${u.last_name}</td>
+      <td>${u.carnet||"—"}</td>
+      <td>${ROL_ES[u.role]||u.role}</td>
+      <td>${u.visits??0}</td>
+      <td>${fmtMin2(u.total_minutes)}</td>
+      <td>${fmtQ2(u.total_spent)}</td>
+      <td>${u.favorite_zone ? "Zona "+u.favorite_zone : "—"}</td>
+    </tr>`).join("");
+
+  const dailyRows = daily.map(d => `<tr><td>${d.date||d.label}</td><td>${fmtQ2(d.total??d.value)}</td><td>${d.count??""}</td></tr>`).join("");
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">
+  <title>Reporte Parqueo USPG</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; color: #222; margin: 2cm; }
+    h1 { color: #800020; font-size: 20px; margin-bottom: 4px; }
+    h2 { color: #800020; font-size: 14px; margin: 20px 0 8px; border-bottom: 2px solid #800020; padding-bottom: 4px; }
+    .meta { color: #666; font-size: 11px; margin-bottom: 20px; }
+    .stats { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .stat-box { border: 1px solid #ddd; border-radius: 6px; padding: 10px 16px; min-width: 140px; }
+    .stat-val { font-size: 22px; font-weight: bold; color: #800020; }
+    .stat-lbl { font-size: 11px; color: #666; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th { background: #800020; color: #fff; padding: 6px 8px; text-align: left; font-size: 11px; }
+    td { padding: 5px 8px; border-bottom: 1px solid #eee; font-size: 11px; }
+    tr:nth-child(even) td { background: #f9f9f9; }
+    @page { margin: 1.5cm; size: A4; }
+  </style></head><body>
+  <h1>🅿 Reporte de Parqueo — USPG</h1>
+  <div class="meta">Campus Central · Período: ${dateFrom} → ${dateTo} · Generado: ${new Date().toLocaleString("es-GT")}</div>
+
+  <h2>Resumen general</h2>
+  <div class="stats">
+    <div class="stat-box"><div class="stat-val">${stats.total_entries??0}</div><div class="stat-lbl">Total entradas</div></div>
+    <div class="stat-box"><div class="stat-val">${fmtQ2(stats.total_revenue)}</div><div class="stat-lbl">Ingresos totales</div></div>
+    <div class="stat-box"><div class="stat-val">${fmtQ2(stats.avg_revenue_per_session)}</div><div class="stat-lbl">Promedio / sesión</div></div>
+    <div class="stat-box"><div class="stat-val">${fmtMin2(stats.avg_duration_minutes)}</div><div class="stat-lbl">Tiempo promedio</div></div>
+    <div class="stat-box"><div class="stat-val">${pct(stats.avg_occupancy_rate)}</div><div class="stat-lbl">Ocupación promedio</div></div>
+    <div class="stat-box"><div class="stat-val">${stats.unique_vehicles??0}</div><div class="stat-lbl">Vehículos únicos</div></div>
+  </div>
+
+  <h2>Ingresos por día</h2>
+  <table><thead><tr><th>Fecha</th><th>Ingresos</th><th>Sesiones</th></tr></thead>
+  <tbody>${dailyRows||"<tr><td colspan=3>Sin datos</td></tr>"}</tbody></table>
+
+  <h2>Desglose por zona</h2>
+  <table><thead><tr><th>Zona</th><th>Entradas</th><th>Ingresos</th><th>Tiempo prom.</th><th>Ocupación prom.</th></tr></thead>
+  <tbody>${zonaRows}</tbody></table>
+
+  <h2>Top ${topUsers.length} usuarios más frecuentes</h2>
+  <table><thead><tr><th>#</th><th>Nombre</th><th>Carnet</th><th>Rol</th><th>Visitas</th><th>Tiempo total</th><th>Gasto total</th><th>Zona favorita</th></tr></thead>
+  <tbody>${userRows||"<tr><td colspan=8>Sin datos</td></tr>"}</tbody></table>
+  <script>window.onload=()=>{window.print();}</script>
+  </body></html>`;
+
+  const w = window.open("", "_blank", "width=900,height=700");
+  w.document.write(html);
+  w.document.close();
+}
+
+// ── Exportar CSV ──────────────────────────────────────────────────────────────
+function exportCSV(report, dateFrom, dateTo) {
+  const rows = [];
+  const stats = report.stats || {};
+
+  rows.push(["REPORTE DE PARQUEO — USPG"]);
+  rows.push([`Período: ${dateFrom} a ${dateTo}`]);
+  rows.push([`Generado: ${new Date().toLocaleString("es-GT")}`]);
+  rows.push([]);
+
+  rows.push(["RESUMEN GENERAL"]);
+  rows.push(["Indicador", "Valor"]);
+  rows.push(["Total entradas", stats.total_entries ?? 0]);
+  rows.push(["Vehículos únicos", stats.unique_vehicles ?? 0]);
+  rows.push(["Ingresos totales (Q)", Number(stats.total_revenue ?? 0).toFixed(2)]);
+  rows.push(["Ingreso promedio / sesión (Q)", Number(stats.avg_revenue_per_session ?? 0).toFixed(2)]);
+  rows.push(["Tiempo promedio (min)", Math.round(stats.avg_duration_minutes ?? 0)]);
+  rows.push(["Ocupación promedio (%)", Math.round(stats.avg_occupancy_rate ?? 0)]);
+  rows.push([]);
+
+  rows.push(["INGRESOS POR DÍA"]);
+  rows.push(["Fecha", "Total (Q)", "Sesiones"]);
+  (report.daily_income || []).forEach(d => {
+    rows.push([d.date || d.label, Number(d.total || d.value || 0).toFixed(2), d.count ?? ""]);
+  });
+  rows.push([]);
+
+  rows.push(["DESGLOSE POR ZONA"]);
+  rows.push(["Zona", "Entradas", "Ingresos (Q)", "Tiempo prom. (min)", "Ocupación prom. (%)"]);
+  const byZone = report.by_zone || {};
+  ["A","B","C","D"].forEach(z => {
+    const d = byZone[z] || {};
+    rows.push([`Zona ${z}`, d.entries ?? 0, Number(d.revenue ?? 0).toFixed(2), Math.round(d.avg_duration ?? 0), Math.round(d.avg_occupancy ?? 0)]);
+  });
+  rows.push([]);
+
+  rows.push(["TOP USUARIOS MÁS FRECUENTES"]);
+  rows.push(["#", "Nombre", "Carnet", "Rol", "Visitas", "Tiempo total (min)", "Gasto total (Q)", "Zona favorita"]);
+  (report.top_users || []).forEach((u, i) => {
+    rows.push([i+1, `${u.first_name} ${u.last_name}`, u.carnet || "—", ROL_ES[u.role] || u.role, u.visits ?? 0, u.total_minutes ?? 0, Number(u.total_spent ?? 0).toFixed(2), u.favorite_zone ? `Zona ${u.favorite_zone}` : "—"]);
+  });
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href     = url;
+  a.download = `reporte-parqueo-${dateFrom}-${dateTo}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 // ── Gráfica de barras inline (SVG) ────────────────────────────────────────────
 function BarChart({ data = [], color = "#800020", label = "Valor" }) {
   if (!data.length) return <Empty />;
@@ -95,8 +228,9 @@ export default function Reportes() {
   const [dateFrom,  setDateFrom]  = useState(daysAgo(6));
   const [dateTo,    setDateTo]    = useState(today());
   const [report,    setReport]    = useState(null);
-  const [loading,   setLoading]   = useState(false);
+  const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState("");
+  const [lastGen,   setLastGen]   = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
@@ -114,6 +248,7 @@ export default function Reportes() {
       const pred = predRes.status === "fulfilled" ? predRes.value.data.data : null;
 
       if (rev || occ) {
+        setLastGen(new Date());
         setReport({
           stats: {
             total_entries:          rev?.total_entries  ?? occ?.total_entries  ?? 0,
@@ -165,6 +300,23 @@ export default function Reportes() {
 
   return (
     <>
+      <style>{`
+        @media print {
+          body > *:not(#parqueo-reporte-root) { display: none !important; }
+          nav, .sidebar, .nav-tabs, .no-print { display: none !important; }
+          .card { border: 1px solid #ccc !important; break-inside: avoid; }
+          .print-header { display: block !important; }
+          @page { margin: 1.5cm; size: A4; }
+        }
+        .print-header { display: none; }
+      `}</style>
+
+      {/* Encabezado solo visible al imprimir */}
+      <div className="print-header" style={{ marginBottom: 16 }}>
+        <h2 style={{ color: "#800020" }}>Reporte de Parqueo — USPG</h2>
+        <p>Campus Central · Período: {dateFrom} → {dateTo} · Generado: {new Date().toLocaleString("es-GT")}</p>
+      </div>
+
       {/* ── Selector de rango ─────────────────────────────────────────────────── */}
       <div className="row clearfix">
         <div className="col-12">
@@ -191,16 +343,40 @@ export default function Reportes() {
 
                 <button className="btn btn-primary btn-sm" onClick={load} disabled={loading}>
                   {loading
-                    ? <i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} />
-                    : <i className="fa fa-search" style={{ marginRight: 6 }} />}
-                  Generar reporte
+                    ? <><i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} />Generando...</>
+                    : <><i className="fa fa-bar-chart" style={{ marginRight: 6 }} />Generar reporte</>}
                 </button>
+
+                {report && !loading && (
+                  <>
+                    <button className="btn btn-success btn-sm no-print"
+                      title="Exportar a Excel/CSV"
+                      onClick={() => exportCSV(report, dateFrom, dateTo)}>
+                      <i className="fa fa-file-excel-o" style={{ marginRight: 6 }} />
+                      Excel
+                    </button>
+                    <button className="btn btn-danger btn-sm no-print"
+                      title="Exportar a PDF"
+                      onClick={() => exportPDF(report, dateFrom, dateTo)}>
+                      <i className="fa fa-file-pdf-o" style={{ marginRight: 6 }} />
+                      PDF
+                    </button>
+                  </>
+                )}
               </div>
-              {error && (
-                <div style={{ marginTop: 8, fontSize: 12, color: "#fbbd08" }}>
-                  <i className="fa fa-exclamation-triangle" style={{ marginRight: 4 }} />{error}
-                </div>
-              )}
+              <div style={{ marginTop: 8, display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" }}>
+                {lastGen && !loading && (
+                  <span style={{ fontSize: 12, color: "#21ba45" }}>
+                    <i className="fa fa-check-circle" style={{ marginRight: 4 }} />
+                    Reporte generado — {lastGen.toLocaleTimeString("es-GT")}
+                  </span>
+                )}
+                {error && (
+                  <span style={{ fontSize: 12, color: "#fbbd08" }}>
+                    <i className="fa fa-exclamation-triangle" style={{ marginRight: 4 }} />{error}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -430,9 +606,10 @@ export default function Reportes() {
                             <td style={{ fontSize:12, color:"#7d8490" }}>{u.carnet || "—"}</td>
                             <td>
                               <span className={`badge ${
-                                u.role === "ADMIN"   ? "badge-danger"  :
-                                u.role === "TEACHER" ? "badge-primary" : "badge-default"
-                              }`}>{u.role || "—"}</span>
+                                u.role === "ADMIN"    ? "badge-danger"  :
+                                u.role === "TEACHER"  ? "badge-primary" :
+                                u.role === "SECURITY" ? "badge-warning" : "badge-default"
+                              }`}>{ROL_ES[u.role] || u.role || "—"}</span>
                             </td>
                             <td><strong style={{ color:"#800020" }}>{u.visits ?? 0}</strong></td>
                             <td style={{ fontSize:12 }}>{fmtMin(u.total_minutes)}</td>

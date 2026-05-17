@@ -2,6 +2,13 @@
 import { useState, useEffect, useRef } from "react";
 import api from "@/lib/api";
 
+// ── Datos demo para la gráfica de tráfico ────────────────────────────────────
+function demoHourly() {
+  return Array.from({ length: 24 }, (_, h) =>
+    h < 6 ? 1 : h < 8 ? 10 + h * 3 : h < 12 ? 55 + (h - 8) * 8 : h < 14 ? 80 : h < 18 ? 60 - (h - 14) * 5 : 15
+  );
+}
+
 // ── Stat Card ────────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, sub, color, bg }) {
   return (
@@ -60,11 +67,13 @@ function AlertRow({ type, message, severity }) {
 
 // ── Componente principal ──────────────────────────────────────────────────────
 export default function ParqueoDashboard() {
-  const [stats, setStats]       = useState(null);
-  const [activity, setActivity] = useState([]);
-  const [alerts, setAlerts]     = useState([]);
-  const [hourly, setHourly]     = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const [stats, setStats]           = useState(null);
+  const [activity, setActivity]     = useState([]);
+  const [alerts, setAlerts]         = useState([]);
+  const [hourly, setHourly]         = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [jobRunning, setJobRunning] = useState(false);
+  const [jobResult, setJobResult]   = useState(null);
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
 
@@ -72,18 +81,25 @@ export default function ParqueoDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [statsRes, activityRes, alertsRes, hourlyRes] = await Promise.all([
-          api.get("/dashboard/stats"),
-          api.get("/dashboard/recent-activity?limit=10"),
+        const [statsRes, activityRes, alertsRes, hourlyRes, zonesRes] = await Promise.allSettled([
+          api.get("/dashboard"),
+          api.get("/dashboard/activity?limit=10"),
           api.get("/dashboard/alerts"),
-          api.get("/dashboard/hourly-traffic"),
+          api.get("/dashboard/traffic"),
+          api.get("/spaces/status"),
         ]);
-        setStats(statsRes.data.data);
-        setActivity(activityRes.data.data?.recent_sessions || []);
-        setAlerts(alertsRes.data.data?.alerts || []);
-        setHourly(hourlyRes.data.data?.hourly_entries || []);
+        const dashData = statsRes.status === "fulfilled" ? statsRes.value.data.data : null;
+        const byZone = zonesRes.status === "fulfilled" ? (zonesRes.value.data.data?.by_zone || {}) : {};
+        if (dashData) setStats({ ...dashData, spaces: { ...dashData.spaces, by_zone: byZone } });
+        if (activityRes.status === "fulfilled") setActivity(activityRes.value.data.data?.recent_sessions || []);
+        if (alertsRes.status  === "fulfilled") setAlerts(alertsRes.value.data.data?.alerts || []);
+        const hourlyData = hourlyRes.status === "fulfilled"
+          ? (hourlyRes.value.data.data?.hourly_entries || [])
+          : demoHourly();
+        setHourly(hourlyData.length ? hourlyData : demoHourly());
       } catch (e) {
         console.error("Error cargando dashboard:", e);
+        setHourly(demoHourly());
       } finally {
         setLoading(false);
       }
@@ -92,6 +108,20 @@ export default function ParqueoDashboard() {
     const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // ── Job de suscripciones ────────────────────────────────────────────────────
+  async function runSubscriptionJob() {
+    setJobRunning(true);
+    setJobResult(null);
+    try {
+      const r = await api.post("/subscriptions/run-job");
+      setJobResult({ ok: true, ...r.data.data });
+    } catch (e) {
+      setJobResult({ ok: false, error: e.response?.data?.message ?? "Error al ejecutar el job" });
+    } finally {
+      setJobRunning(false);
+    }
+  }
 
   // ── Gráfica ApexCharts ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -281,6 +311,57 @@ export default function ParqueoDashboard() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Control de suscripciones ────────────────────────────────────────── */}
+      <div className="row clearfix">
+        <div className="col-12">
+          <div className="card" style={{ marginBottom: "1rem" }}>
+            <div className="card-header">
+              <h3 className="card-title">
+                <i className="fa fa-id-card" style={{ marginRight: 6 }} />
+                Control de suscripciones
+              </h3>
+            </div>
+            <div className="card-body" style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
+              <div style={{ flex: 1, minWidth: 260 }}>
+                <p style={{ margin: 0, fontSize: 13, color: "#7d8490" }}>
+                  Ejecuta el proceso automático: expira suscripciones vencidas, bloquea accesos,
+                  renueva las que tienen auto-renovación activa y envía alertas a usuarios cuya
+                  suscripción vence en 3 días.
+                </p>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                <button
+                  className="btn btn-primary"
+                  onClick={runSubscriptionJob}
+                  disabled={jobRunning}
+                  style={{ minWidth: 220 }}
+                >
+                  {jobRunning
+                    ? <><i className="fa fa-spinner fa-spin" style={{ marginRight: 6 }} />Procesando...</>
+                    : <><i className="fa fa-refresh" style={{ marginRight: 6 }} />Ejecutar job de suscripciones</>
+                  }
+                </button>
+                {jobResult && (
+                  <div style={{
+                    fontSize: 13,
+                    padding: "6px 12px",
+                    borderRadius: 6,
+                    background: jobResult.ok ? "#21ba4520" : "#db282820",
+                    color: jobResult.ok ? "#1a6e3c" : "#db2828",
+                    border: `1px solid ${jobResult.ok ? "#21ba45" : "#db2828"}`,
+                  }}>
+                    {jobResult.ok
+                      ? `✓ ${jobResult.expired} vencidas · ${jobResult.renewed} renovadas · ${jobResult.alerts_sent} alertas`
+                      : `✗ ${jobResult.error}`
+                    }
+                  </div>
+                )}
               </div>
             </div>
           </div>

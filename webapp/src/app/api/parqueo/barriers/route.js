@@ -1,5 +1,9 @@
 import * as res from '@/lib/response';
 
+// LIMITANTE: el estado de barreras se guarda en memoria (Map).
+// Se reinicia con cada reinicio del servidor Next.js.
+// Para estado persistente, usar BarrierLog: el estado real es el último
+// registro por barrier_id en esa tabla.
 const barriers = new Map([
   ['barrier-entrada-a', { id: 'barrier-entrada-a', name: 'Entrada Zona A', location: 'Zona A Norte', is_open: false, is_blocked: false, last_action: null, last_action_at: null }],
   ['barrier-salida-a', { id: 'barrier-salida-a', name: 'Salida Zona A', location: 'Zona A Sur', is_open: false, is_blocked: false, last_action: null, last_action_at: null }],
