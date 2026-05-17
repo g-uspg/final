@@ -1,7 +1,6 @@
 #!/bin/bash
 # ── Reset Demo — Sistema de Parqueo USPG ─────────────────────────────────────
-# Limpia sesiones, pagos, reservas y logs de prueba.
-# Deja intactos: usuarios, vehículos, espacios, tarifas y configuración.
+# Limpia datos de prueba. Conserva usuarios y vehículos del seed original.
 # Uso: ./reset-demo.sh
 
 GREEN='\033[0;32m'
@@ -13,7 +12,6 @@ RESET='\033[0m'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/webapp/.env.local"
 
-# Cargar DATABASE_URL del .env.local
 if [ -f "$ENV_FILE" ]; then
   export $(grep -E '^DATABASE_URL=' "$ENV_FILE" | xargs)
 fi
@@ -28,8 +26,8 @@ echo -e "${BOLD}╔════════════════════�
 echo -e "${BOLD}║     Reset Demo — Sistema de Parqueo USPG         ║${RESET}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════╝${RESET}"
 echo ""
-echo -e "  ${YELLOW}⚠  Esto borrará sesiones, pagos, reservas y logs.${RESET}"
-echo -e "  ${YELLOW}   Usuarios, vehículos y espacios NO se tocan.${RESET}"
+echo -e "  ${YELLOW}⚠  Borrará sesiones, pagos, reservas, logs y vehículos de prueba.${RESET}"
+echo -e "  ${YELLOW}   Conserva los 10 vehículos y usuarios del seed.${RESET}"
 echo ""
 echo -ne "  ¿Continuar? [s/N] → "
 read -r confirm
@@ -45,6 +43,8 @@ node -e "
 const { PrismaClient } = require('$SCRIPT_DIR/webapp/node_modules/@prisma/client');
 const prisma = new PrismaClient({ datasources: { db: { url: process.env.DATABASE_URL } } });
 
+const SEED_PLACAS = ['P123ABC','C456XYZ','P789DEF','M001GHI','C234JKL','O567MNO','P890PQR','M345STU','C678VWX','P901YZA'];
+
 async function main() {
   await prisma.payment.deleteMany();
   await prisma.parkingSession.deleteMany();
@@ -53,6 +53,8 @@ async function main() {
   await prisma.barrierLog.deleteMany();
   await prisma.visitorQR.deleteMany();
   await prisma.notification.deleteMany();
+  await prisma.blacklist.deleteMany({ where: { vehicle: { placa: { notIn: SEED_PLACAS } } } });
+  await prisma.vehicle.deleteMany({ where: { placa: { notIn: SEED_PLACAS } } });
   await prisma.parkingSpace.updateMany({ data: { status: 'AVAILABLE' } });
   await prisma.\$disconnect();
   console.log('OK');
@@ -64,7 +66,7 @@ if [ $? -eq 0 ]; then
   echo -e " ${GREEN}✓${RESET}"
   echo ""
   echo -e "  ${GREEN}✓ Demo lista. Todos los espacios disponibles.${RESET}"
-  echo -e "  ${GREEN}  Usuarios y vehículos del seed intactos.${RESET}"
+  echo -e "  ${GREEN}  10 vehículos y usuarios del seed intactos.${RESET}"
 else
   echo -e " ${RED}✗ Error — verifica que el servidor de BD esté corriendo.${RESET}"
 fi
