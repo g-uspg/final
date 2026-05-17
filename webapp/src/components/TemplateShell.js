@@ -35,11 +35,12 @@ export default function TemplateShell({ children }) {
     router.push("/login");
   };
 
-  const isLoginPage = pathname?.startsWith("/login");
+  const isLoginPage  = pathname?.startsWith("/login");
+  const isKioscoPage = pathname?.startsWith("/kiosco");
 
-  if (isLoginPage) {
-    return <div className="login-container">{children}</div>;
-  }
+  if (isLoginPage)  return <div className="login-container">{children}</div>;
+  if (isKioscoPage) return <>{children}</>;
+
 
   return (
     <>
