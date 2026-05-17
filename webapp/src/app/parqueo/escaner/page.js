@@ -2,8 +2,28 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import api from "@/lib/api";
 
-// ── QR decode via BarcodeDetector (API nativa Chrome/Edge) ────────────────────
-// Fallback: input manual. No instala dependencias externas.
+// ── Input de placa con auto-formato ──────────────────────────────────────────
+function PlacaInput({ value, onChange, placeholder = "P-001ABC", className = "form-control form-control-sm" }) {
+  const format = (raw) => {
+    let clean = raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (clean.length > 1 && !raw.includes("-")) clean = clean[0] + "-" + clean.slice(1);
+    return clean;
+  };
+  const isValid = value.length >= 5;
+  return (
+    <div style={{ position: "relative" }}>
+      <input className={className} placeholder={placeholder} value={value} maxLength={10}
+        onChange={e => onChange(format(e.target.value))}
+        style={{ paddingRight: 32, textTransform: "uppercase", letterSpacing: 1, fontWeight: 600 }}
+      />
+      {value.length > 0 && (
+        <span style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", fontSize: 13, color: isValid ? "#21ba45" : "#fbbd08" }}>
+          <i className={`fa ${isValid ? "fa-check" : "fa-pencil"}`} />
+        </span>
+      )}
+    </div>
+  );
+}
 
 // ── Modal: Generar QR visitante ───────────────────────────────────────────────
 function VisitorModal({ onClose }) {
@@ -102,10 +122,10 @@ function VisitorModal({ onClose }) {
                 </div>
                 <div className="form-group">
                   <label style={{ fontSize: 13, fontWeight: 600 }}>Placa del vehículo <span style={{ color: "#7d8490", fontWeight: 400 }}>(opcional)</span></label>
-                  <input className="form-control form-control-sm"
-                    placeholder="ABC-123"
+                  <PlacaInput
                     value={form.vehicle_plate}
-                    onChange={e => setForm(f => ({ ...f, vehicle_plate: e.target.value }))}
+                    onChange={v => setForm(f => ({ ...f, vehicle_plate: v }))}
+                    placeholder="ABC-123"
                   />
                 </div>
                 <div className="form-group">

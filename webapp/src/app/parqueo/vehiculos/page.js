@@ -56,6 +56,21 @@ function AddVehicleModal({ onClose, onDone }) {
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
+  const [carnetMsg, setCarnetMsg] = useState("");
+
+  const checkCarnet = async (carnet) => {
+    if (!carnet.trim()) { setCarnetMsg(""); return; }
+    try {
+      const r = await api.get(`/users?carnet=${carnet.trim()}`);
+      const users = r.data.data?.data ?? r.data.data ?? [];
+      const found = users.find(u => u.carnet === carnet.trim());
+      setCarnetMsg(found
+        ? `✓ ${found.first_name} ${found.last_name} (${found.role})`
+        : "⚠ Carnet no encontrado — se asignará al administrador"
+      );
+    } catch { setCarnetMsg("⚠ No se pudo verificar el carnet"); }
+  };
+
   const submit = async () => {
     if (!form.placa.trim()) { setError("La placa es obligatoria."); return; }
     setLoading(true); setError("");
@@ -130,7 +145,15 @@ function AddVehicleModal({ onClose, onDone }) {
                     Carnet del propietario <span style={{ color:"#7d8490", fontWeight:400 }}>(opcional)</span>
                   </label>
                   <input className="form-control form-control-sm" placeholder="202300001"
-                    value={form.owner_carnet} onChange={e => set("owner_carnet", e.target.value)} />
+                    value={form.owner_carnet}
+                    onChange={e => { set("owner_carnet", e.target.value); setCarnetMsg(""); }}
+                    onBlur={e => checkCarnet(e.target.value)}
+                  />
+                  {carnetMsg && (
+                    <small style={{ color: carnetMsg.startsWith("✓") ? "#21ba45" : "#fbbd08", marginTop: 4, display: "block" }}>
+                      {carnetMsg}
+                    </small>
+                  )}
                 </div>
               </div>
             </div>
