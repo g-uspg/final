@@ -4,8 +4,6 @@
 # Deja intactos: usuarios, vehículos, espacios, tarifas y configuración.
 # Uso: ./reset-demo.sh
 
-DATABASE_URL="postgresql://postgres:admin123@localhost:5432/parqueo_db"
-
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
@@ -28,29 +26,32 @@ if [[ "$confirm" != "s" && "$confirm" != "S" ]]; then
 fi
 
 echo ""
+echo -ne "  Limpiando base de datos..."
 
-run() {
-  local label="$1"
-  local sql="$2"
-  echo -ne "  ${label}..."
-  result=$(psql "$DATABASE_URL" -c "$sql" 2>&1)
-  if [ $? -eq 0 ]; then
-    echo -e " ${GREEN}✓${RESET}"
-  else
-    echo -e " ${RED}✗ Error: $result${RESET}"
-  fi
+node -e "
+const { PrismaClient } = require('./webapp/node_modules/@prisma/client');
+const prisma = new PrismaClient();
+
+async function main() {
+  await prisma.payment.deleteMany();
+  await prisma.parkingSession.deleteMany();
+  await prisma.reservation.deleteMany();
+  await prisma.auditLog.deleteMany();
+  await prisma.barrierLog.deleteMany();
+  await prisma.visitorQR.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.parkingSpace.updateMany({ data: { status: 'AVAILABLE' } });
+  await prisma.\$disconnect();
 }
+main().catch(e => { console.error(e); process.exit(1); });
+" 2>/dev/null
 
-run "Limpiando pagos             " 'DELETE FROM "Payment";'
-run "Limpiando sesiones          " 'DELETE FROM "ParkingSession";'
-run "Limpiando reservas          " 'DELETE FROM "Reservation";'
-run "Limpiando logs de auditoría " 'DELETE FROM "AuditLog";'
-run "Limpiando logs de barrera   " 'DELETE FROM "BarrierLog";'
-run "Limpiando QRs de visitantes " 'DELETE FROM "VisitorQR";'
-run "Limpiando notificaciones    " 'DELETE FROM "Notification";'
-run "Liberando todos los espacios" 'UPDATE "ParkingSpace" SET status = '"'"'AVAILABLE'"'"';'
-
-echo ""
-echo -e "  ${GREEN}✓ Demo lista. Todos los espacios disponibles.${RESET}"
-echo -e "  ${GREEN}  Usuarios y vehículos del seed intactos.${RESET}"
+if [ $? -eq 0 ]; then
+  echo -e " ${GREEN}✓${RESET}"
+  echo ""
+  echo -e "  ${GREEN}✓ Demo lista. Todos los espacios disponibles.${RESET}"
+  echo -e "  ${GREEN}  Usuarios y vehículos del seed intactos.${RESET}"
+else
+  echo -e " ${RED}✗ Error — verifica que el servidor de BD esté corriendo.${RESET}"
+fi
 echo ""

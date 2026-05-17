@@ -8,6 +8,34 @@ const fmt = (d) =>
     day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit",
   }) : "—";
 
+const ACTION_ES = {
+  LOGIN:                  "Inicio de sesión",
+  LOGOUT:                 "Cierre de sesión",
+  LOGIN_FAILED:           "Intento de acceso fallido",
+  ACCESS_DENIED:          "Acceso denegado",
+  BLACKLIST_ATTEMPT:      "Intento con vehículo bloqueado",
+  BLACKLISTED:            "Vehículo en lista negra",
+  UNAUTHORIZED:           "No autorizado",
+  FORCED_ENTRY:           "Entrada forzada",
+  OVERSTAY:               "Tiempo excedido",
+  MANUAL_OVERRIDE:        "Anulación manual",
+  PAYMENT_FAILED:         "Pago fallido",
+  TARIFF_UPDATED:         "Tarifa actualizada",
+  VEHICLE_CREATED:        "Vehículo registrado",
+  VEHICLE_UPDATED:        "Vehículo actualizado",
+  VEHICLE_DELETED:        "Vehículo eliminado",
+  RESERVATION_DELETED:    "Reserva cancelada",
+  SUBSCRIPTION_CREATED:   "Suscripción creada",
+  SUBSCRIPTION_CANCELLED: "Suscripción cancelada",
+  EVENT_CREATED:          "Evento creado",
+  EVENT_CANCELLED:        "Evento cancelado",
+  CARD_REPLACED:          "Tarjeta repuesta",
+  BILL_PAID:              "Factura pagada",
+  ENTRY:                  "Entrada registrada",
+  EXIT:                   "Salida registrada",
+};
+const fmtAction = (s) => ACTION_ES[s] ?? (s || "—").replace(/_/g, " ");
+
 const SEVERITY = {
   HIGH:   { cls:"badge-danger",   color:"#db2828", label:"Alto"  },
   MEDIUM: { cls:"badge-warning",  color:"#fbbd08", label:"Medio" },
@@ -200,7 +228,7 @@ export default function Seguridad() {
                         <i className="fa fa-bell" style={{ color:sv.color, marginTop:2 }} />
                         <div style={{ flex:1 }}>
                           <div style={{ fontSize:13, fontWeight:600, color:sv.color }}>
-                            {(a.type || "ALERTA").replace(/_/g," ")}
+                            {fmtAction(a.type) || "Alerta"}
                           </div>
                           <div style={{ fontSize:12, color:"#7d8490" }}>{a.message}</div>
                         </div>
@@ -369,7 +397,7 @@ export default function Seguridad() {
                               <td style={{ fontSize:12, whiteSpace:"nowrap" }}>{fmt(log.created_at || log.timestamp)}</td>
                               <td>
                                 <span style={{ fontSize:12, fontWeight:600, color:sv.color }}>
-                                  {(log.event_type || log.type || "—").replace(/_/g," ")}
+                                  {fmtAction(log.event_type || log.type)}
                                 </span>
                               </td>
                               <td>
