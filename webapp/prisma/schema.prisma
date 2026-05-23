@@ -1,11 +1,13 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "library"
+  provider        = "prisma-client-js"
+  engineType      = "library"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["public", "libreria"]
 }
 
 model Usuario {
@@ -34,23 +36,28 @@ model Usuario {
   sesionesUso            SesionUso[]
 
   @@map("usuario")
+  @@schema("public")
 }
 
-model Lib_Categoria {
-  id      Int         @id @default(autoincrement())
-  nombre  String      @unique
-  libros  Lib_Libro[]
-  @@map("lib_categoria")
+model Categoria {
+  id     Int     @id @default(autoincrement())
+  nombre String  @unique
+  libros Libro[]
+
+  @@map("categoria")
+  @@schema("libreria")
 }
 
-model Lib_Autor {
-  id      Int         @id @default(autoincrement())
-  nombre  String
-  libros  Lib_Libro[]
-  @@map("lib_autor")
+model Autor {
+  id     Int     @id @default(autoincrement())
+  nombre String
+  libros Libro[]
+
+  @@map("autor")
+  @@schema("libreria")
 }
 
-model Lib_Libro {
+model Libro {
   id          Int            @id @default(autoincrement())
   titulo      String
   isbn        String?        @unique
@@ -58,46 +65,52 @@ model Lib_Libro {
   activo      Boolean        @default(true)
   categoriaId Int            @map("categoria_id")
   autorId     Int            @map("autor_id")
-  categoria   Lib_Categoria  @relation(fields: [categoriaId], references: [id])
-  autor       Lib_Autor      @relation(fields: [autorId], references: [id])
-  prestamos   Lib_Prestamo[]
-  @@map("lib_libro")
+  categoria   Categoria      @relation(fields: [categoriaId], references: [id])
+  autor       Autor          @relation(fields: [autorId], references: [id])
+  prestamos   Prestamo[]
+
+  @@map("libro")
+  @@schema("libreria")
 }
 
-
-model Lib_Usuario {
-  id        Int            @id @default(autoincrement())
+model UsuarioBiblioteca {
+  id        Int        @id @default(autoincrement())
   nombre    String
-  email     String         @unique
-  carnet    String         @unique
-  prestamos Lib_Prestamo[]
-  @@map("lib_usuario")
+  email     String     @unique
+  carnet    String     @unique
+  prestamos Prestamo[]
+
+  @@map("usuario_biblioteca")
+  @@schema("libreria")
 }
 
-model Lib_Prestamo {
-  id                  Int        @id @default(autoincrement())
-  libroId             Int        @map("libro_id")
-  usuarioId           Int        @map("usuario_id")
-  fechaPrestamo       DateTime   @default(now()) @map("fecha_prestamo")
-  fechaDevolucionEsc  DateTime   @map("fecha_devolucion_esc")
-  fechaDevolucionReal DateTime?  @map("fecha_devolucion_real")
-  estado              String     @default("PENDIENTE") // PENDIENTE, DEVUELTO
-  libro               Lib_Libro  @relation(fields: [libroId], references: [id])
-  usuario             Lib_Usuario @relation(fields: [usuarioId], references: [id])
-  multas              Lib_Multa[]
-  @@map("lib_prestamo")
+model Prestamo {
+  id                  Int               @id @default(autoincrement())
+  libroId             Int               @map("libro_id")
+  usuarioId           Int               @map("usuario_id")
+  fechaPrestamo       DateTime          @default(now()) @map("fecha_prestamo")
+  fechaDevolucionEsc  DateTime          @map("fecha_devolucion_esc")
+  fechaDevolucionReal DateTime?         @map("fecha_devolucion_real")
+  estado              String            @default("PENDIENTE") // PENDIENTE, DEVUELTO
+  libro               Libro             @relation(fields: [libroId], references: [id])
+  usuario             UsuarioBiblioteca @relation(fields: [usuarioId], references: [id])
+  multas              Multa[]
+
+  @@map("prestamo")
+  @@schema("libreria")
 }
 
-model Lib_Multa {
-  id         Int          @id @default(autoincrement())
-  prestamoId Int          @map("prestamo_id")
-  monto      Decimal      @db.Decimal(10, 2)
-  fechaMulta DateTime     @default(now()) @map("fecha_multa")
-  pagada     Boolean      @default(false)
-  prestamo   Lib_Prestamo @relation(fields: [prestamoId], references: [id])
-  @@map("lib_multa")
-}
+model Multa {
+  id         Int      @id @default(autoincrement())
+  prestamoId Int      @map("prestamo_id")
+  monto      Decimal  @db.Decimal(10, 2)
+  fechaMulta DateTime @default(now()) @map("fecha_multa")
+  pagada     Boolean  @default(false)
+  prestamo   Prestamo @relation(fields: [prestamoId], references: [id])
 
+  @@map("multa")
+  @@schema("libreria")
+}
 
 model Reglamento {
   id           Int                    @id @default(autoincrement())
@@ -110,6 +123,7 @@ model Reglamento {
   aceptaciones ReglamentoAceptacion[]
 
   @@map("reglamento")
+  @@schema("public")
 }
 
 model ReglamentoAceptacion {
@@ -122,6 +136,7 @@ model ReglamentoAceptacion {
 
   @@unique([usuarioId, reglamentoId])
   @@map("reglamento_aceptacion")
+  @@schema("public")
 }
 
 model Sancion {
@@ -138,6 +153,7 @@ model Sancion {
   usuario       Usuario     @relation(fields: [usuarioId], references: [id])
 
   @@map("sancion")
+  @@schema("public")
 }
 
 model Laboratorio {
@@ -153,7 +169,7 @@ model Laboratorio {
   faseImplementacion Int                     @default(1) @map("fase_implementacion")
   disponiblePublico  Boolean                 @default(true) @map("disponible_publico")
   createdAt          DateTime                @default(now()) @map("created_at")
-  updatedAt          DateTime                @updatedAt @map("updated_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
   configuraciones    ConfiguracionDivision[]
   equipos            Equipo[]
   estaciones         Estacion[]
@@ -162,6 +178,7 @@ model Laboratorio {
   sesionesUso        SesionUso[]
 
   @@map("laboratorio")
+  @@schema("public")
 }
 
 model ConfiguracionDivision {
@@ -176,6 +193,7 @@ model ConfiguracionDivision {
   reservas        Reserva[]
 
   @@map("configuracion_division")
+  @@schema("public")
 }
 
 model Estacion {
@@ -189,6 +207,7 @@ model Estacion {
   laboratorio   Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
 
   @@map("estacion")
+  @@schema("public")
 }
 
 model Equipo {
@@ -207,6 +226,7 @@ model Equipo {
   sesionesUso      SesionUso[]
 
   @@map("equipo")
+  @@schema("public")
 }
 
 model MantenimientoEquipo {
@@ -223,6 +243,7 @@ model MantenimientoEquipo {
   tecnico     Usuario?            @relation("MantenimientoTecnico", fields: [tecnicoId], references: [id])
 
   @@map("mantenimiento_equipo")
+  @@schema("public")
 }
 
 model ReporteDano {
@@ -240,6 +261,7 @@ model ReporteDano {
   usuarioResponsable   Usuario?          @relation("DanoResponsable", fields: [usuarioResponsableId], references: [id])
 
   @@map("reporte_dano")
+  @@schema("public")
 }
 
 model Reserva {
@@ -266,6 +288,7 @@ model Reserva {
 
   @@index([laboratorioId, fechaInicio, fechaFin])
   @@map("reserva")
+  @@schema("public")
 }
 
 model Pago {
@@ -285,6 +308,7 @@ model Pago {
   usuario           Usuario      @relation(fields: [usuarioId], references: [id])
 
   @@map("pago")
+  @@schema("public")
 }
 
 model SesionUso {
@@ -302,6 +326,7 @@ model SesionUso {
   usuario           Usuario      @relation(fields: [usuarioId], references: [id])
 
   @@map("sesion_uso")
+  @@schema("public")
 }
 
 model Infraccion {
@@ -315,6 +340,7 @@ model Infraccion {
   usuario         Usuario    @relation(fields: [usuarioId], references: [id])
 
   @@map("infraccion")
+  @@schema("public")
 }
 
 enum RolUsuario {
@@ -322,6 +348,8 @@ enum RolUsuario {
   TECNICO
   CATEDRATICO
   ESTUDIANTE
+
+  @@schema("public")
 }
 
 enum CategoriaUsuario {
@@ -330,6 +358,8 @@ enum CategoriaUsuario {
   PERSONAL_IGLESIA
   EVENTO_EXTERNO
   CATEDRATICO
+
+  @@schema("public")
 }
 
 enum TipoLaboratorio {
@@ -337,12 +367,16 @@ enum TipoLaboratorio {
   PLC_CNC
   QUIMICA
   FISICA
+
+  @@schema("public")
 }
 
 enum EstadoLaboratorio {
   ACTIVO
   INACTIVO
   MANTENIMIENTO
+
+  @@schema("public")
 }
 
 enum EstadoReserva {
@@ -351,6 +385,8 @@ enum EstadoReserva {
   RECHAZADA
   COMPLETADA
   CANCELADA
+
+  @@schema("public")
 }
 
 enum TipoCobro {
@@ -359,12 +395,16 @@ enum TipoCobro {
   PAGO_DIA
   PAGO_SEMESTRE
   RESERVACION_GRUPO
+
+  @@schema("public")
 }
 
 enum EstadoPago {
   PENDIENTE
   PAGADO
   ANULADO
+
+  @@schema("public")
 }
 
 enum EstadoEquipo {
@@ -372,23 +412,31 @@ enum EstadoEquipo {
   MANTENIMIENTO
   DANADO
   BAJA
+
+  @@schema("public")
 }
 
 enum TipoConexion {
   PRESENCIAL
   REMOTA
+
+  @@schema("public")
 }
 
 enum TipoSancion {
   AMONESTACION
   SUSPENSION_TEMPORAL
   EXPULSION
+
+  @@schema("public")
 }
 
 enum EstadoMantenimiento {
   PROGRAMADO
   EN_PROCESO
   COMPLETADO
+
+  @@schema("public")
 }
 
 enum EstadoReporteDano {
@@ -396,4 +444,6 @@ enum EstadoReporteDano {
   EN_REVISION
   COBRADO
   CERRADO
+
+  @@schema("public")
 }
