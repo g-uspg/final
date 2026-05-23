@@ -7,6 +7,61 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id      Int     @id @default(autoincrement())
+  nombre  String  @unique
+  libros  Libro[]
+}
+
+model Autor {
+  id      Int     @id @default(autoincrement())
+  nombre  String
+  libros  Libro[]
+}
+
+model Libro {
+  id          Int         @id @default(autoincrement())
+  titulo      String
+  isbn        String?     @unique
+  stock       Int         @default(1)
+  categoria   Categoria   @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+  autor       Autor       @relation(fields: [autorId], references: [id])
+  autorId     Int
+  prestamos   Prestamo[]
+}
+
+model Usuario {
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  email     String     @unique
+  carnet    String     @unique
+  prestamos Prestamo[]
+}
+
+model Prestamo {
+  id                     Int       @id @default(autoincrement())
+  libro                  Libro     @relation(fields: [libroId], references: [id])
+  libroId                Int
+  usuario                Usuario   @relation(fields: [usuarioId], references: [id])
+  usuarioId              Int
+  fechaPrestamo          DateTime  @default(now())
+  fechaDevolucionEsc     DateTime
+  fechaDevolucionReal    DateTime?
+  estado                 String    @default("PENDIENTE") // PENDIENTE, DEVUELTO
+  multas                 Multa[]
+}
+
+model Multa {
+  id         Int      @id @default(autoincrement())
+  prestamo   Prestamo @relation(fields: [prestamoId], references: [id])
+  prestamoId Int
+  monto      Decimal  @db.Decimal(10, 2)
+  fechaMulta DateTime @default(now())
+  pagada     Boolean  @default(false)
 }
 
 model Alumno {

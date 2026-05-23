@@ -8,7 +8,312 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ─── Enums ───────────────────────────────────────────────────────────────────
+model Usuario {
+  id                     String                 @id @default(uuid())
+  correo                 String                 @unique
+  nombre                 String
+  apellido               String?
+  rol                    RolUsuario             @default(ESTUDIANTE)
+  categoria              CategoriaUsuario       @default(ESTUDIANTE_UNIVERSITARIO)
+  carrera                String?
+  activo                 Boolean                @default(true)
+  reglamentoAcep         Boolean                @default(false) @map("reglamento_acep")
+  sancionado             Boolean                @default(false)
+  eventoExternoRef       String?                @map("evento_externo_ref")
+  createdAt              DateTime               @default(now()) @map("created_at")
+  updatedAt              DateTime               @updatedAt @map("updated_at")
+  infracciones           Infraccion[]
+  mantenimientos         MantenimientoEquipo[]  @relation("MantenimientoTecnico")
+  pagos                  Pago[]
+  aceptacionesReglamento ReglamentoAceptacion[]
+  reportesDano           ReporteDano[]          @relation("ReportePor")
+  danosResponsable       ReporteDano[]          @relation("DanoResponsable")
+  reservasAprobadas      Reserva[]              @relation("ReservaAprobador")
+  reservas               Reserva[]              @relation("ReservaSolicitante")
+  sanciones              Sancion[]
+  sesionesUso            SesionUso[]
+
+  @@map("usuario")
+}
+
+model Lib_Categoria {
+  id      Int         @id @default(autoincrement())
+  nombre  String      @unique
+  libros  Lib_Libro[]
+  @@map("lib_categoria")
+}
+
+model Lib_Autor {
+  id      Int         @id @default(autoincrement())
+  nombre  String
+  libros  Lib_Libro[]
+  @@map("lib_autor")
+}
+
+model Lib_Libro {
+  id          Int            @id @default(autoincrement())
+  titulo      String
+  isbn        String?        @unique
+  stock       Int            @default(1)
+  categoriaId Int            @map("categoria_id")
+  autorId     Int            @map("autor_id")
+  categoria   Lib_Categoria  @relation(fields: [categoriaId], references: [id])
+  autor       Lib_Autor      @relation(fields: [autorId], references: [id])
+  prestamos   Lib_Prestamo[]
+  @@map("lib_libro")
+}
+
+model Lib_Usuario {
+  id        Int            @id @default(autoincrement())
+  nombre    String
+  email     String         @unique
+  carnet    String         @unique
+  prestamos Lib_Prestamo[]
+  @@map("lib_usuario")
+}
+
+model Lib_Prestamo {
+  id                  Int        @id @default(autoincrement())
+  libroId             Int        @map("libro_id")
+  usuarioId           Int        @map("usuario_id")
+  fechaPrestamo       DateTime   @default(now()) @map("fecha_prestamo")
+  fechaDevolucionEsc  DateTime   @map("fecha_devolucion_esc")
+  fechaDevolucionReal DateTime?  @map("fecha_devolucion_real")
+  estado              String     @default("PENDIENTE") // PENDIENTE, DEVUELTO
+  libro               Lib_Libro  @relation(fields: [libroId], references: [id])
+  usuario             Lib_Usuario @relation(fields: [usuarioId], references: [id])
+  multas              Lib_Multa[]
+  @@map("lib_prestamo")
+}
+
+model Lib_Multa {
+  id         Int          @id @default(autoincrement())
+  prestamoId Int          @map("prestamo_id")
+  monto      Decimal      @db.Decimal(10, 2)
+  fechaMulta DateTime     @default(now()) @map("fecha_multa")
+  pagada     Boolean      @default(false)
+  prestamo   Lib_Prestamo @relation(fields: [prestamoId], references: [id])
+  @@map("lib_multa")
+}
+
+
+model Reglamento {
+  id           Int                    @id @default(autoincrement())
+  version      String                 @unique
+  titulo       String
+  contenido    String
+  activo       Boolean                @default(true)
+  vigenteDesde DateTime               @default(now()) @map("vigente_desde")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  aceptaciones ReglamentoAceptacion[]
+
+  @@map("reglamento")
+}
+
+model ReglamentoAceptacion {
+  id           Int        @id @default(autoincrement())
+  usuarioId    String     @map("usuario_id")
+  reglamentoId Int        @map("reglamento_id")
+  aceptadoEn   DateTime   @default(now()) @map("aceptado_en")
+  reglamento   Reglamento @relation(fields: [reglamentoId], references: [id])
+  usuario      Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@unique([usuarioId, reglamentoId])
+  @@map("reglamento_aceptacion")
+}
+
+model Sancion {
+  id            Int         @id @default(autoincrement())
+  usuarioId     String      @map("usuario_id")
+  tipo          TipoSancion
+  motivo        String
+  aplicadaPorId String?     @map("aplicada_por_id")
+  fechaInicio   DateTime    @default(now()) @map("fecha_inicio")
+  fechaFin      DateTime?   @map("fecha_fin")
+  levantada     Boolean     @default(false)
+  notas         String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id])
+
+  @@map("sancion")
+}
+
+model Laboratorio {
+  id                 Int                     @id @default(autoincrement())
+  codigo             String                  @unique @default("LAB-GEN")
+  nombre             String
+  descripcion        String?
+  ubicacion          String?
+  tipo               TipoLaboratorio         @default(COMPUTACION)
+  capacidadTotal     Int                     @default(30) @map("capacidad_total")
+  permiteDivision    Boolean                 @default(true) @map("permite_division")
+  estado             EstadoLaboratorio       @default(ACTIVO)
+  faseImplementacion Int                     @default(1) @map("fase_implementacion")
+  disponiblePublico  Boolean                 @default(true) @map("disponible_publico")
+  createdAt          DateTime                @default(now()) @map("created_at")
+  updatedAt          DateTime                @updatedAt @map("updated_at")
+  configuraciones    ConfiguracionDivision[]
+  equipos            Equipo[]
+  estaciones         Estacion[]
+  pagos              Pago[]
+  reservas           Reserva[]
+  sesionesUso        SesionUso[]
+
+  @@map("laboratorio")
+}
+
+model ConfiguracionDivision {
+  id              Int         @id @default(autoincrement())
+  laboratorioId   Int         @map("laboratorio_id")
+  etiqueta        String
+  cupo            Int
+  esGrupoCompleto Boolean     @default(false) @map("es_grupo_completo")
+  activo          Boolean     @default(true)
+  orden           Int         @default(0)
+  laboratorio     Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  reservas        Reserva[]
+
+  @@map("configuracion_division")
+}
+
+model Estacion {
+  id            Int         @id @default(autoincrement())
+  laboratorioId Int         @map("laboratorio_id")
+  nombre        String
+  tipo          String
+  descripcion   String?
+  orden         Int         @default(0)
+  activo        Boolean     @default(true)
+  laboratorio   Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+
+  @@map("estacion")
+}
+
+model Equipo {
+  id               Int                   @id @default(autoincrement())
+  laboratorioId    Int                   @map("laboratorio_id")
+  codigoInventario String                @unique @map("codigo_inventario")
+  nombre           String
+  esServidor       Boolean               @default(false) @map("es_servidor")
+  estado           EstadoEquipo          @default(OPERATIVO)
+  ubicacionFisica  String?               @map("ubicacion_fisica")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+  laboratorio      Laboratorio           @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  mantenimientos   MantenimientoEquipo[]
+  reportesDano     ReporteDano[]
+  sesionesUso      SesionUso[]
+
+  @@map("equipo")
+}
+
+model MantenimientoEquipo {
+  id          Int                 @id @default(autoincrement())
+  equipoId    Int                 @map("equipo_id")
+  tecnicoId   String?             @map("tecnico_id")
+  tipo        String
+  descripcion String
+  costo       Decimal?            @db.Decimal(10, 2)
+  estado      EstadoMantenimiento @default(PROGRAMADO)
+  fecha       DateTime            @default(now())
+  createdAt   DateTime            @default(now()) @map("created_at")
+  equipo      Equipo              @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  tecnico     Usuario?            @relation("MantenimientoTecnico", fields: [tecnicoId], references: [id])
+
+  @@map("mantenimiento_equipo")
+}
+
+model ReporteDano {
+  id                   Int               @id @default(autoincrement())
+  equipoId             Int               @map("equipo_id")
+  reportadoPorId       String            @map("reportado_por_id")
+  usuarioResponsableId String?           @map("usuario_responsable_id")
+  descripcion          String
+  requiereCobro        Boolean           @default(false) @map("requiere_cobro")
+  montoCobro           Decimal?          @map("monto_cobro") @db.Decimal(10, 2)
+  estado               EstadoReporteDano @default(REPORTADO)
+  createdAt            DateTime          @default(now()) @map("created_at")
+  equipo               Equipo            @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  reportadoPor         Usuario           @relation("ReportePor", fields: [reportadoPorId], references: [id])
+  usuarioResponsable   Usuario?          @relation("DanoResponsable", fields: [usuarioResponsableId], references: [id])
+
+  @@map("reporte_dano")
+}
+
+model Reserva {
+  id                      String                 @id @default(uuid())
+  usuarioId               String                 @map("usuario_id")
+  laboratorioId           Int                    @map("laboratorio_id")
+  configuracionDivisionId Int?                   @map("configuracion_division_id")
+  fechaInicio             DateTime               @map("fecha_inicio")
+  fechaFin                DateTime               @map("fecha_fin")
+  cantidadPersonas        Int                    @map("cantidad_personas")
+  proposito               String
+  estado                  EstadoReserva          @default(PENDIENTE)
+  aprobadaPorId           String?                @map("aprobada_por_id")
+  notas                   String?
+  motivoRechazo           String?                @map("motivo_rechazo")
+  motivoCancelacion       String?                @map("motivo_cancelacion")
+  createdAt               DateTime               @default(now()) @map("created_at")
+  updatedAt               DateTime               @updatedAt @map("updated_at")
+  pagos                   Pago[]
+  aprobadaPor             Usuario?               @relation("ReservaAprobador", fields: [aprobadaPorId], references: [id])
+  configuracionDivision   ConfiguracionDivision? @relation(fields: [configuracionDivisionId], references: [id])
+  laboratorio             Laboratorio            @relation(fields: [laboratorioId], references: [id])
+  usuario                 Usuario                @relation("ReservaSolicitante", fields: [usuarioId], references: [id])
+
+  @@index([laboratorioId, fechaInicio, fechaFin])
+  @@map("reserva")
+}
+
+model Pago {
+  id                String       @id @default(uuid())
+  usuarioId         String       @map("usuario_id")
+  laboratorioId     Int?         @map("laboratorio_id")
+  reservaId         String?      @map("reserva_id")
+  monto             Decimal      @db.Decimal(10, 2)
+  tipoCobro         TipoCobro    @map("tipo_cobro")
+  metodoPago        String       @map("metodo_pago")
+  estado            EstadoPago   @default(PENDIENTE)
+  referenciaExterna String?      @map("referencia_externa")
+  notas             String?
+  createdAt         DateTime     @default(now()) @map("created_at")
+  laboratorio       Laboratorio? @relation(fields: [laboratorioId], references: [id])
+  reserva           Reserva?     @relation(fields: [reservaId], references: [id])
+  usuario           Usuario      @relation(fields: [usuarioId], references: [id])
+
+  @@map("pago")
+}
+
+model SesionUso {
+  id                String       @id @default(uuid())
+  usuarioId         String       @map("usuario_id")
+  laboratorioId     Int?         @map("laboratorio_id")
+  equipoId          Int?         @map("equipo_id")
+  tipoConexion      TipoConexion @default(PRESENCIAL) @map("tipo_conexion")
+  inicio            DateTime     @default(now())
+  fin               DateTime?
+  registroActividad Json?        @map("registro_actividad")
+  infracciones      Infraccion[]
+  equipo            Equipo?      @relation(fields: [equipoId], references: [id])
+  laboratorio       Laboratorio? @relation(fields: [laboratorioId], references: [id])
+  usuario           Usuario      @relation(fields: [usuarioId], references: [id])
+
+  @@map("sesion_uso")
+}
+
+model Infraccion {
+  id              Int        @id @default(autoincrement())
+  usuarioId       String     @map("usuario_id")
+  sesionUsoId     String?    @map("sesion_uso_id")
+  descripcion     String
+  sancionAplicada Boolean    @default(false) @map("sancion_aplicada")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  sesionUso       SesionUso? @relation(fields: [sesionUsoId], references: [id])
+  usuario         Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@map("infraccion")
+}
 
 enum RolUsuario {
   ADMINISTRADOR
@@ -89,286 +394,4 @@ enum EstadoReporteDano {
   EN_REVISION
   COBRADO
   CERRADO
-}
-
-// ─── Usuarios y reglamento ───────────────────────────────────────────────────
-
-model Usuario {
-  id               String           @id @default(uuid())
-  correo           String           @unique
-  nombre           String
-  apellido         String?
-  rol              RolUsuario       @default(ESTUDIANTE)
-  categoria        CategoriaUsuario @default(ESTUDIANTE_UNIVERSITARIO)
-  carrera          String?
-  activo           Boolean          @default(true)
-  reglamentoAcep   Boolean          @default(false) @map("reglamento_acep")
-  sancionado       Boolean          @default(false)
-  eventoExternoRef String?          @map("evento_externo_ref")
-
-  reservas              Reserva[]              @relation("ReservaSolicitante")
-  reservasAprobadas     Reserva[]              @relation("ReservaAprobador")
-  sesionesUso           SesionUso[]
-  pagos                 Pago[]
-  sanciones             Sancion[]
-  aceptacionesReglamento ReglamentoAceptacion[]
-  reportesDano          ReporteDano[]          @relation("ReportePor")
-  danosResponsable      ReporteDano[]          @relation("DanoResponsable")
-  infracciones          Infraccion[]
-  mantenimientos        MantenimientoEquipo[]  @relation("MantenimientoTecnico")
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("usuario")
-}
-
-model Reglamento {
-  id          Int      @id @default(autoincrement())
-  version     String   @unique
-  titulo      String
-  contenido   String   @db.Text
-  activo      Boolean  @default(true)
-  vigenteDesde DateTime @default(now()) @map("vigente_desde")
-
-  aceptaciones ReglamentoAceptacion[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("reglamento")
-}
-
-model ReglamentoAceptacion {
-  id           Int      @id @default(autoincrement())
-  usuarioId    String   @map("usuario_id")
-  reglamentoId Int      @map("reglamento_id")
-  aceptadoEn   DateTime @default(now()) @map("aceptado_en")
-
-  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
-  reglamento Reglamento @relation(fields: [reglamentoId], references: [id])
-
-  @@unique([usuarioId, reglamentoId])
-  @@map("reglamento_aceptacion")
-}
-
-model Sancion {
-  id           Int         @id @default(autoincrement())
-  usuarioId    String      @map("usuario_id")
-  tipo         TipoSancion
-  motivo       String
-  aplicadaPorId String?    @map("aplicada_por_id")
-  fechaInicio  DateTime    @default(now()) @map("fecha_inicio")
-  fechaFin     DateTime?   @map("fecha_fin")
-  levantada    Boolean     @default(false)
-  notas        String?
-
-  usuario Usuario @relation(fields: [usuarioId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("sancion")
-}
-
-// ─── Laboratorios ─────────────────────────────────────────────────────────────
-
-model Laboratorio {
-  id                 Int               @id @default(autoincrement())
-  codigo             String            @unique @default("LAB-GEN")
-  nombre             String
-  descripcion        String?
-  ubicacion          String?
-  tipo               TipoLaboratorio   @default(COMPUTACION)
-  capacidadTotal     Int               @default(30) @map("capacidad_total")
-  permiteDivision    Boolean           @default(true) @map("permite_division")
-  estado             EstadoLaboratorio @default(ACTIVO)
-  faseImplementacion Int               @default(1) @map("fase_implementacion")
-  disponiblePublico  Boolean           @default(true) @map("disponible_publico")
-
-  configuraciones ConfiguracionDivision[]
-  estaciones      Estacion[]
-  equipos         Equipo[]
-  reservas        Reserva[]
-  pagos           Pago[]
-  sesionesUso     SesionUso[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("laboratorio")
-}
-
-model ConfiguracionDivision {
-  id             Int     @id @default(autoincrement())
-  laboratorioId  Int     @map("laboratorio_id")
-  etiqueta       String
-  cupo           Int
-  esGrupoCompleto Boolean @default(false) @map("es_grupo_completo")
-  activo         Boolean @default(true)
-  orden          Int     @default(0)
-
-  laboratorio Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
-  reservas    Reserva[]
-
-  @@map("configuracion_division")
-}
-
-model Estacion {
-  id            Int    @id @default(autoincrement())
-  laboratorioId Int    @map("laboratorio_id")
-  nombre        String
-  tipo          String
-  descripcion   String?
-  orden         Int    @default(0)
-  activo        Boolean @default(true)
-
-  laboratorio Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
-
-  @@map("estacion")
-}
-
-// ─── Equipos e inventario ───────────────────────────────────────────────────
-
-model Equipo {
-  id               Int          @id @default(autoincrement())
-  laboratorioId    Int          @map("laboratorio_id")
-  codigoInventario String       @unique @map("codigo_inventario")
-  nombre           String
-  esServidor       Boolean      @default(false) @map("es_servidor")
-  estado           EstadoEquipo @default(OPERATIVO)
-  ubicacionFisica  String?      @map("ubicacion_fisica")
-
-  laboratorio    Laboratorio           @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
-  sesionesUso    SesionUso[]
-  reportesDano   ReporteDano[]
-  mantenimientos MantenimientoEquipo[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("equipo")
-}
-
-model MantenimientoEquipo {
-  id          Int                 @id @default(autoincrement())
-  equipoId    Int                 @map("equipo_id")
-  tecnicoId   String?             @map("tecnico_id")
-  tipo        String
-  descripcion String
-  costo       Decimal?            @db.Decimal(10, 2)
-  estado      EstadoMantenimiento @default(PROGRAMADO)
-  fecha       DateTime            @default(now())
-
-  equipo  Equipo   @relation(fields: [equipoId], references: [id], onDelete: Cascade)
-  tecnico Usuario? @relation("MantenimientoTecnico", fields: [tecnicoId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("mantenimiento_equipo")
-}
-
-model ReporteDano {
-  id                   Int               @id @default(autoincrement())
-  equipoId             Int               @map("equipo_id")
-  reportadoPorId         String            @map("reportado_por_id")
-  usuarioResponsableId String?           @map("usuario_responsable_id")
-  descripcion          String
-  requiereCobro        Boolean           @default(false) @map("requiere_cobro")
-  montoCobro           Decimal?          @map("monto_cobro") @db.Decimal(10, 2)
-  estado               EstadoReporteDano @default(REPORTADO)
-
-  equipo             Equipo   @relation(fields: [equipoId], references: [id], onDelete: Cascade)
-  reportadoPor       Usuario  @relation("ReportePor", fields: [reportadoPorId], references: [id])
-  usuarioResponsable Usuario? @relation("DanoResponsable", fields: [usuarioResponsableId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("reporte_dano")
-}
-
-// ─── Reservaciones ────────────────────────────────────────────────────────────
-
-model Reserva {
-  id                      String        @id @default(uuid())
-  usuarioId               String        @map("usuario_id")
-  laboratorioId           Int           @map("laboratorio_id")
-  configuracionDivisionId Int?          @map("configuracion_division_id")
-  fechaInicio             DateTime      @map("fecha_inicio")
-  fechaFin                DateTime      @map("fecha_fin")
-  cantidadPersonas        Int           @map("cantidad_personas")
-  proposito               String
-  estado                  EstadoReserva @default(PENDIENTE)
-  aprobadaPorId           String?       @map("aprobada_por_id")
-  notas                   String?
-  motivoRechazo           String?       @map("motivo_rechazo")
-  motivoCancelacion       String?       @map("motivo_cancelacion")
-
-  usuario               Usuario                @relation("ReservaSolicitante", fields: [usuarioId], references: [id])
-  laboratorio           Laboratorio            @relation(fields: [laboratorioId], references: [id])
-  configuracionDivision ConfiguracionDivision? @relation(fields: [configuracionDivisionId], references: [id])
-  aprobadaPor           Usuario?               @relation("ReservaAprobador", fields: [aprobadaPorId], references: [id])
-  pagos                 Pago[]
-
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@index([laboratorioId, fechaInicio, fechaFin])
-  @@map("reserva")
-}
-
-// ─── Cobros ───────────────────────────────────────────────────────────────────
-
-model Pago {
-  id                String     @id @default(uuid())
-  usuarioId         String     @map("usuario_id")
-  laboratorioId     Int?       @map("laboratorio_id")
-  reservaId         String?    @map("reserva_id")
-  monto             Decimal    @db.Decimal(10, 2)
-  tipoCobro         TipoCobro  @map("tipo_cobro")
-  metodoPago        String     @map("metodo_pago")
-  estado            EstadoPago @default(PENDIENTE)
-  referenciaExterna String?    @map("referencia_externa")
-  notas             String?
-
-  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
-  laboratorio Laboratorio? @relation(fields: [laboratorioId], references: [id])
-  reserva     Reserva?     @relation(fields: [reservaId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("pago")
-}
-
-// ─── Sesiones y monitoreo ─────────────────────────────────────────────────────
-
-model SesionUso {
-  id                String       @id @default(uuid())
-  usuarioId         String       @map("usuario_id")
-  laboratorioId     Int?         @map("laboratorio_id")
-  equipoId          Int?         @map("equipo_id")
-  tipoConexion      TipoConexion @default(PRESENCIAL) @map("tipo_conexion")
-  inicio            DateTime     @default(now())
-  fin               DateTime?
-  registroActividad Json?        @map("registro_actividad")
-
-  usuario     Usuario      @relation(fields: [usuarioId], references: [id])
-  laboratorio Laboratorio? @relation(fields: [laboratorioId], references: [id])
-  equipo      Equipo?      @relation(fields: [equipoId], references: [id])
-  infracciones Infraccion[]
-
-  @@map("sesion_uso")
-}
-
-model Infraccion {
-  id          Int      @id @default(autoincrement())
-  usuarioId   String   @map("usuario_id")
-  sesionUsoId String?  @map("sesion_uso_id")
-  descripcion String
-  sancionAplicada Boolean @default(false) @map("sancion_aplicada")
-
-  usuario   Usuario    @relation(fields: [usuarioId], references: [id])
-  sesionUso SesionUso? @relation(fields: [sesionUsoId], references: [id])
-
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("infraccion")
 }
