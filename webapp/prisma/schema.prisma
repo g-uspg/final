@@ -55,6 +55,7 @@ model Lib_Libro {
   titulo      String
   isbn        String?        @unique
   stock       Int            @default(1)
+  activo      Boolean        @default(true)
   categoriaId Int            @map("categoria_id")
   autorId     Int            @map("autor_id")
   categoria   Lib_Categoria  @relation(fields: [categoriaId], references: [id])
@@ -62,6 +63,7 @@ model Lib_Libro {
   prestamos   Lib_Prestamo[]
   @@map("lib_libro")
 }
+
 
 model Lib_Usuario {
   id        Int            @id @default(autoincrement())

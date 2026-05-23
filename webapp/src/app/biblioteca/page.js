@@ -13,7 +13,7 @@ export default function BibliotecaPage() {
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
 
-  const [newLibro, setNewLibro] = useState({ titulo: "", isbn: "", stock: 1, categoriaId: "", autorId: "" });
+  const [newLibro, setNewLibro] = useState({ id: null, titulo: "", isbn: "", stock: 1, categoriaId: "", autorId: "" });
   const [newPrestamo, setNewPrestamo] = useState({ libroId: "", usuarioId: "", fechaDevolucionEsc: "" });
   const [newUsuario, setNewUsuario] = useState({ nombre: "", email: "", carnet: "" });
   const [newItem, setNewItem] = useState({ type: "categoria", nombre: "" });
@@ -39,7 +39,8 @@ export default function BibliotecaPage() {
       setAutores(resSetup.data.autores);
       setUsuarios(resUsuarios.data);
     } catch (error) {
-      showNotification("Error cargando datos: " + error.message, "danger");
+      const msg = error.response?.data?.error || error.message;
+      showNotification("Error cargando datos: " + msg, "danger");
     } finally {
       setLoading(false);
     }
@@ -53,13 +54,29 @@ export default function BibliotecaPage() {
   const handleCreateLibro = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/biblioteca/libros", newLibro);
-      showNotification("Libro creado exitosamente");
-      setNewLibro({ titulo: "", isbn: "", stock: 1, categoriaId: "", autorId: "" });
+      if (newLibro.id) {
+        await axios.put("/api/biblioteca/libros", newLibro);
+        showNotification("Libro actualizado exitosamente");
+      } else {
+        await axios.post("/api/biblioteca/libros", newLibro);
+        showNotification("Libro creado exitosamente");
+      }
+      setNewLibro({ id: null, titulo: "", isbn: "", stock: 1, categoriaId: "", autorId: "" });
       fetchData();
     } catch (error) {
       const msg = error.response?.data?.error || error.message;
-      showNotification("Error creando libro: " + msg, "danger");
+      showNotification("Error guardando libro: " + msg, "danger");
+    }
+  };
+
+  const toggleLibroStatus = async (libro) => {
+    try {
+      await axios.put("/api/biblioteca/libros", { ...libro, activo: !libro.activo });
+      showNotification(`Libro ${!libro.activo ? 'activado' : 'desactivado'} exitosamente`);
+      fetchData();
+    } catch (error) {
+      const msg = error.response?.data?.error || error.message;
+      showNotification("Error actualizando estado: " + msg, "danger");
     }
   };
 
@@ -173,7 +190,7 @@ export default function BibliotecaPage() {
                       <div className="col-md-9">
                         <select className="form-control" value={newPrestamo.libroId} onChange={e => setNewPrestamo({ ...newPrestamo, libroId: e.target.value })} required>
                           <option value="">Seleccionar...</option>
-                          {libros.map(l => (
+                          {libros.filter(l => l.activo).map(l => (
                             <option key={l.id} value={l.id} disabled={l.stock <= 0}>
                               {l.titulo} {l.stock <= 0 ? '(SIN STOCK)' : `(${l.stock} disponibles)`}
                             </option>
@@ -302,10 +319,12 @@ export default function BibliotecaPage() {
             <div className="col-lg-12">
               <div className="card">
                 <div className="card-header">
-                  <h3 className="card-title">Mantenimiento de Inventario</h3>
-                  <div className="card-options">
-                    <button className="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalLibro">Añadir Libro</button>
-                  </div>
+                  <h3 className="card-title">{newLibro.id ? 'Editar Libro' : 'Mantenimiento de Inventario'}</h3>
+                  {newLibro.id && (
+                    <div className="card-options">
+                      <button className="btn btn-sm btn-secondary" onClick={() => setNewLibro({ id: null, titulo: "", isbn: "", stock: 1, categoriaId: "", autorId: "" })}>Cancelar Edición</button>
+                    </div>
+                  )}
                 </div>
                 <div className="card-body">
                   <form onSubmit={handleCreateLibro} className="mb-4">
@@ -332,7 +351,7 @@ export default function BibliotecaPage() {
                         <input type="number" className="form-control" value={newLibro.stock} onChange={e => setNewLibro({ ...newLibro, stock: e.target.value })} required />
                       </div>
                       <div className="col-md-2">
-                        <button type="submit" className="btn btn-primary btn-block">Añadir</button>
+                        <button type="submit" className="btn btn-primary btn-block">{newLibro.id ? 'Actualizar' : 'Añadir'}</button>
                       </div>
                     </div>
                   </form>
@@ -345,16 +364,29 @@ export default function BibliotecaPage() {
                           <th>Categoría</th>
                           <th>Autor</th>
                           <th>Stock</th>
+                          <th>Estado</th>
+                          <th>Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
                         {libros.map(l => (
-                          <tr key={l.id}>
-                            <td>{l.titulo}</td>
+                          <tr key={l.id} className={!l.activo ? 'bg-light' : ''}>
+                            <td className={!l.activo ? 'text-muted' : ''}>{l.titulo}</td>
                             <td>{l.isbn}</td>
                             <td>{l.categoria.nombre}</td>
                             <td>{l.autor.nombre}</td>
                             <td>{l.stock}</td>
+                            <td>
+                              <span className={`tag ${l.activo ? 'tag-success' : 'tag-default'}`}>{l.activo ? 'Activo' : 'Inactivo'}</span>
+                            </td>
+                            <td>
+                              <button className="btn btn-sm btn-outline-primary mr-1" onClick={() => setNewLibro({ ...l })} title="Editar">
+                                <i className="fa fa-edit"></i>
+                              </button>
+                              <button className={`btn btn-sm ${l.activo ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => toggleLibroStatus(l)} title={l.activo ? 'Desactivar' : 'Activar'}>
+                                <i className={`fa ${l.activo ? 'fa-trash' : 'fa-check'}`}></i>
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
