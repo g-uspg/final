@@ -28,8 +28,16 @@ function getContract() {
  * No lanza excepción — si falla, solo loguea. La BD es la fuente de verdad.
  */
 export async function anclarAudit({ sessionId, action, data }) {
+  console.log('[blockchain] anclarAudit llamado:', action, sessionId);
+  console.log('[blockchain] RPC:', process.env.BLOCKCHAIN_RPC_URL ? 'OK' : 'MISSING');
+  console.log('[blockchain] KEY:', process.env.BLOCKCHAIN_PRIVATE_KEY ? 'OK' : 'MISSING');
+  console.log('[blockchain] CONTRACT:', process.env.BLOCKCHAIN_CONTRACT_ADDRESS ? 'OK' : 'MISSING');
+
   const contract = getContract();
-  if (!contract) return null;
+  if (!contract) {
+    console.error('[blockchain] getContract() devolvió null — faltan variables de entorno');
+    return null;
+  }
 
   try {
     const dataHash = crypto
