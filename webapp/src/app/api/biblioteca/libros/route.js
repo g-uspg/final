@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const libros = await prisma.lib_Libro.findMany({
+    const libros = await prisma.libro.findMany({
       include: {
         categoria: true,
         autor: true,
@@ -20,7 +20,7 @@ export async function POST(request) {
     const body = await request.json();
     const { titulo, isbn, stock, categoriaId, autorId } = body;
 
-    const libro = await prisma.lib_Libro.create({
+    const libro = await prisma.libro.create({
       data: {
         titulo,
         isbn,
@@ -51,7 +51,7 @@ export async function PUT(request) {
     if (categoriaId !== undefined) updateData.categoria = { connect: { id: parseInt(categoriaId) } };
     if (autorId !== undefined) updateData.autor = { connect: { id: parseInt(autorId) } };
 
-    const libro = await prisma.lib_Libro.update({
+    const libro = await prisma.libro.update({
       where: { id: parseInt(id) },
       data: updateData,
     });

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const prestamos = await prisma.lib_Prestamo.findMany({
+    const prestamos = await prisma.prestamo.findMany({
       include: {
         libro: true,
         usuario: true,
@@ -22,7 +22,7 @@ export async function POST(request) {
     const body = await request.json();
     const { libroId, usuarioId, fechaDevolucionEsc } = body;
     
-    const prestamo = await prisma.lib_Prestamo.create({
+    const prestamo = await prisma.prestamo.create({
       data: {
         libroId: parseInt(libroId),
         usuarioId: parseInt(usuarioId),
@@ -41,7 +41,7 @@ export async function PUT(request) {
     const body = await request.json();
     const { id, fechaDevolucionReal, estado } = body;
     
-    const prestamo = await prisma.lib_Prestamo.update({
+    const prestamo = await prisma.prestamo.update({
       where: { id: parseInt(id) },
       data: {
         fechaDevolucionReal: fechaDevolucionReal ? new Date(fechaDevolucionReal) : undefined,

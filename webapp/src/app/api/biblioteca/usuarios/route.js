@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const usuarios = await prisma.lib_Usuario.findMany();
+    const usuarios = await prisma.usuarioBiblioteca.findMany();
     return NextResponse.json(usuarios);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -15,7 +15,7 @@ export async function POST(request) {
     const body = await request.json();
     const { nombre, email, carnet } = body;
     
-    const usuario = await prisma.lib_Usuario.create({
+    const usuario = await prisma.usuarioBiblioteca.create({
       data: { nombre, email, carnet },
     });
     return NextResponse.json(usuario);

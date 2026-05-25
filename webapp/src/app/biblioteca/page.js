@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function BibliotecaPage() {
-  const [activeTab, setActiveTab] = useState("prestamos");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [libros, setLibros] = useState([]);
   const [prestamos, setPrestamos] = useState([]);
   const [multas, setMultas] = useState([]);
@@ -146,6 +146,9 @@ export default function BibliotecaPage() {
     }
   };
 
+  const activeLoans = prestamos.filter(p => p.estado === 'PENDIENTE');
+  const librosWithStock = libros.filter(l => l.stock > 0);
+
   return (
     <div className="section-body">
       {notification.show && (
@@ -161,22 +164,107 @@ export default function BibliotecaPage() {
               <div className="card-body">
                 <ul className="nav nav-tabs page-header-tab">
                   <li className="nav-item">
-                    <a className={`nav-link ${activeTab === "prestamos" ? "active" : ""}`} onClick={() => setActiveTab("prestamos")} href="#">Préstamos</a>
+                    <a className={`nav-link ${activeTab === "dashboard" ? "active" : ""}`} onClick={() => setActiveTab("dashboard")} href="#"><i className="fa fa-dashboard mr-2"></i>Dashboard</a>
                   </li>
                   <li className="nav-item">
-                    <a className={`nav-link ${activeTab === "multas" ? "active" : ""}`} onClick={() => setActiveTab("multas")} href="#">Multas</a>
+                    <a className={`nav-link ${activeTab === "prestamos" ? "active" : ""}`} onClick={() => setActiveTab("prestamos")} href="#"><i className="fa fa-exchange mr-2"></i>Préstamos</a>
                   </li>
                   <li className="nav-item">
-                    <a className={`nav-link ${activeTab === "libros" ? "active" : ""}`} onClick={() => setActiveTab("libros")} href="#">Inventario de Libros</a>
+                    <a className={`nav-link ${activeTab === "multas" ? "active" : ""}`} onClick={() => setActiveTab("multas")} href="#"><i className="fa fa-money mr-2"></i>Multas</a>
                   </li>
                   <li className="nav-item">
-                    <a className={`nav-link ${activeTab === "config" ? "active" : ""}`} onClick={() => setActiveTab("config")} href="#">Configuración / Usuarios</a>
+                    <a className={`nav-link ${activeTab === "libros" ? "active" : ""}`} onClick={() => setActiveTab("libros")} href="#"><i className="fa fa-book mr-2"></i>Inventario de Libros</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className={`nav-link ${activeTab === "config" ? "active" : ""}`} onClick={() => setActiveTab("config")} href="#"><i className="fa fa-cog mr-2"></i>Configuración - Usuarios</a>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
+
+        {activeTab === "dashboard" && (
+          <>
+            <div className="row clearfix">
+              <div className="col-lg-4 col-md-6 col-sm-12">
+                <div className="card">
+                  <div className="card-body text-center p-4">
+                    <div className="h1 m-0 text-primary"><i className="fa fa-users"></i> {usuarios.length}</div>
+                    <div className="text-muted mt-2">Usuarios Activos</div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-6 col-sm-12">
+                <div className="card">
+                  <div className="card-body text-center p-4">
+                    <div className="h1 m-0 text-success"><i className="fa fa-book"></i> {librosWithStock.length}</div>
+                    <div className="text-muted mt-2">Libros con Stock</div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-6 col-sm-12">
+                <div className="card">
+                  <div className="card-body text-center p-4">
+                    <div className="h1 m-0 text-warning"><i className="fa fa-hand-holding"></i> {activeLoans.length}</div>
+                    <div className="text-muted mt-2">Préstamos Activos</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row clearfix">
+              <div className="col-lg-12">
+                <div className="card">
+                  <div className="card-header">
+                    <h3 className="card-title">Listado de Préstamos Activos</h3>
+                  </div>
+                  <div className="card-body">
+                    <div className="table-responsive">
+                      <table className="table table-hover table-vcenter table-striped mb-0 text-nowrap">
+                        <thead>
+                          <tr>
+                            <th>Libro</th>
+                            <th>Usuario</th>
+                            <th>Fecha de Devolución</th>
+                            <th>Días Restantes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {activeLoans.map(p => {
+                            const diff = Math.ceil((new Date(p.fechaDevolucionEsc) - new Date()) / (1000 * 60 * 60 * 24));
+                            return (
+                              <tr key={p.id}>
+                                <td>{p.libro.titulo}</td>
+                                <td>
+                                  <div>{p.usuario.nombre}</div>
+                                  <small className="text-muted">{p.usuario.carnet}</small>
+                                </td>
+                                <td>{new Date(p.fechaDevolucionEsc).toLocaleDateString()}</td>
+                                <td>
+                                  {diff < 0 ? (
+                                    <span className="badge badge-danger">Vencido ({Math.abs(diff)} días)</span>
+                                  ) : (
+                                    <span className="badge badge-info">{diff} días</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          {activeLoans.length === 0 && (
+                            <tr>
+                              <td colSpan="4" className="text-center text-muted">No hay préstamos activos actualmente</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {activeTab === "prestamos" && (
           <div className="row clearfix">

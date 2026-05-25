@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const multas = await prisma.lib_Multa.findMany({
+    const multas = await prisma.multa.findMany({
       include: {
         prestamo: {
           include: {
@@ -25,7 +25,7 @@ export async function PUT(request) {
     const body = await request.json();
     const { id, pagada } = body;
     
-    const multa = await prisma.lib_Multa.update({
+    const multa = await prisma.multa.update({
       where: { id: parseInt(id) },
       data: { pagada: pagada },
     });
