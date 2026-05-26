@@ -19,18 +19,18 @@ export async function POST(request) {
     const body = await request.json();
     const { codigo, nombre, apellido, email } = body;
 
-    // Validaciones
     if (!codigo || !nombre || !apellido || !email) {
-      return Response.json({ success: false, error: "Todos los campos son requeridos: codigo, nombre, apellido, email" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Todos los campos son requeridos: codigo, nombre, apellido, email" },
+        { status: 400 }
+      );
     }
 
-    // Verificar código duplicado
     const existeCodigo = await prisma.catedraticoAcademico.findUnique({ where: { codigo } });
     if (existeCodigo) {
       return Response.json({ success: false, error: `El código ${codigo} ya está registrado` }, { status: 409 });
     }
 
-    // Verificar email duplicado
     const existeEmail = await prisma.catedraticoAcademico.findUnique({ where: { email } });
     if (existeEmail) {
       return Response.json({ success: false, error: `El email ${email} ya está registrado` }, { status: 409 });

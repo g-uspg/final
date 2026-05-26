@@ -19,24 +19,17 @@ export async function POST(request) {
     const body = await request.json();
     const { codigo, nombre, facultad, activo } = body;
 
-    // Validaciones
     if (!codigo || !nombre) {
       return Response.json({ success: false, error: "codigo y nombre son requeridos" }, { status: 400 });
     }
 
-    // Verificar código duplicado
     const existeCodigo = await prisma.carrera.findUnique({ where: { codigo } });
     if (existeCodigo) {
       return Response.json({ success: false, error: `La carrera con código ${codigo} ya existe` }, { status: 409 });
     }
 
     const carrera = await prisma.carrera.create({
-      data: {
-        codigo,
-        nombre,
-        facultad: facultad ?? null,
-        activo: activo ?? true,
-      },
+      data: { codigo, nombre, facultad: facultad ?? null, activo: activo ?? true },
     });
     return Response.json({ success: true, data: carrera }, { status: 201 });
   } catch (error) {

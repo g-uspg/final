@@ -19,16 +19,17 @@ export async function POST(request) {
     const body = await request.json();
     const { codigo, nombre, creditos } = body;
 
-    // Validaciones
     if (!codigo || !nombre || !creditos) {
-      return Response.json({ success: false, error: "Todos los campos son requeridos: codigo, nombre, creditos" }, { status: 400 });
+      return Response.json(
+        { success: false, error: "Todos los campos son requeridos: codigo, nombre, creditos" },
+        { status: 400 }
+      );
     }
 
     if (creditos < 1 || creditos > 10) {
       return Response.json({ success: false, error: "Los créditos deben estar entre 1 y 10" }, { status: 400 });
     }
 
-    // Verificar código duplicado
     const existeCodigo = await prisma.curso.findUnique({ where: { codigo } });
     if (existeCodigo) {
       return Response.json({ success: false, error: `El curso con código ${codigo} ya existe` }, { status: 409 });
