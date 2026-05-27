@@ -379,16 +379,16 @@ model Carrera {
   codigo    String   @unique
   nombre    String
   facultad  String?
+  nivel     String   @default("LICENCIATURA")
   activo    Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
 
   alumnos Alumno[]
+  planes  PlanEstudio[]
 
   @@map("carrera")
 }
 
-model Alumno {
 model Alumno {
   id                  Int          @id @default(autoincrement())
   carnet              String       @unique
@@ -400,11 +400,7 @@ model Alumno {
   createdAt           DateTime     @default(now()) @map("created_at")
   asignaciones        Asignacion[]
   asistencias         Asistencia[]
-
-  carrera Carrera? @relation(fields: [carreraId], references: [id])
-
-  @@map("alumno")
-}
+  historial           HistorialAcademico[]
 
   carrera Carrera? @relation(fields: [carreraId], references: [id])
 
@@ -424,13 +420,17 @@ model CatedraticoAcademico {
 }
 
 model Curso {
-  id           Int          @id @default(autoincrement())
-  codigo       String       @unique
-  nombre       String
-  creditos     Int
-  createdAt    DateTime     @default(now()) @map("created_at")
-  asignaciones Asignacion[]
-  horarios     Horario[]
+  id             Int          @id @default(autoincrement())
+  codigo         String       @unique
+  nombre         String
+  creditos       Int
+  createdAt      DateTime     @default(now()) @map("created_at")
+  asignaciones   Asignacion[]
+  horarios       Horario[]
+  planesEstudio  CursoPlan[]
+  prerrequisitos Prerrequisito[] @relation("CursoPrerrequisito")
+  esRequeridoPor Prerrequisito[] @relation("CursoRequerido")
+  historial      HistorialAcademico[]
 
   @@map("curso")
 }
@@ -479,4 +479,61 @@ model Asistencia {
 
   @@unique([alumnoId, horarioId, fecha])
   @@map("asistencia")
+}
+
+model Prerrequisito {
+  id         Int @id @default(autoincrement())
+  cursoId    Int @map("curso_id")
+  requiereId Int @map("requiere_id")
+
+  curso    Curso @relation("CursoPrerrequisito", fields: [cursoId], references: [id])
+  requiere Curso @relation("CursoRequerido", fields: [requiereId], references: [id])
+
+  @@unique([cursoId, requiereId])
+  @@map("prerrequisito")
+}
+
+model HistorialAcademico {
+  id        Int      @id @default(autoincrement())
+  alumnoId  Int      @map("alumno_id")
+  cursoId   Int      @map("curso_id")
+  ciclo     String
+  nota      Decimal? @db.Decimal(4, 2)
+  aprobado  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  alumno Alumno @relation(fields: [alumnoId], references: [id])
+  curso  Curso  @relation(fields: [cursoId], references: [id])
+
+  @@unique([alumnoId, cursoId, ciclo])
+  @@map("historial_academico")
+}
+
+model PlanEstudio {
+  id            Int      @id @default(autoincrement())
+  carreraId     Int      @map("carrera_id")
+  nombre        String
+  version       String   // Ej: "2026-A"
+  totalCreditos Int      @map("total_creditos")
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  carrera Carrera     @relation(fields: [carreraId], references: [id])
+  cursos  CursoPlan[]
+
+  @@map("plan_estudio")
+}
+
+model CursoPlan {
+  id            Int     @id @default(autoincrement())
+  planEstudioId Int     @map("plan_estudio_id")
+  cursoId       Int     @map("curso_id")
+  semestre      Int     // semestre en que se imparte
+  obligatorio   Boolean @default(true)
+
+  planEstudio PlanEstudio @relation(fields: [planEstudioId], references: [id])
+  curso       Curso       @relation(fields: [cursoId], references: [id])
+
+  @@unique([planEstudioId, cursoId])
+  @@map("curso_plan")
 }
