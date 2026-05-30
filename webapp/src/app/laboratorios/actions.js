@@ -12,7 +12,7 @@ const labInclude = {
 export async function getDashboardData() {
   try {
     const [laboratorios, reservasPendientes, equipos, pagosRecientes, usuariosActivos] =
-      await Promise.all([
+      await prisma.$transaction([
         prisma.laboratorio.findMany({
           include: {
             ...labInclude,

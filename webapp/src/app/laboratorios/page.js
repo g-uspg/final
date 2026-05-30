@@ -5,7 +5,8 @@ import LaboratoriosDashboard from './LaboratoriosDashboard'
 export const dynamic = 'force-dynamic'
 
 export default async function LaboratoriosPage() {
-  const [data, usuarios] = await Promise.all([getDashboardData(), getUsuariosSelect()])
+  const data = await getDashboardData()
+  const usuarios = await getUsuariosSelect()
 
   return (
     <LaboratoriosDashboard

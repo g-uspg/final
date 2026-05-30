@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
         </div>
 
         <Script src="/assets/bundles/lib.vendor.bundle.js" strategy="beforeInteractive" />
-        <Script src="/assets/js/core.js" strategy="lazyOnload" />
+        <Script src="/assets/js/core.js" strategy="afterInteractive" />
       </body>
     </html>
   );
