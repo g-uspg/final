@@ -10,7 +10,6 @@ const tabs = [
   { label: "Sesiones",       path: "/parqueo/sesiones",         icon: "fa-clock-o"    },
   { label: "Escáner QR",     path: "/parqueo/escaner",          icon: "fa-qrcode"     },
   { label: "Vehículos",      path: "/parqueo/vehiculos",        icon: "fa-car"        },
-  { label: "Usuarios",       path: "/parqueo/usuarios",         icon: "fa-users"      },
   { label: "Reservas",       path: "/parqueo/reservas",         icon: "fa-calendar"   },
   { label: "Eventos",        path: "/parqueo/eventos",          icon: "fa-flag"       },
   { label: "Reportes",       path: "/parqueo/reportes",         icon: "fa-bar-chart"  },
