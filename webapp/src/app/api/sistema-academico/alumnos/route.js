@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { enviarCorreoBienvenidaConQR } from "@/lib/email";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 /**
  * Normalizes a string: lowercase, remove accents, remove non-alphanumeric.

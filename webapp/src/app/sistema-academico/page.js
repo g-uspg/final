@@ -11,6 +11,7 @@ export default function SistemaAcademicoPage() {
   const [asignaciones, setAsignaciones] = useState([]);
   const [horarios, setHorarios] = useState([]);
   const [asistencias, setAsistencias] = useState([]);
+  const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
 
@@ -39,7 +40,7 @@ export default function SistemaAcademicoPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [resAlumnos, resCatedraticos, resCursos, resCarreras, resAsignaciones, resHorarios, resAsistencias] = await Promise.all([
+      const [resAlumnos, resCatedraticos, resCursos, resCarreras, resAsignaciones, resHorarios, resAsistencias, resSolicitudes] = await Promise.all([
         axios.get("/api/sistema-academico/alumnos"),
         axios.get("/api/sistema-academico/catedraticos"),
         axios.get("/api/sistema-academico/cursos"),
@@ -47,6 +48,7 @@ export default function SistemaAcademicoPage() {
         axios.get("/api/sistema-academico/asignaciones"),
         axios.get("/api/sistema-academico/horarios"),
         axios.get("/api/sistema-academico/asistencias"),
+        axios.get("/api/sistema-academico/solicitudes"),
       ]);
       setAlumnos(resAlumnos.data.data || []);
       setCatedraticos(resCatedraticos.data.data || []);
@@ -55,6 +57,7 @@ export default function SistemaAcademicoPage() {
       setAsignaciones(resAsignaciones.data.data || []);
       setHorarios(resHorarios.data.data || []);
       setAsistencias(resAsistencias.data.data || []);
+      setSolicitudes(resSolicitudes.data.data || []);
     } catch (error) {
       showNotification("Error cargando datos: " + (error.response?.data?.error || error.message), "danger");
     } finally {

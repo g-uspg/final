@@ -1,23 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
-const prisma = new PrismaClient();
-
-/**
- * GET /api/sistema-academico/verificar-usuario?id=<carnet_or_codigo>
- *
- * Verifica si un usuario existe en el sistema académico y devuelve:
- *   - nombre, apellido
- *   - rol: "ALUMNO" | "CATEDRATICO"
- *   - activo: true (siempre true si existe — extender si se agrega campo activo)
- *
- * Usado por otros módulos (ej. parqueo) para validar identidad antes de crear cuenta.
- *
- * Respuestas:
- *   200 { found: true,  id, nombre, apellido, email, rol, activo }
- *   200 { found: false }
- *   400 { error: "Se requiere el parámetro id" }
- *   500 { error: "..." }
- */
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -30,7 +12,7 @@ export async function GET(request) {
       );
     }
 
-    // Search alumnos first (by carnet)
+    // Buscar alumno por carnet
     const alumno = await prisma.alumno.findUnique({
       where: { carnet: id },
       select: {
@@ -39,6 +21,7 @@ export async function GET(request) {
         nombre: true,
         apellido: true,
         email: true,
+        activo: true,
       },
     });
 
@@ -50,11 +33,11 @@ export async function GET(request) {
         apellido: alumno.apellido,
         email: alumno.email,
         rol: "ALUMNO",
-        activo: true,
+        activo: alumno.activo,
       });
     }
 
-    // Search catedraticos (by codigo)
+    // Buscar catedrático por código
     const catedratico = await prisma.catedraticoAcademico.findUnique({
       where: { codigo: id },
       select: {
@@ -63,6 +46,7 @@ export async function GET(request) {
         nombre: true,
         apellido: true,
         email: true,
+        activo: true,
       },
     });
 
@@ -74,11 +58,10 @@ export async function GET(request) {
         apellido: catedratico.apellido,
         email: catedratico.email,
         rol: "CATEDRATICO",
-        activo: true,
+        activo: catedratico.activo,
       });
     }
 
-    // Not found in either table
     return Response.json({ found: false });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
