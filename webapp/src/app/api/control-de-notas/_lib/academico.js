@@ -1,175 +1,53 @@
 import prisma from "@/lib/prisma";
 
 export const NOTA_APROBACION = 61;
+export const CURSOS_API = "webapp/src/app/api/sistema-academico/cursos";
+export const ALUMNOS_API = "webapp/src/app/api/sistema-academico/alumnos";
 
-// Rutas a tus APIs existentes
-export const ALUMNOS_API = "/api/control-de-notas/prueba/alumnos";
-export const CURSOS_API = "/api/control-de-notas/prueba/cursos";
+// ... (mantén todas las funciones auxiliares que ya tenías: crearError, toNumber, parseMoney, etc.) ...
 
-export function crearError(message, status = 500) {
-  const error = new Error(message);
-  error.status = status;
-  return error;
-}
-
-export function toNumber(value, fallback = 0) {
-  if (value === null || value === undefined || value === "") return fallback;
-  if (typeof value === "object" && typeof value.toString === "function") {
-    const n = Number(value.toString());
-    return Number.isNaN(n) ? fallback : n;
-  }
-  const n = Number(value);
-  return Number.isNaN(n) ? fallback : n;
-}
-
-export function parseMoney(value) {
-  if (value === null || value === undefined || value === "") return 0;
-  if (typeof value === "number") return value;
-  const limpio = String(value).replace(/[^\d.-]/g, "");
-  const n = Number(limpio);
-  return Number.isNaN(n) ? 0 : n;
-}
-
-async function consumirJson(origin, path) {
-  const url = path.startsWith("http") ? path : `${origin}${path}`;
-  const res = await fetch(url, { cache: "no-store" });
-  const text = await res.text();
-  let data = null;
+// Función nueva para buscar alumno por UUID o Carnet
+export async function obtenerAlumnoPorIdentificador(origin, identificador) {
+  // 1. Primero intentar buscar en la lista general por carnet (más rápido)
   try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    throw crearError(`Respuesta inválida de ${path}`, 502);
+    const alumnos = await consumirApiAcademica(origin, ALUMNOS_API);
+    const porCarnet = alumnos.find((a) => String(a.carnet) === String(identificador));
+    if (porCarnet) return porCarnet;
+  } catch (e) {
+    console.log("No se pudo obtener lista de alumnos, intentando por ID...");
   }
-  if (!res.ok) {
-    throw crearError(data?.message || data?.error || `Error consumiendo ${path}`, res.status);
+  
+  // 2. Si no encuentra, buscar directamente por ID/UUID
+  // Esto asume que tu API de alumnos soporta: GET /api/control-de-notas/alumnos/{id}
+  try {
+    const alumno = await consumirApiAcademica(origin, `${ALUMNOS_API}/${identificador}`);
+    return alumno;
+  } catch (e) {
+    // Si tampoco encuentra, retornar null
+    return null;
   }
-  return data;
 }
 
-export async function consumirApiAcademica(origin, path) {
-  const data = await consumirJson(origin, path);
-  if (data?.success === false) {
-    throw crearError(data.message || data.error || `Error consumiendo ${path}`, 500);
-  }
-  return data?.data ?? data;
-}
-
-export async function consumirApiGrupo6(origin, path) {
-  const data = await consumirJson(origin, path);
-  return data?.data ?? data;
-}
-
-export async function obtenerCatalogos(origin) {
-  const [alumnos, cursos] = await Promise.all([
-    consumirApiAcademica(origin, ALUMNOS_API),
-    consumirApiAcademica(origin, CURSOS_API),
-  ]);
-  return {
-    alumnos: Array.isArray(alumnos) ? alumnos : [],
-    cursos: Array.isArray(cursos) ? cursos : [],
-  };
-}
-
-export function buscarAlumnoPorCarnet(alumnos, carnet) {
-  return alumnos.find((a) => String(a.carnet) === String(carnet));
-}
-
-export function obtenerIdAlumno(alumno) {
-  return Number(alumno?.id ?? alumno?.id_alumno ?? alumno?.alumnoId);
-}
-
-export function obtenerIdCurso(curso) {
-  return Number(curso?.id ?? curso?.id_curso ?? curso?.cursoId);
-}
-
-export function obtenerNombreAlumno(alumno) {
-  const nombre = alumno?.nombre ?? "";
-  const apellido = alumno?.apellido ?? "";
-  const completo = `${nombre} ${apellido}`.trim();
-  return completo || alumno?.name || alumno?.nombreCompleto || "Alumno";
-}
-
-export function obtenerNombreCarrera(alumno) {
-  return alumno?.carrera?.nombre ?? alumno?.carreraNombre ?? alumno?.nombreCarrera ?? null;
-}
-
-export function obtenerCodigoCurso(curso, idCurso = null) {
-  return curso?.codigo ?? curso?.code ?? String(idCurso ?? obtenerIdCurso(curso));
-}
-
-export function obtenerNombreCurso(curso) {
-  return curso?.nombre ?? curso?.name ?? "Curso sin nombre";
-}
-
-export function buscarCursoPorId(cursos, idCurso) {
-  return cursos.find((c) => obtenerIdCurso(c) === Number(idCurso));
-}
-
-export function buscarCursoPorParametro(cursos, parametro) {
-  return cursos.find((c) => {
-    const idCurso = obtenerIdCurso(c);
-    const codigoCurso = obtenerCodigoCurso(c, idCurso);
-    return String(idCurso) === String(parametro) || String(codigoCurso) === String(parametro);
-  });
-}
-
-export function esEvaluacionFinal(nombre) {
-  const n = String(nombre || "").toLowerCase();
-  return n.includes("final") || n.includes("examen final") || n.includes("ordinario");
-}
-
-export function construirNotaDesdeMatricula(matricula, curso) {
-  const notas = matricula.notas ?? [];
-  let zona = 0;
-  let examenFinal = 0;
-
-  for (const nota of notas) {
-    const valor = toNumber(nota.valor);
-    const nombreEvaluacion = nota.evaluacion?.nombre ?? "";
-    if (esEvaluacionFinal(nombreEvaluacion)) {
-      examenFinal += valor;
-    } else {
-      zona += valor;
-    }
+// Modificar armarNotasAlumno para usar la nueva función
+export async function armarNotasAlumno(origin, identificador) {
+  // 🔧 CAMBIO: Usar la nueva función que busca por ID o Carnet
+  const alumno = await obtenerAlumnoPorIdentificador(origin, identificador);
+  
+  if (!alumno) {
+    throw crearError(`No se encontró alumno con identificador ${identificador}`, 404);
   }
 
-  const notaCalculada = zona + examenFinal;
-  const notaFinal = toNumber(matricula.cierre?.nota_final, notaCalculada);
-  const estado = notaFinal >= NOTA_APROBACION ? "aprobado" : "reprobado";
-
-  return {
-    curso: obtenerCodigoCurso(curso, matricula.id_curso),
-    nombreCurso: obtenerNombreCurso(curso),
-    periodo: matricula.periodo,
-    zona,
-    examenFinal,
-    notaFinal,
-    estado,
-    creditos: toNumber(curso?.creditos),
-  };
-}
-
-export async function obtenerMatriculasAlumno(idAlumno) {
-  return prisma.matricula.findMany({
-    where: { id_alumno: Number(idAlumno) },
-    include: {
-      notas: { include: { evaluacion: true } },
-      cierre: true,
-    },
-    orderBy: [{ periodo: "desc" }, { id_matricula: "desc" }],
-  });
-}
-
-export async function armarNotasAlumno(origin, carnet) {
-  const { alumnos, cursos } = await obtenerCatalogos(origin);
-  const alumno = buscarAlumnoPorCarnet(alumnos, carnet);
-
-  if (!alumno) throw crearError(`No se encontró alumno con carnet ${carnet}`, 404);
-
+  // Obtener cursos para el mapeo
+  const { cursos } = await obtenerCatalogos(origin).catch(() => ({ cursos: [] }));
+  
   const idAlumno = obtenerIdAlumno(alumno);
-  if (!idAlumno) throw crearError("El alumno no tiene un id válido para buscar matrículas", 400);
+  
+  if (!idAlumno) {
+    throw crearError("El alumno no tiene un id válido para buscar matrículas", 400);
+  }
 
   const matriculas = await obtenerMatriculasAlumno(idAlumno);
+  
   const notas = matriculas.map((matricula) => {
     const curso = buscarCursoPorId(cursos, matricula.id_curso);
     return construirNotaDesdeMatricula(matricula, curso);
