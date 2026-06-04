@@ -2,56 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// ── DATOS LOCALES (Fallback cuando fallan las APIs) ──────────────────────────
-const DATOS_MOCK = {
-  alumno: {
-    id: 1,
-    carnet: "2600001",
-    nombre: "Juan Carlos Pérez García",
-    email: "juan.perez@alumno.uspg.edu.gt",
-    correoInstitucional: "juan.perez@alumno.uspg.edu.gt",
-    carrera: "Ingeniería en Sistemas"
-  },
-  notas: [
-    { curso: "MAT101", nombreCurso: "Matemática I", periodo: "2024-01", zona: 45, examenFinal: 35, notaFinal: 80, estado: "aprobado", creditos: 5 },
-    { curso: "FIS101", nombreCurso: "Física I", periodo: "2024-01", zona: 40, examenFinal: 30, notaFinal: 70, estado: "aprobado", creditos: 5 },
-    { curso: "PRO101", nombreCurso: "Programación I", periodo: "2024-01", zona: 50, examenFinal: 40, notaFinal: 90, estado: "aprobado", creditos: 6 },
-    { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55, estado: "reprobado", creditos: 5 },
-    { curso: "FIS102", nombreCurso: "Física II", periodo: "2024-02", zona: 42, examenFinal: 38, notaFinal: 80, estado: "aprobado", creditos: 5 },
-  ],
-  resumen: {
-    promedioGeneral: 75,
-    totalCursos: 5,
-    cursosAprobados: 4,
-    cursosReprobados: 1,
-    creditosAprobados: 21
-  },
-  solvencia: {
-    solvenciaGeneral: false,
-    solvenciaNotas: {
-      solvente: false,
-      totalReprobados: 1,
-      cursosReprobados: [
-        { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55 }
-      ]
-    },
-    solvenciaPagos: {
-      solvente: false,
-      montoPendiente: 1250.00,
-      montoMensualidades: 1000.00,
-      montoMora: 250.00,
-      mensualidadesPendientes: 2,
-      matriculaActiva: true,
-      facultadoProcesosAcademicos: false,
-      enMora: true,
-      pagosPendientes: [
-        { mes: "Octubre 2024", estado: "Vencido", precio: 500, mora: 125, diasMora: 15, fechaLimite: "2024-10-31" },
-        { mes: "Noviembre 2024", estado: "Pendiente", precio: 500, mora: 125, diasMora: 5, fechaLimite: "2024-11-30" }
-      ]
-    }
-  }
-};
-
 // ── Toast flotante ────────────────────────────────────────────────────────────
 function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onClose }) {
   const [show, setShow] = useState(false);
@@ -139,63 +89,101 @@ export default function EstudiantePage() {
   const [error, setError] = useState("");
   const [tabActiva, setTabActiva] = useState("notas");
   const [toastVisible, setToastVisible] = useState({ solvencia: false });
-  const [usandoDatosLocales, setUsandoDatosLocales] = useState(false);
+  const [modoDemo, setModoDemo] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cn_usuario");
-    if (!raw) { window.location.href = "/control-de-notas"; return; }
+    if (!raw) { 
+      window.location.href = "/control-de-notas"; 
+      return; 
+    }
     
     const u = JSON.parse(raw);
-    if (u.rol !== "ALUMNO") { window.location.href = "/control-de-notas"; return; }
+    if (u.rol !== "ALUMNO") { 
+      window.location.href = "/control-de-notas"; 
+      return; 
+    }
     
     setUsuario(u);
-    cargarDatos(u.carnet ?? u.id);
+    
+    // Usar carnet si existe, sino el id (UUID)
+    const identificador = u.carnet ?? u.id;
+    if (identificador) {
+      cargarDatos(identificador);
+    } else {
+      setError("No se encontró identificador de usuario");
+      setCargando(false);
+    }
   }, []);
 
-  const cargarDatos = async (carnet) => {
+  const cargarDatos = async (identificador) => {
     setCargando(true);
     setError("");
-    setUsandoDatosLocales(false);
+    setModoDemo(false);
     
     try {
-      const encodedCarnet = encodeURIComponent(carnet);
+      const encoded = encodeURIComponent(identificador);
       
-      // Intentar cargar de la API
+      // Llamar a nuestras APIs
       const [resNotas, resSolvencia] = await Promise.all([
-        fetch(`/api/control-de-notas/notas/${encodedCarnet}`),
-        fetch(`/api/control-de-notas/notas/${encodedCarnet}/solvencia-estado`),
+        fetch(`/api/control-de-notas/notas/${encoded}`),
+        fetch(`/api/control-de-notas/notas/${encoded}/solvencia-estado`),
       ]);
 
-      if (!resNotas.ok || !resSolvencia.ok) {
-        throw new Error("Error en APIs");
-      }
-
-      const [dNotas, dSolvencia] = await Promise.all([
-        resNotas.json(),
-        resSolvencia.json(),
-      ]);
+      const dNotas = await resNotas.json();
+      const dSolvencia = await resSolvencia.json();
 
       if (!dNotas.success || !dSolvencia.success) {
-        throw new Error("Datos inválidos");
+        throw new Error(dNotas.message || dSolvencia.message || "Error en datos");
       }
 
       setNotas(dNotas);
       setSolvencia(dSolvencia);
 
     } catch (e) {
-      console.warn("⚠️ APIs no disponibles, usando datos locales:", e);
-      // 🔧 FALLBACK: Usar datos mock
-      setUsandoDatosLocales(true);
+      console.error("Error cargando datos:", e);
+      
+      // Si falla, usar datos de demo para no dejar la página en blanco
+      setModoDemo(true);
+      setError("No se pudieron cargar los datos reales. Mostrando información de demostración.");
+      
+      // Datos mock para que vea el diseño
       setNotas({
         success: true,
-        alumno: DATOS_MOCK.alumno,
-        notas: DATOS_MOCK.notas,
-        resumen: DATOS_MOCK.resumen
+        alumno: {
+          nombre: "Juan Carlos Pérez García",
+          carnet: "2600001",
+          carrera: "Ingeniería en Sistemas"
+        },
+        notas: [
+          { curso: "MAT101", nombreCurso: "Matemática I", periodo: "2024-01", zona: 45, examenFinal: 35, notaFinal: 80, estado: "aprobado", creditos: 5 },
+          { curso: "FIS101", nombreCurso: "Física I", periodo: "2024-01", zona: 40, examenFinal: 30, notaFinal: 70, estado: "aprobado", creditos: 5 },
+          { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55, estado: "reprobado", creditos: 5 },
+        ],
+        resumen: {
+          promedioGeneral: 68.3,
+          totalCursos: 3,
+          cursosAprobados: 2,
+          cursosReprobados: 1,
+          creditosAprobados: 10
+        }
       });
+      
       setSolvencia({
         success: true,
-        alumno: DATOS_MOCK.alumno,
-        ...DATOS_MOCK.solvencia
+        solvenciaGeneral: false,
+        solvenciaNotas: {
+          solvente: false,
+          totalReprobados: 1,
+          cursosReprobados: [
+            { curso: "MAT102", nombreCurso: "Matemática II", notaFinal: 55 }
+          ]
+        },
+        solvenciaPagos: {
+          solvente: false,
+          montoPendiente: 1250.00,
+          mensualidadesPendientes: 2
+        }
       });
     } finally {
       setCargando(false);
@@ -208,48 +196,42 @@ export default function EstudiantePage() {
     </div>
   );
 
+  // Extraer datos (ya sean reales o de demo)
   const notasLista = notas?.notas ?? [];
   const resumen = notas?.resumen ?? {};
+  const alumnoData = notas?.alumno ?? {};
   const solvGeneral = solvencia?.solvenciaGeneral ?? false;
-  const reprobados = solvencia?.solvenciaNotas?.cursosReprobados ?? [];
-  const aprobados = notasLista.filter((n) => n.estado === "aprobado");
   const reproList = notasLista.filter((n) => n.estado === "reprobado");
-  const carnetDisplay = usuario?.carnet ?? usuario?.id ?? notas?.alumno?.carnet ?? "—";
+  
+  const carnetDisplay = alumnoData?.carnet ?? usuario?.carnet ?? usuario?.id ?? "—";
 
   return (
     <div className="row clearfix">
       <div className="col-lg-12">
         <div className="card" style={{ background: "#fff" }}>
-
-          {/* Banner de modo local */}
-          {usandoDatosLocales && (
+          
+          {/* Banner de modo demo */}
+          {modoDemo && (
             <div style={{
-              background: "#fff3cd", 
-              border: "1px solid #ffc107", 
-              color: "#856404", 
-              padding: "12px 20px",
-              fontSize: "14px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              borderRadius: "0 0 8px 8px"
+              background: "#fff3cd", border: "1px solid #ffc107", 
+              color: "#856404", padding: "12px 20px", fontSize: "14px",
+              borderRadius: "0 0 8px 8px", textAlign: "center"
             }}>
-              <span>⚠️</span>
-              <span><strong>Modo demostración:</strong> Mostrando datos de ejemplo. Las APIs no están conectadas.</span>
+              ⚠️ <strong>Modo demostración:</strong> {error}
             </div>
           )}
 
-          {/* ── Header ── */}
+          {/* Header */}
           <div className="card-header" style={{
             background: "#fff", display: "flex", justifyContent: "space-between",
             alignItems: "center", borderBottom: "2px solid #800020", padding: "20px",
           }}>
             <div>
               <h3 style={{ color: "#800020", marginBottom: "4px" }}>
-                👨‍🎓 {notas?.alumno?.nombre ?? usuario?.nombre}
+                👨‍🎓 {alumnoData?.nombre || usuario?.nombre}
               </h3>
               <p style={{ color: "#666", margin: 0 }}>
-                Carnet: {carnetDisplay} | Carrera: {notas?.alumno?.carrera ?? "—"}
+                Carnet: {carnetDisplay} | Carrera: {alumnoData?.carrera || usuario?.carrera || "—"}
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -272,7 +254,7 @@ export default function EstudiantePage() {
 
           <div className="card-body" style={{ padding: "20px" }}>
 
-            {/* ── Stats rápidos ── */}
+            {/* Stats rápidos */}
             <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
               {[
                 { label: "Promedio General", valor: resumen.promedioGeneral ?? "—", color: "#1976d2", bg: "#e3f2fd" },
@@ -292,7 +274,7 @@ export default function EstudiantePage() {
               ))}
             </div>
 
-            {/* ── Tabs ── */}
+            {/* Tabs */}
             <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0" }}>
               {[
                 { id: "notas", label: "📝 Mis Notas" },
@@ -310,7 +292,7 @@ export default function EstudiantePage() {
               ))}
             </div>
 
-            {/* ── Tab: Todas las notas ── */}
+            {/* Tab: Todas las notas */}
             {tabActiva === "notas" && (
               <div>
                 {notasLista.length === 0 ? (
@@ -374,7 +356,7 @@ export default function EstudiantePage() {
               </div>
             )}
 
-            {/* ── Tab: Reprobados ── */}
+            {/* Tab: Reprobados */}
             {tabActiva === "reprobados" && (
               <div>
                 {reproList.length === 0 ? (
@@ -423,7 +405,7 @@ export default function EstudiantePage() {
         </div>
       </div>
 
-      {/* ── Toast solvencia ── */}
+      {/* Toast solvencia */}
       <div style={{
         position: "fixed", top: "16px", right: "16px",
         display: "flex", flexDirection: "column", gap: "10px",
@@ -442,13 +424,13 @@ export default function EstudiantePage() {
             <p style={{ margin: "0 0 4px", color: solvencia?.solvenciaNotas?.solvente ? "#2e7d32" : "#c62828" }}>
               {solvencia?.solvenciaNotas?.solvente
                 ? "✅ Sin cursos reprobados"
-                : `❌ ${solvencia?.solvenciaNotas?.totalReprobados} curso(s) reprobado(s)`}
+                : `❌ ${solvencia?.solvenciaNotas?.totalReprobados || reproList.length} curso(s) reprobado(s)`}
             </p>
             <p style={{ margin: "8px 0 6px", fontWeight: 600, color: "#444" }}>Pagos:</p>
             <p style={{ margin: 0, color: solvencia?.solvenciaPagos?.solvente ? "#2e7d32" : "#c62828" }}>
               {solvencia?.solvenciaPagos?.solvente
                 ? "✅ Sin mora pendiente"
-                : `❌ Q${solvencia?.solvenciaPagos?.montoPendiente?.toFixed(2)} pendiente`}
+                : `❌ Q${(solvencia?.solvenciaPagos?.montoPendiente || 0).toFixed(2)} pendiente`}
             </p>
           </div>
         </SolvenciaToast>
