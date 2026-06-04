@@ -1,74 +1,20 @@
-import prisma from "@/lib/prisma"; // Conectado al schema 'notas'
+import mockData from "@/app/mocks/control-de-notas-mocks/mockData";
 
 export const NOTA_APROBACION = 61;
 
-// Rutas APIs Grupo 1 (REST)
-const API_BASE = {
-  ALUMNOS: "/api/alumnos",       // GET lista completa
-  CURSOS: "/api/cursos",         // GET lista completa
-  SOLVENCIA: "/api/solvencia",   // Grupo 6
-  MORA: "/api/mora"              // Grupo 6
-};
-
-// Helper fetch
-async function fetchApi(url) {
-  const res = await fetch(url, { 
-    cache: "no-store",
-    headers: { 'Content-Type': 'application/json' }
-  });
-  
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || err.message || `HTTP ${res.status}`);
-  }
-  
-  const data = await res.json();
-  return data.data ?? data;
-}
-
-// Detectar tipo de identificador
-function esUUID(str) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-}
-
-function esNumerico(str) {
-  return /^\d+$/.test(str);
-}
-
-// 🔧 BUSCAR ALUMNO: Busca por UUID (parqueo_user_id), Carnet, o ID numérico
-export async function buscarAlumnoPorIdentificador(origin, identificador) {
-  // Obtener lista de alumnos desde API Grupo 1
-  const alumnos = await fetchApi(`${origin}${API_BASE.ALUMNOS}`);
-  
-  if (!Array.isArray(alumnos)) {
-    throw new Error("Error obteniendo lista de alumnos");
-  }
-
-  let alumno = null;
-
-  if (esUUID(identificador)) {
-    // Buscar por parqueo_user_id (UUID del auth.User)
-    alumno = alumnos.find(a => a.parqueo_user_id === identificador);
-  } else if (esNumerico(identificador)) {
-    // Buscar por ID numérico o carnet numérico
-    alumno = alumnos.find(a => 
-      String(a.id) === identificador || 
-      a.carnet === identificador
-    );
-  } else {
-    // Buscar por carnet (string)
-    alumno = alumnos.find(a => a.carnet === identificador);
-  }
+// Helper para buscar alumno en mocks
+export function buscarAlumnoEnMocks(identificador) {
+  // Buscar por carnet o id
+  const alumno = mockData.alumnos.find(a => 
+    a.carnet === identificador || 
+    a.id === identificador
+  );
   
   if (!alumno) {
     throw new Error(`Alumno con identificador ${identificador} no encontrado`);
   }
   
-  return alumno; // Devuelve objeto con id (Int), carnet, nombre, carrera, etc.
-}
-
-export async function obtenerCursos(origin) {
-  return fetchApi(`${origin}${API_BASE.CURSOS}`);
+  return alumno;
 }
 
 export function toNumber(value, fallback = 0) {
@@ -89,79 +35,19 @@ export function obtenerNombreAlumno(alumno) {
 }
 
 export function obtenerNombreCarrera(alumno) {
-  return alumno?.carrera?.nombre ?? null;
+  return alumno?.carrera ?? null;
 }
 
-export function buscarCursoPorId(cursos, idCurso) {
-  return cursos.find((c) => Number(c.id) === Number(idCurso));
+export function buscarCursoPorCodigo(cursos, codigoCurso) {
+  return cursos.find((c) => c.curso === codigoCurso || c.id === codigoCurso);
 }
 
-export function construirNotaDesdeMatricula(matricula, curso) {
-  const notas = matricula.notas ?? [];
-  let zona = 0;
-  let examenFinal = 0;
-
-  for (const nota of notas) {
-    const valor = toNumber(nota.valor);
-    const nombreEval = nota.evaluacion?.nombre?.toLowerCase() ?? "";
-    if (nombreEval.includes("final") || nombreEval.includes("examen")) {
-      examenFinal += valor;
-    } else {
-      zona += valor;
-    }
-  }
-
-  const notaFinal = toNumber(matricula.cierre?.nota_final, zona + examenFinal);
-  const estado = notaFinal >= NOTA_APROBACION ? "aprobado" : "reprobado";
-
-  return {
-    curso: curso?.codigo ?? String(curso?.id),
-    nombreCurso: curso?.nombre ?? "Curso",
-    periodo: matricula.periodo,
-    zona,
-    examenFinal,
-    notaFinal,
-    estado,
-    creditos: toNumber(curso?.creditos),
-  };
-}
-
-// Consulta Prisma al schema 'notas' (Grupo 2)
-export async function obtenerMatriculasAlumno(idAlumnoInt) {
-  return prisma.matricula.findMany({
-    where: { id_alumno: idAlumnoInt },
-    include: {
-      notas: { include: { evaluacion: true } },
-      cierre: true,
-    },
-    orderBy: [{ periodo: "desc" }, { id_matricula: "desc" }],
-  });
-}
-
-// 🔧 ARMAR NOTAS: Conecta Grupo 1 (API) + Grupo 2 (Prisma notas)
-export async function armarNotasAlumno(origin, identificador) {
-  // 1. Buscar alumno en Grupo 1 (por UUID, carnet o ID)
-  const alumno = await buscarAlumnoPorIdentificador(origin, identificador);
+// 🔧 ARMAR NOTAS: Usa mocks locales
+export function armarNotasAlumnoLocal(carnet) {
+  const alumno = buscarAlumnoEnMocks(carnet);
+  const notas = mockData.notas[carnet] || [];
   
-  // El ID numérico del alumno para el schema 'notas'
-  const idAlumnoInt = Number(alumno.id);
-  
-  if (!idAlumnoInt) {
-    throw new Error("Alumno sin ID válido");
-  }
-
-  // 2. Obtener cursos de Grupo 1
-  const cursos = await obtenerCursos(origin);
-
-  // 3. Obtener matrículas de Grupo 2 (schema notas)
-  const matriculas = await obtenerMatriculasAlumno(idAlumnoInt);
-  
-  // 4. Construir notas
-  const notas = matriculas.map((mat) => {
-    const curso = buscarCursoPorId(cursos, mat.id_curso);
-    return construirNotaDesdeMatricula(mat, curso);
-  });
-
+  // Calcular resumen
   const aprobados = notas.filter(n => n.estado === "aprobado");
   const reprobados = notas.filter(n => n.estado === "reprobado");
   
@@ -169,41 +55,79 @@ export async function armarNotasAlumno(origin, identificador) {
     ? Number((notas.reduce((a, n) => a + n.notaFinal, 0) / notas.length).toFixed(2))
     : 0;
 
+  const creditosAprobados = aprobados.reduce((a, n) => a + (n.creditos || 0), 0);
+
   return {
-    alumno,
-    idAlumno: idAlumnoInt,
-    cursos,
+    alumno: {
+      ...alumno,
+      nombreCompleto: obtenerNombreAlumno(alumno)
+    },
+    carnet: alumno.carnet,
     notas,
     resumen: {
       promedioGeneral,
       totalCursos: notas.length,
       cursosAprobados: aprobados.length,
       cursosReprobados: reprobados.length,
-      creditosAprobados: aprobados.reduce((a, n) => a + n.creditos, 0),
+      creditosAprobados,
     },
   };
 }
 
-// Solvencia Grupo 6
-export async function obtenerSolvenciaPagos(origin, carnet) {
-  try {
-    const [solv, mora] = await Promise.all([
-      fetchApi(`${origin}${API_BASE.SOLVENCIA}/${encodeURIComponent(carnet)}`),
-      fetchApi(`${origin}${API_BASE.MORA}/${encodeURIComponent(carnet)}`)
-    ]);
+// 🔧 SOLVENCIA: Usa mocks locales
+export function obtenerSolvenciaLocal(carnet) {
+  const alumno = buscarAlumnoEnMocks(carnet);
+  const notas = mockData.notas[carnet] || [];
+  const solvenciaPago = mockData.solvenciaPagos[carnet] || { solvente: true, montoPendiente: 0 };
+  
+  const cursosReprobados = notas.filter(n => n.estado === "reprobado");
+  const solventeNotas = cursosReprobados.length === 0;
+  
+  return {
+    alumno,
+    solvenciaGeneral: solventeNotas && solvenciaPago.solvente,
+    solvenciaNotas: {
+      solvente: solventeNotas,
+      totalReprobados: cursosReprobados.length,
+      cursosReprobados: cursosReprobados.map(c => ({
+        curso: c.curso,
+        nombreCurso: c.nombreCurso,
+        notaFinal: c.notaFinal,
+        periodo: c.periodo
+      }))
+    },
+    solvenciaPagos: {
+      solvente: solvenciaPago.solvente,
+      montoPendiente: parseMoney(solvenciaPago.montoPendiente),
+      mensualidadesPendientes: solvenciaPago.montoPendiente > 0 ? 1 : 0,
+      enMora: !solvenciaPago.solvente
+    }
+  };
+}
 
-    const montoPendiente = parseMoney(mora?.total_pendiente || 0) + parseMoney(mora?.total_mora || 0);
-    
-    return {
-      solvente: solv?.solvente === true && mora?.en_mora !== true,
-      montoPendiente,
-      mensualidadesPendientes: solv?.mensualidades_pendientes || mora?.detalle?.length || 0,
-      matriculaActiva: solv?.matricula_activa === true,
-      enMora: mora?.en_mora === true,
-      pagosPendientes: mora?.detalle || [],
-    };
-  } catch (e) {
-    console.warn("Error solvencia:", e);
-    return { solvente: true, montoPendiente: 0, mensualidadesPendientes: 0, enMora: false, pagosPendientes: [] };
+// 🔧 ASISTENCIAS: Usa mocks locales
+export function obtenerAsistenciasLocal(carnet, codigoCurso) {
+  const alumno = buscarAlumnoEnMocks(carnet);
+  
+  // mockData.asistencias[carnet][curso]
+  const asistenciasAlumno = mockData.asistencias[carnet];
+  if (!asistenciasAlumno) {
+    return null;
   }
+  
+  const asistenciaCurso = asistenciasAlumno[codigoCurso.toUpperCase()];
+  if (!asistenciaCurso) {
+    return null;
+  }
+
+  return {
+    alumno,
+    curso: asistenciaCurso,
+    resumen: {
+      total: asistenciaCurso.totalClases || 0,
+      presentes: asistenciaCurso.asistencias || 0,
+      ausentes: asistenciaCurso.ausencias || 0,
+      porcentaje: asistenciaCurso.porcentajeAsistencia || 0
+    }
+  };
 }
