@@ -11,3 +11,4 @@ export default async function ControlDeNotasLayout({ children }) {
   if (error) redirect('/login')
   return <>{children}</>
 }
+//return to version 2dbe848
