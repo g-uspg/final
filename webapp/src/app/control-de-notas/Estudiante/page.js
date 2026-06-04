@@ -59,13 +59,26 @@ function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onC
   );
 }
 
-// ── Badge de estado de nota ───────────────────────────────────────────────────
-function BadgeNota({ nota }) {
-  const color = nota >= 61 ? "#2e7d32" : "#c62828";
-  const bg = nota >= 61 ? "#e8f5e9" : "#ffebee";
+// ── Badge de estado ─────────────────────────────────────────────────────────
+function BadgeEstado({ estado }) {
+  const configs = {
+    pendiente: { bg: "#fff3e0", color: "#e65100", texto: "⏳ Pendiente" },
+    aprobado: { bg: "#e8f5e9", color: "#2e7d32", texto: "✅ Aprobado" },
+    reprobado: { bg: "#ffebee", color: "#c62828", texto: "❌ Reprobado" }
+  };
+  
+  const config = configs[estado] || configs.pendiente;
+  
   return (
-    <span style={{ padding: "3px 10px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, background: bg, color }}>
-      {nota}
+    <span style={{ 
+      padding: "3px 10px", 
+      borderRadius: "999px", 
+      fontSize: "11px", 
+      fontWeight: 600,
+      background: config.bg,
+      color: config.color 
+    }}>
+      {config.texto}
     </span>
   );
 }
@@ -75,7 +88,13 @@ function BarraProgreso({ valor, max, color }) {
   const pct = Math.min(100, (valor / max) * 100);
   return (
     <div style={{ background: "#f0f0f0", borderRadius: "999px", height: "8px", width: "100%" }}>
-      <div style={{ width: `${pct}%`, background: color, borderRadius: "999px", height: "100%", transition: "width 0.6s ease" }} />
+      <div style={{ 
+        width: `${pct}%`, 
+        background: color, 
+        borderRadius: "999px", 
+        height: "100%", 
+        transition: "width 0.6s ease" 
+      }} />
     </div>
   );
 }
@@ -87,9 +106,8 @@ export default function EstudiantePage() {
   const [solvencia, setSolvencia] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const [tabActiva, setTabActiva] = useState("notas");
+  const [tabActiva, setTabActiva] = useState("cursos");
   const [toastVisible, setToastVisible] = useState({ solvencia: false });
-  const [modoDemo, setModoDemo] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cn_usuario");
@@ -106,10 +124,9 @@ export default function EstudiantePage() {
     
     setUsuario(u);
     
-    // Usar carnet como identificador principal
-    const identificador = u.carnet;
-    if (identificador) {
-      cargarDatos(identificador);
+    const carnet = u.carnet;
+    if (carnet) {
+      cargarDatos(carnet);
     } else {
       setError("No se encontró el carnet del alumno");
       setCargando(false);
@@ -119,34 +136,28 @@ export default function EstudiantePage() {
   const cargarDatos = async (carnet) => {
     setCargando(true);
     setError("");
-    setModoDemo(false);
     
     try {
-      console.log("🔍 Cargando datos para carnet:", carnet);
+      console.log("🔍 [Frontend] Cargando datos para carnet:", carnet);
       
-      // Llamar a las APIs del Grupo 1
+      // Llamar a las APIs
       const [resNotas, resSolvencia] = await Promise.all([
         fetch(`/api/control-de-notas/notas/${carnet}`),
         fetch(`/api/control-de-notas/notas/${carnet}/solvencia-estado`),
       ]);
 
-      console.log("📡 Respuesta notas:", resNotas.status);
-      console.log("📡 Respuesta solvencia:", resSolvencia.status);
+      console.log("📡 [Frontend] Status notas:", resNotas.status);
+      console.log("📡 [Frontend] Status solvencia:", resSolvencia.status);
 
-      // Validar respuestas HTTP
-      if (!resNotas.ok) {
-        throw new Error(`Error al obtener notas: ${resNotas.status} ${resNotas.statusText}`);
-      }
-      
-      if (!resSolvencia.ok) {
-        throw new Error(`Error al obtener solvencia: ${resSolvencia.status} ${resSolvencia.statusText}`);
+      if (!resNotas.ok || !resSolvencia.ok) {
+        const errorMsg = `Error en servidor: Notas(${resNotas.status}) Solvencia(${resSolvencia.status})`;
+        throw new Error(errorMsg);
       }
 
       const dNotas = await resNotas.json();
       const dSolvencia = await resSolvencia.json();
 
-      console.log("✅ Datos de notas:", dNotas);
-      console.log("✅ Datos de solvencia:", dSolvencia);
+      console.log("✅ [Frontend] Datos recibidos:", { notas: dNotas, solvencia: dSolvencia });
 
       if (!dNotas.success) {
         throw new Error(dNotas.message || "Error al cargar las notas");
@@ -160,101 +171,73 @@ export default function EstudiantePage() {
       setSolvencia(dSolvencia);
 
     } catch (e) {
-      console.error("❌ Error cargando datos:", e);
-      
-      // Mostrar el error real
-      setError(e.message || "No se pudieron cargar los datos");
-      setModoDemo(true);
-      
-      // Datos mock de respaldo
-      setNotas({
-        success: true,
-        alumno: {
-          nombre: usuario?.nombre || "Estudiante",
-          carnet: carnet,
-          carrera: usuario?.carrera || "Sin carrera asignada"
-        },
-        notas: [],
-        resumen: {
-          promedioGeneral: 0,
-          totalCursos: 0,
-          cursosAprobados: 0,
-          cursosReprobados: 0,
-          creditosAprobados: 0
-        }
-      });
-      
-      setSolvencia({
-        success: true,
-        solvenciaGeneral: true,
-        solvenciaNotas: {
-          solvente: true,
-          totalReprobados: 0,
-          cursosReprobados: []
-        },
-        solvenciaPagos: {
-          solvente: true,
-          montoPendiente: 0.00,
-          mensualidadesPendientes: 0,
-          enMora: false
-        }
-      });
+      console.error("❌ [Frontend] Error:", e);
+      setError(e.message || "Error de conexión con el servidor");
     } finally {
       setCargando(false);
     }
   };
 
-  if (cargando) return (
-    <div style={{ textAlign: "center", padding: "80px" }}>
-      <div style={{ fontSize: "48px", marginBottom: "16px" }}>⏳</div>
-      <p style={{ fontSize: "18px", color: "#666" }}>Cargando tu información académica...</p>
-      <p style={{ fontSize: "14px", color: "#999", marginTop: "8px" }}>
-        Consultando base de datos del sistema académico
-      </p>
-    </div>
-  );
+  if (cargando) {
+    return (
+      <div style={{ textAlign: "center", padding: "80px" }}>
+        <div style={{ fontSize: "48px", marginBottom: "16px" }}>⏳</div>
+        <p style={{ fontSize: "18px", color: "#666", fontWeight: 600 }}>
+          Cargando información académica...
+        </p>
+        <p style={{ fontSize: "14px", color: "#999", marginTop: "8px" }}>
+          Consultando sistema académico del Grupo 1
+        </p>
+      </div>
+    );
+  }
 
-  // Extraer datos (ya sean reales o de demo)
-  const notasLista = notas?.notas ?? [];
+  if (error) {
+    return (
+      <div className="row clearfix">
+        <div className="col-lg-12">
+          <div className="card">
+            <div className="card-body" style={{ padding: "40px", textAlign: "center" }}>
+              <div style={{ fontSize: "64px", marginBottom: "16px" }}>⚠️</div>
+              <h3 style={{ color: "#c62828", marginBottom: "16px" }}>Error al cargar datos</h3>
+              <p style={{ color: "#666", marginBottom: "24px" }}>{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                style={{
+                  padding: "10px 20px",
+                  background: "#800020",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: 600
+                }}
+              >
+                🔄 Reintentar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Extraer datos
+  const cursosLista = notas?.notas ?? [];
   const resumen = notas?.resumen ?? {};
   const alumnoData = notas?.alumno ?? {};
-  const solvGeneral = solvencia?.solvenciaGeneral ?? false;
-  const reproList = notasLista.filter((n) => n.estado === "reprobado");
-  
+  const solvGeneral = solvencia?.solvenciaGeneral ?? true;
   const carnetDisplay = alumnoData?.carnet ?? usuario?.carnet ?? "—";
+
+  // Calcular total de créditos (suma de todos los cursos asignados)
+  const totalCreditos = cursosLista.reduce((sum, c) => sum + (c.creditos || 0), 0);
 
   return (
     <div className="row clearfix">
       <div className="col-lg-12">
         <div className="card" style={{ background: "#fff" }}>
           
-          {/* Banner de modo demo/error */}
-          {modoDemo && (
-            <div style={{
-              background: "#fff3cd", 
-              border: "1px solid #ffc107", 
-              color: "#856404", 
-              padding: "12px 20px", 
-              fontSize: "14px",
-              borderRadius: "8px 8px 0 0", 
-              textAlign: "center",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px"
-            }}>
-              <span style={{ fontSize: "18px" }}>⚠️</span>
-              <div>
-                <strong>Modo demostración:</strong> {error}
-                {notasLista.length === 0 && (
-                  <div style={{ marginTop: "4px", fontSize: "12px" }}>
-                    No se encontraron notas registradas. Por favor contacta al departamento académico.
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Header */}
           <div className="card-header" style={{
             background: "#fff", 
@@ -266,10 +249,10 @@ export default function EstudiantePage() {
           }}>
             <div>
               <h3 style={{ color: "#800020", marginBottom: "4px", fontWeight: 700 }}>
-                👨‍🎓 {alumnoData?.nombre || usuario?.nombre || "Estudiante"}
+                👨‍🎓 {alumnoData?.nombre || "Estudiante"}
               </h3>
               <p style={{ color: "#666", margin: 0, fontSize: "14px" }}>
-                <strong>Carnet:</strong> {carnetDisplay} | <strong>Carrera:</strong> {alumnoData?.carrera || usuario?.carrera || "Sin asignar"}
+                <strong>Carnet:</strong> {carnetDisplay} | <strong>Carrera:</strong> {alumnoData?.carrera || "Sin asignar"}
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -289,12 +272,8 @@ export default function EstudiantePage() {
                   fontSize: "13px",
                   transition: "all 0.2s ease"
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
               >
                 {solvGeneral ? "✅" : "⚠️"} Solvencia
               </button>
@@ -320,30 +299,32 @@ export default function EstudiantePage() {
             <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
               {[
                 { 
-                  label: "Promedio General", 
-                  valor: typeof resumen.promedioGeneral === 'number' 
-                    ? resumen.promedioGeneral.toFixed(1) 
-                    : "—", 
+                  label: "Total Cursos", 
+                  valor: cursosLista.length, 
                   color: "#1976d2", 
-                  bg: "#e3f2fd" 
+                  bg: "#e3f2fd",
+                  icono: "📚"
                 },
                 { 
-                  label: "Cursos Aprobados", 
-                  valor: resumen.cursosAprobados ?? 0, 
-                  color: "#2e7d32", 
-                  bg: "#e8f5e9" 
-                },
-                { 
-                  label: "Cursos Reprobados", 
-                  valor: resumen.cursosReprobados ?? 0, 
-                  color: "#c62828", 
-                  bg: "#ffebee" 
-                },
-                { 
-                  label: "Créditos Obtenidos", 
-                  valor: resumen.creditosAprobados ?? 0, 
+                  label: "Créditos Asignados", 
+                  valor: totalCreditos, 
                   color: "#e65100", 
-                  bg: "#fff3e0" 
+                  bg: "#fff3e0",
+                  icono: "🎯"
+                },
+                { 
+                  label: "Estado", 
+                  valor: "Activo", 
+                  color: "#2e7d32", 
+                  bg: "#e8f5e9",
+                  icono: "✅"
+                },
+                { 
+                  label: "Solvencia", 
+                  valor: solvGeneral ? "OK" : "Pendiente", 
+                  color: solvGeneral ? "#2e7d32" : "#c62828", 
+                  bg: solvGeneral ? "#e8f5e9" : "#ffebee",
+                  icono: solvGeneral ? "✅" : "⚠️"
                 },
               ].map((s) => (
                 <div key={s.label} style={{
@@ -351,15 +332,16 @@ export default function EstudiantePage() {
                   borderRadius: "10px", 
                   background: s.bg,
                   border: `1.5px solid ${s.color}22`, 
-                  minWidth: "130px", 
+                  minWidth: "140px", 
                   textAlign: "center",
                   flex: "1 1 calc(25% - 12px)",
-                  minHeight: "80px",
+                  minHeight: "85px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center"
                 }}>
-                  <p style={{ margin: 0, fontSize: "26px", fontWeight: 700, color: s.color }}>
+                  <div style={{ fontSize: "20px", marginBottom: "4px" }}>{s.icono}</div>
+                  <p style={{ margin: 0, fontSize: "24px", fontWeight: 700, color: s.color }}>
                     {s.valor}
                   </p>
                   <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#666" }}>{s.label}</p>
@@ -367,194 +349,118 @@ export default function EstudiantePage() {
               ))}
             </div>
 
-            {/* Tabs */}
-            <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0" }}>
-              {[
-                { id: "notas", label: `📝 Mis Notas (${notasLista.length})` },
-                { id: "reprobados", label: `❌ Reprobados (${reproList.length})` },
-              ].map((tab) => (
-                <button key={tab.id} onClick={() => setTabActiva(tab.id)} style={{
-                  padding: "10px 20px", 
-                  border: "none", 
-                  background: "none", 
-                  cursor: "pointer",
-                  borderBottom: tabActiva === tab.id ? "3px solid #800020" : "3px solid transparent",
-                  color: tabActiva === tab.id ? "#800020" : "#666",
-                  fontWeight: tabActiva === tab.id ? 700 : 400,
-                  fontSize: "14px", 
-                  marginBottom: "-2px",
-                  transition: "all 0.2s ease"
-                }}>
-                  {tab.label}
-                </button>
-              ))}
+            {/* Tab header */}
+            <div style={{ 
+              display: "flex", 
+              gap: "4px", 
+              marginBottom: "20px", 
+              borderBottom: "2px solid #f0f0f0" 
+            }}>
+              <button onClick={() => setTabActiva("cursos")} style={{
+                padding: "10px 20px", 
+                border: "none", 
+                background: "none", 
+                cursor: "pointer",
+                borderBottom: tabActiva === "cursos" ? "3px solid #800020" : "3px solid transparent",
+                color: tabActiva === "cursos" ? "#800020" : "#666",
+                fontWeight: tabActiva === "cursos" ? 700 : 400,
+                fontSize: "14px", 
+                marginBottom: "-2px",
+                transition: "all 0.2s ease"
+              }}>
+                📝 Mis Cursos ({cursosLista.length})
+              </button>
             </div>
 
-            {/* Tab: Todas las notas */}
-            {tabActiva === "notas" && (
-              <div>
-                {notasLista.length === 0 ? (
-                  <div style={{ 
-                    textAlign: "center", 
-                    padding: "60px 20px",
-                    background: "#f9f9f9",
-                    borderRadius: "10px"
+            {/* Contenido */}
+            <div>
+              {cursosLista.length === 0 ? (
+                <div style={{ 
+                  textAlign: "center", 
+                  padding: "60px 20px",
+                  background: "#f9f9f9",
+                  borderRadius: "10px"
+                }}>
+                  <p style={{ fontSize: "48px", margin: "0 0 16px" }}>📚</p>
+                  <p style={{ fontSize: "18px", color: "#666", fontWeight: 600, margin: "0 0 8px" }}>
+                    No hay cursos asignados
+                  </p>
+                  <p style={{ fontSize: "14px", color: "#999", margin: 0 }}>
+                    Aún no tienes cursos registrados en el sistema
+                  </p>
+                </div>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table className="table" style={{ 
+                    width: "100%", 
+                    borderCollapse: "collapse", 
+                    minWidth: "700px" 
                   }}>
-                    <p style={{ fontSize: "48px", margin: "0 0 16px" }}>📚</p>
-                    <p style={{ fontSize: "18px", color: "#666", fontWeight: 600, margin: "0 0 8px" }}>
-                      No hay notas registradas
-                    </p>
-                    <p style={{ fontSize: "14px", color: "#999", margin: 0 }}>
-                      Aún no tienes cursos con calificaciones asignadas
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ overflowX: "auto" }}>
-                      <table className="table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "800px" }}>
-                        <thead>
-                          <tr style={{ background: "#f9f9f9" }}>
-                            <th style={{ padding: "12px", textAlign: "left", fontWeight: 600 }}>Código</th>
-                            <th style={{ padding: "12px", textAlign: "left", fontWeight: 600 }}>Curso</th>
-                            <th style={{ padding: "12px", textAlign: "left", fontWeight: 600 }}>Período</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Zona</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Final</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Nota Final</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Estado</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Créditos</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {notasLista.map((n, i) => (
-                            <tr key={i} style={{ 
-                              background: n.estado === "reprobado" ? "#fff8f8" : "white", 
-                              borderBottom: "1px solid #eee",
-                              transition: "background 0.2s ease"
-                            }}>
-                              <td style={{ padding: "12px", fontWeight: 600, fontSize: "13px" }}>{n.curso}</td>
-                              <td style={{ padding: "12px" }}>{n.nombreCurso}</td>
-                              <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{n.periodo}</td>
-                              <td style={{ padding: "12px", textAlign: "center" }}>{n.zona}</td>
-                              <td style={{ padding: "12px", textAlign: "center" }}>{n.examenFinal}</td>
-                              <td style={{ padding: "12px", textAlign: "center" }}><BadgeNota nota={n.notaFinal} /></td>
-                              <td style={{ padding: "12px", textAlign: "center" }}>
-                                <span style={{
-                                  padding: "3px 10px", 
-                                  borderRadius: "999px", 
-                                  fontSize: "11px", 
-                                  fontWeight: 600,
-                                  background: n.estado === "aprobado" ? "#e8f5e9" : "#ffebee",
-                                  color: n.estado === "aprobado" ? "#2e7d32" : "#c62828",
-                                }}>
-                                  {n.estado === "aprobado" ? "✅ Aprobado" : "❌ Reprobado"}
-                                </span>
-                              </td>
-                              <td style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>{n.creditos}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                    <thead>
+                      <tr style={{ background: "#f9f9f9" }}>
+                        <th style={{ padding: "12px", textAlign: "left", fontWeight: 600 }}>Código</th>
+                        <th style={{ padding: "12px", textAlign: "left", fontWeight: 600 }}>Nombre del Curso</th>
+                        <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Período</th>
+                        <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Créditos</th>
+                        <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cursosLista.map((curso, i) => (
+                        <tr key={i} style={{ 
+                          background: "white", 
+                          borderBottom: "1px solid #eee",
+                          transition: "background 0.2s ease"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = "#f9f9f9"}
+                        onMouseLeave={(e) => e.currentTarget.style.background = "white"}
+                        >
+                          <td style={{ padding: "12px", fontWeight: 600, fontSize: "13px" }}>
+                            {curso.curso}
+                          </td>
+                          <td style={{ padding: "12px" }}>
+                            {curso.nombreCurso}
+                          </td>
+                          <td style={{ padding: "12px", textAlign: "center", fontSize: "13px", color: "#888" }}>
+                            {curso.periodo}
+                          </td>
+                          <td style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>
+                            {curso.creditos}
+                          </td>
+                          <td style={{ padding: "12px", textAlign: "center" }}>
+                            <BadgeEstado estado={curso.estado} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
-                    {/* Barra de progreso de créditos */}
-                    <div style={{ 
-                      marginTop: "20px", 
-                      padding: "16px", 
-                      background: "#f9f9f9", 
-                      borderRadius: "10px",
-                      border: "1px solid #e0e0e0"
-                    }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-                        <span style={{ fontWeight: 600, fontSize: "14px" }}>📊 Progreso de créditos</span>
-                        <span style={{ fontSize: "13px", color: "#666", fontWeight: 600 }}>
-                          {resumen.creditosAprobados ?? 0} / 200
-                        </span>
-                      </div>
-                      <BarraProgreso valor={resumen.creditosAprobados ?? 0} max={200} color="#800020" />
-                      <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#888" }}>
-                        Te faltan <strong>{200 - (resumen.creditosAprobados ?? 0)}</strong> créditos para completar la carrera
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Tab: Reprobados */}
-            {tabActiva === "reprobados" && (
-              <div>
-                {reproList.length === 0 ? (
-                  <div style={{ 
-                    textAlign: "center", 
-                    padding: "60px 20px",
-                    background: "#f0fdf4",
-                    borderRadius: "10px",
-                    border: "1px solid #bbf7d0"
-                  }}>
-                    <p style={{ fontSize: "64px", margin: "0 0 16px" }}>🎉</p>
-                    <p style={{ 
-                      color: "#2e7d32", 
-                      fontWeight: 700, 
-                      fontSize: "20px",
-                      margin: "0 0 8px"
-                    }}>
-                      ¡Excelente trabajo!
-                    </p>
-                    <p style={{ color: "#15803d", fontSize: "14px", margin: 0 }}>
-                      No tenés cursos reprobados
-                    </p>
+              {/* Barra de progreso de créditos */}
+              {cursosLista.length > 0 && (
+                <div style={{ 
+                  marginTop: "20px", 
+                  padding: "16px", 
+                  background: "#f9f9f9", 
+                  borderRadius: "10px",
+                  border: "1px solid #e0e0e0"
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                    <span style={{ fontWeight: 600, fontSize: "14px" }}>
+                      📊 Créditos de cursos asignados
+                    </span>
+                    <span style={{ fontSize: "13px", color: "#666", fontWeight: 600 }}>
+                      {totalCreditos} créditos
+                    </span>
                   </div>
-                ) : (
-                  <>
-                    <div style={{
-                      padding: "12px 16px", 
-                      borderRadius: "8px", 
-                      marginBottom: "16px",
-                      background: "#ffebee", 
-                      border: "1px solid #ef9a9a", 
-                      fontSize: "13px", 
-                      color: "#c62828",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px"
-                    }}>
-                      <span style={{ fontSize: "18px" }}>⚠️</span>
-                      <div>
-                        Tenés <strong>{reproList.length}</strong> curso(s) reprobado(s). 
-                        Debés repetirlos para completar tu pensum.
-                      </div>
-                    </div>
-                    
-                    <div style={{ overflowX: "auto" }}>
-                      <table className="table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "700px" }}>
-                        <thead>
-                          <tr style={{ background: "#f9f9f9" }}>
-                            <th style={{ padding: "12px", fontWeight: 600 }}>Código</th>
-                            <th style={{ padding: "12px", fontWeight: 600 }}>Curso</th>
-                            <th style={{ padding: "12px", fontWeight: 600 }}>Período</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Zona</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Examen Final</th>
-                            <th style={{ padding: "12px", textAlign: "center", fontWeight: 600 }}>Nota Final</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {reproList.map((n, i) => (
-                            <tr key={i} style={{ background: "#fff8f8", borderBottom: "1px solid #eee" }}>
-                              <td style={{ padding: "12px", fontWeight: 600 }}>{n.curso}</td>
-                              <td style={{ padding: "12px" }}>{n.nombreCurso}</td>
-                              <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{n.periodo}</td>
-                              <td style={{ padding: "12px", textAlign: "center", color: "#c62828", fontWeight: 600 }}>{n.zona}</td>
-                              <td style={{ padding: "12px", textAlign: "center", color: "#c62828", fontWeight: 600 }}>{n.examenFinal}</td>
-                              <td style={{ padding: "12px", textAlign: "center" }}><BadgeNota nota={n.notaFinal} /></td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
+                  <BarraProgreso valor={totalCreditos} max={200} color="#800020" />
+                  <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#888" }}>
+                    Total de créditos en cursos actuales: <strong>{totalCreditos}</strong>
+                  </p>
+                </div>
+              )}
+            </div>
 
           </div>
         </div>
@@ -580,26 +486,24 @@ export default function EstudiantePage() {
           onClose={() => setToastVisible((p) => ({ ...p, solvencia: false }))}
         >
           <div style={{ fontSize: "13px" }}>
-            <p style={{ margin: "0 0 6px", fontWeight: 600, color: "#444" }}>📚 Notas:</p>
+            <p style={{ margin: "0 0 6px", fontWeight: 600, color: "#444" }}>📚 Estado Académico:</p>
             <p style={{ 
               margin: "0 0 4px", 
-              color: solvencia?.solvenciaNotas?.solvente ? "#2e7d32" : "#c62828",
+              color: solvGeneral ? "#2e7d32" : "#c62828",
               fontSize: "12px"
             }}>
-              {solvencia?.solvenciaNotas?.solvente
-                ? "✅ Sin cursos reprobados"
-                : `❌ ${solvencia?.solvenciaNotas?.totalReprobados || reproList.length} curso(s) reprobado(s)`}
+              {solvGeneral 
+                ? "✅ Todo en orden" 
+                : "⚠️ Revisar pendientes"}
             </p>
             
             <p style={{ margin: "12px 0 6px", fontWeight: 600, color: "#444" }}>💰 Pagos:</p>
             <p style={{ 
               margin: 0, 
-              color: solvencia?.solvenciaPagos?.solvente ? "#2e7d32" : "#c62828",
+              color: "#2e7d32",
               fontSize: "12px"
             }}>
-              {solvencia?.solvenciaPagos?.solvente
-                ? "✅ Sin mora pendiente"
-                : `❌ Q${(solvencia?.solvenciaPagos?.montoPendiente || 0).toFixed(2)} pendiente`}
+              ✅ Sin mora pendiente
             </p>
           </div>
         </SolvenciaToast>

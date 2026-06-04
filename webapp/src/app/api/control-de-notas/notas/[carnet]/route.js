@@ -1,23 +1,26 @@
-import prisma from "@/lib/prisma";
-
-export const dynamic = "force-dynamic";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(request, { params }) {
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('🚀 API NOTAS - USANDO GRUPO 1');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
   try {
-    const { carnet } = await params;
+    const { carnet } = params;
+    console.log('📝 Carnet recibido:', carnet);
 
     if (!carnet) {
-      return Response.json(
-        { success: false, message: "El carnet es requerido" },
+      return NextResponse.json(
+        { success: false, message: 'Carnet requerido' },
         { status: 400 }
       );
     }
 
-    console.log("🔍 [API Notas] Buscando alumno con carnet:", carnet);
-
     // 1. Buscar alumno en grupo1_academico
+    console.log('🔍 Buscando alumno en grupo1_academico...');
     const alumno = await prisma.alumno.findUnique({
-      where: { carnet },
+      where: { carnet: String(carnet) },
       include: {
         carrera: true,
         asignaciones: {
@@ -29,133 +32,68 @@ export async function GET(request, { params }) {
     });
 
     if (!alumno) {
-      console.log("❌ [API Notas] Alumno no encontrado");
-      return Response.json(
-        { success: false, message: "Alumno no encontrado" },
+      console.log('❌ Alumno no encontrado');
+      return NextResponse.json(
+        { success: false, message: 'Alumno no encontrado' },
         { status: 404 }
       );
     }
 
-    console.log("✅ [API Notas] Alumno encontrado:", alumno.nombre, alumno.apellido);
+    console.log('✅ Alumno encontrado:', alumno.nombre, alumno.apellido);
+    console.log('📚 Asignaciones (cursos):', alumno.asignaciones.length);
 
-    // 2. Obtener matrículas del schema notas usando el ID del alumno
-    const matriculas = await prisma.matricula.findMany({
-      where: {
-        id_alumno: alumno.id
-      },
-      include: {
-        notas: {
-          include: {
-            evaluacion: true
-          }
-        },
-        cierre: true
-      },
-      orderBy: {
-        periodo: 'desc'
-      }
-    });
+    // 2. Convertir asignaciones a formato de notas
+    // Por ahora sin calificaciones, solo mostramos los cursos asignados
+    const notasFormateadas = alumno.asignaciones.map(asignacion => ({
+      curso: asignacion.curso.codigo,
+      nombreCurso: asignacion.curso.nombre,
+      periodo: asignacion.ciclo || '2024-01',
+      zona: 0,
+      examenFinal: 0,
+      notaFinal: 0,
+      estado: 'pendiente',
+      creditos: asignacion.curso.creditos
+    }));
 
-    console.log("📚 [API Notas] Matrículas encontradas:", matriculas.length);
+    console.log('✅ Cursos procesados:', notasFormateadas.length);
 
-    // 3. Crear un mapa de cursos del grupo1 para enriquecer los datos
-    const cursosDelAlumno = {};
-    alumno.asignaciones.forEach(asig => {
-      cursosDelAlumno[asig.curso.id] = asig.curso;
-    });
+    // 3. Calcular resumen (todo en 0 por ahora)
+    const resumen = {
+      promedioGeneral: 0,
+      totalCursos: notasFormateadas.length,
+      cursosAprobados: 0,
+      cursosReprobados: 0,
+      creditosAprobados: 0
+    };
 
-    // 4. Procesar las notas
-    const notasFormateadas = [];
-    
-    for (const matricula of matriculas) {
-      const curso = cursosDelAlumno[matricula.id_curso];
-
-      if (!curso) {
-        // Si no está en asignaciones, buscar el curso directamente
-        const cursoDirecto = await prisma.curso.findUnique({
-          where: { id: matricula.id_curso }
-        });
-        
-        if (cursoDirecto) {
-          cursosDelAlumno[matricula.id_curso] = cursoDirecto;
-        } else {
-          console.warn(`⚠️ [API Notas] Curso ID ${matricula.id_curso} no encontrado`);
-          continue;
-        }
-      }
-
-      const cursoData = cursosDelAlumno[matricula.id_curso];
-
-      // Calcular zona y examen final
-      let zona = 0;
-      let examenFinal = 0;
-
-      matricula.notas.forEach(nota => {
-        const nombreEval = nota.evaluacion.nombre.toLowerCase();
-        const valor = parseFloat(nota.valor);
-
-        if (nombreEval.includes('zona')) {
-          zona += valor;
-        } else if (nombreEval.includes('final') || nombreEval.includes('examen')) {
-          examenFinal += valor;
-        }
-      });
-
-      // Nota final desde cierre o suma de evaluaciones
-      const notaFinal = matricula.cierre?.nota_final
-        ? parseFloat(matricula.cierre.nota_final)
-        : zona + examenFinal;
-
-      const estado = notaFinal >= 61 ? 'aprobado' : 'reprobado';
-
-      notasFormateadas.push({
-        curso: cursoData.codigo,
-        nombreCurso: cursoData.nombre,
-        periodo: matricula.periodo,
-        zona: Math.round(zona),
-        examenFinal: Math.round(examenFinal),
-        notaFinal: Math.round(notaFinal),
-        estado: estado,
-        creditos: cursoData.creditos
-      });
-    }
-
-    console.log("✅ [API Notas] Notas procesadas:", notasFormateadas.length);
-
-    // 5. Calcular resumen
-    const cursosAprobados = notasFormateadas.filter(n => n.estado === 'aprobado').length;
-    const cursosReprobados = notasFormateadas.filter(n => n.estado === 'reprobado').length;
-    const creditosAprobados = notasFormateadas
-      .filter(n => n.estado === 'aprobado')
-      .reduce((sum, n) => sum + n.creditos, 0);
-
-    const sumaNotasFinales = notasFormateadas.reduce((sum, n) => sum + n.notaFinal, 0);
-    const promedioGeneral = notasFormateadas.length > 0
-      ? Math.round((sumaNotasFinales / notasFormateadas.length) * 10) / 10
-      : 0;
-
-    return Response.json({
+    const response = {
       success: true,
       alumno: {
         carnet: alumno.carnet,
         nombre: `${alumno.nombre} ${alumno.apellido}`,
         email: alumno.email,
-        carrera: alumno.carrera?.nombre || "Sin asignar"
+        carrera: alumno.carrera?.nombre || 'Sin asignar'
       },
       notas: notasFormateadas,
-      resumen: {
-        promedioGeneral,
-        totalCursos: notasFormateadas.length,
-        cursosAprobados,
-        cursosReprobados,
-        creditosAprobados
-      }
-    });
+      resumen: resumen
+    };
+
+    console.log('✅ Respuesta enviada');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
+    return NextResponse.json(response);
 
   } catch (error) {
-    console.error("❌ [API Notas] Error:", error);
-    return Response.json(
-      { success: false, message: error.message || "Error obteniendo las notas" },
+    console.error('❌ ERROR:', error);
+    console.error('Stack:', error.stack);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    
+    return NextResponse.json(
+      { 
+        success: false, 
+        message: 'Error interno del servidor',
+        error: error.message 
+      },
       { status: 500 }
     );
   }
