@@ -1,43 +1,78 @@
-import prisma from "@/lib/prisma"; // Para el schema de notas (grupo 2)
+import prisma from "@/lib/prisma"; // Conectado al schema 'notas'
 
 export const NOTA_APROBACION = 61;
 
-// 🔧 RUTAS APIs GRUPO 1 (ajústa si están en otra ubicación)
+// Rutas APIs Grupo 1 (REST)
 const API_BASE = {
-  ALUMNOS: "webapp/src/app/api/alumnos",
-  CURSOS: "webapp/src/app/api/cursos", 
-  BUSCAR: "webapp/src/app/api/buscar",
-  ASIGNACIONES: "webapp/src/app/api/asignaciones",
-  ASISTENCIAS: "webapp/src/app/api/asistencias",
-  CARRERAS: "webapp/src/app/api/carreras"
+  ALUMNOS: "/api/alumnos",       // GET lista completa
+  CURSOS: "/api/cursos",         // GET lista completa
+  SOLVENCIA: "/api/solvencia",   // Grupo 6
+  MORA: "/api/mora"              // Grupo 6
 };
 
-// Helper para hacer fetch con auth (reenvía el token del usuario)
-async function fetchApi(url, options = {}) {
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    cache: "no-store"
+// Helper fetch
+async function fetchApi(url) {
+  const res = await fetch(url, { 
+    cache: "no-store",
+    headers: { 'Content-Type': 'application/json' }
   });
   
   if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.error || error.message || `Error ${res.status}`);
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || err.message || `HTTP ${res.status}`);
   }
   
   const data = await res.json();
-  return data.data || data; // Algunas APIs devuelven {success, data}, otras directo
+  return data.data ?? data;
+}
+
+// Detectar tipo de identificador
+function esUUID(str) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
+function esNumerico(str) {
+  return /^\d+$/.test(str);
+}
+
+// 🔧 BUSCAR ALUMNO: Busca por UUID (parqueo_user_id), Carnet, o ID numérico
+export async function buscarAlumnoPorIdentificador(origin, identificador) {
+  // Obtener lista de alumnos desde API Grupo 1
+  const alumnos = await fetchApi(`${origin}${API_BASE.ALUMNOS}`);
+  
+  if (!Array.isArray(alumnos)) {
+    throw new Error("Error obteniendo lista de alumnos");
+  }
+
+  let alumno = null;
+
+  if (esUUID(identificador)) {
+    // Buscar por parqueo_user_id (UUID del auth.User)
+    alumno = alumnos.find(a => a.parqueo_user_id === identificador);
+  } else if (esNumerico(identificador)) {
+    // Buscar por ID numérico o carnet numérico
+    alumno = alumnos.find(a => 
+      String(a.id) === identificador || 
+      a.carnet === identificador
+    );
+  } else {
+    // Buscar por carnet (string)
+    alumno = alumnos.find(a => a.carnet === identificador);
+  }
+  
+  if (!alumno) {
+    throw new Error(`Alumno con identificador ${identificador} no encontrado`);
+  }
+  
+  return alumno; // Devuelve objeto con id (Int), carnet, nombre, carrera, etc.
+}
+
+export async function obtenerCursos(origin) {
+  return fetchApi(`${origin}${API_BASE.CURSOS}`);
 }
 
 export function toNumber(value, fallback = 0) {
   if (value === null || value === undefined || value === "") return fallback;
-  if (typeof value === "object" && typeof value.toString === "function") {
-    const n = Number(value.toString());
-    return Number.isNaN(n) ? fallback : n;
-  }
   const n = Number(value);
   return Number.isNaN(n) ? fallback : n;
 }
@@ -45,93 +80,20 @@ export function toNumber(value, fallback = 0) {
 export function parseMoney(value) {
   if (value === null || value === undefined || value === "") return 0;
   if (typeof value === "number") return value;
-  const limpio = String(value).replace(/[^\d.-]/g, "");
-  const n = Number(limpio);
+  const n = Number(String(value).replace(/[^\d.-]/g, ""));
   return Number.isNaN(n) ? 0 : n;
 }
 
-export function obtenerIdAlumno(alumno) {
-  return Number(alumno?.id ?? alumno?.id_alumno ?? alumno?.alumnoId);
-}
-
-export function obtenerIdCurso(curso) {
-  return Number(curso?.id ?? curso?.id_curso ?? curso?.cursoId);
-}
-
 export function obtenerNombreAlumno(alumno) {
-  const nombre = alumno?.nombre ?? "";
-  const apellido = alumno?.apellido ?? "";
-  const completo = `${nombre} ${apellido}`.trim();
-  return completo || alumno?.name || "Alumno";
+  return `${alumno?.nombre ?? ""} ${alumno?.apellido ?? ""}`.trim() || "Alumno";
 }
 
 export function obtenerNombreCarrera(alumno) {
-  return alumno?.carrera?.nombre ?? alumno?.carreraNombre ?? null;
-}
-
-export function obtenerCodigoCurso(curso, idCurso = null) {
-  return curso?.codigo ?? curso?.code ?? String(idCurso ?? obtenerIdCurso(curso));
-}
-
-export function obtenerNombreCurso(curso) {
-  return curso?.nombre ?? curso?.name ?? "Curso sin nombre";
-}
-
-// 🔧 BUSCAR ALUMNO: Usa /api/buscar?id={carnet} o filtra de /api/alumnos
-export async function buscarAlumnoPorIdentificador(origin, identificador) {
-  try {
-    // Intentar buscar usando la API específica de búsqueda
-    const url = `${origin}${API_BASE.BUSCAR}?id=${encodeURIComponent(identificador)}`;
-    const resultado = await fetchApi(url);
-    
-    if (resultado.found && resultado.rol === "ALUMNO") {
-      return {
-        id: resultado.id, // carnet
-        carnet: resultado.id,
-        nombre: resultado.nombre,
-        apellido: resultado.apellido,
-        email: resultado.email,
-        activo: resultado.activo,
-        carrera: null // La API buscar no devuelve carrera, la obtendremos de /api/alumnos si es necesario
-      };
-    }
-  } catch (e) {
-    console.log("API buscar no disponible o no encontró, intentando lista...");
-  }
-
-  // Fallback: Obtener lista completa y filtrar
-  try {
-    const alumnos = await fetchApi(`${origin}${API_BASE.ALUMNOS}`);
-    const encontrado = alumnos.find(a => 
-      String(a.carnet) === String(identificador) || 
-      String(a.id) === String(identificador)
-    );
-    
-    if (encontrado) return encontrado;
-  } catch (e) {
-    console.error("Error obteniendo lista de alumnos:", e);
-  }
-
-  throw new Error(`Alumno con identificador ${identificador} no encontrado`);
-}
-
-// 🔧 OBTENER CURSOS: Usa /api/cursos
-export async function obtenerCursos(origin) {
-  try {
-    return await fetchApi(`${origin}${API_BASE.CURSOS}`);
-  } catch (e) {
-    console.error("Error obteniendo cursos:", e);
-    return [];
-  }
+  return alumno?.carrera?.nombre ?? null;
 }
 
 export function buscarCursoPorId(cursos, idCurso) {
-  return cursos.find((c) => obtenerIdCurso(c) === Number(idCurso));
-}
-
-export function esEvaluacionFinal(nombre) {
-  const n = String(nombre || "").toLowerCase();
-  return n.includes("final") || n.includes("examen final") || n.includes("ordinario");
+  return cursos.find((c) => Number(c.id) === Number(idCurso));
 }
 
 export function construirNotaDesdeMatricula(matricula, curso) {
@@ -141,21 +103,20 @@ export function construirNotaDesdeMatricula(matricula, curso) {
 
   for (const nota of notas) {
     const valor = toNumber(nota.valor);
-    const nombreEvaluacion = nota.evaluacion?.nombre ?? "";
-    if (esEvaluacionFinal(nombreEvaluacion)) {
+    const nombreEval = nota.evaluacion?.nombre?.toLowerCase() ?? "";
+    if (nombreEval.includes("final") || nombreEval.includes("examen")) {
       examenFinal += valor;
     } else {
       zona += valor;
     }
   }
 
-  const notaCalculada = zona + examenFinal;
-  const notaFinal = toNumber(matricula.cierre?.nota_final, notaCalculada);
+  const notaFinal = toNumber(matricula.cierre?.nota_final, zona + examenFinal);
   const estado = notaFinal >= NOTA_APROBACION ? "aprobado" : "reprobado";
 
   return {
-    curso: obtenerCodigoCurso(curso, matricula.id_curso),
-    nombreCurso: obtenerNombreCurso(curso),
+    curso: curso?.codigo ?? String(curso?.id),
+    nombreCurso: curso?.nombre ?? "Curso",
     periodo: matricula.periodo,
     zona,
     examenFinal,
@@ -165,10 +126,10 @@ export function construirNotaDesdeMatricula(matricula, curso) {
   };
 }
 
-// 🔧 OBTENER MATRÍCULAS: Desde Prisma (schema notas - Grupo 2)
-export async function obtenerMatriculasAlumno(idAlumno) {
+// Consulta Prisma al schema 'notas' (Grupo 2)
+export async function obtenerMatriculasAlumno(idAlumnoInt) {
   return prisma.matricula.findMany({
-    where: { id_alumno: Number(idAlumno) },
+    where: { id_alumno: idAlumnoInt },
     include: {
       notas: { include: { evaluacion: true } },
       cierre: true,
@@ -177,106 +138,72 @@ export async function obtenerMatriculasAlumno(idAlumno) {
   });
 }
 
-// 🔧 ARMAR NOTAS: Combina API Grupo 1 (alumnos/cursos) + Prisma Grupo 2 (notas)
+// 🔧 ARMAR NOTAS: Conecta Grupo 1 (API) + Grupo 2 (Prisma notas)
 export async function armarNotasAlumno(origin, identificador) {
-  // 1. Buscar alumno en APIs Grupo 1
+  // 1. Buscar alumno en Grupo 1 (por UUID, carnet o ID)
   const alumno = await buscarAlumnoPorIdentificador(origin, identificador);
   
-  // 2. Obtener cursos de API Grupo 1
-  const cursos = await obtenerCursos(origin);
+  // El ID numérico del alumno para el schema 'notas'
+  const idAlumnoInt = Number(alumno.id);
   
-  // 3. Obtener matrículas/notas de Prisma (Grupo 2)
-  // Nota: Usamos el ID numérico del alumno si existe, o buscamos por carnet
-  const idAlumno = obtenerIdAlumno(alumno);
-  
-  if (!idAlumno) {
-    throw new Error("El alumno no tiene un ID numérico válido para consultar notas");
+  if (!idAlumnoInt) {
+    throw new Error("Alumno sin ID válido");
   }
 
-  const matriculas = await obtenerMatriculasAlumno(idAlumno);
+  // 2. Obtener cursos de Grupo 1
+  const cursos = await obtenerCursos(origin);
+
+  // 3. Obtener matrículas de Grupo 2 (schema notas)
+  const matriculas = await obtenerMatriculasAlumno(idAlumnoInt);
   
-  const notas = matriculas.map((matricula) => {
-    const curso = buscarCursoPorId(cursos, matricula.id_curso);
-    return construirNotaDesdeMatricula(matricula, curso);
+  // 4. Construir notas
+  const notas = matriculas.map((mat) => {
+    const curso = buscarCursoPorId(cursos, mat.id_curso);
+    return construirNotaDesdeMatricula(mat, curso);
   });
 
-  const aprobados = notas.filter((n) => n.estado === "aprobado");
-  const reprobados = notas.filter((n) => n.estado === "reprobado");
-
-  const promedioGeneral =
-    notas.length > 0
-      ? Number((notas.reduce((acc, n) => acc + toNumber(n.notaFinal), 0) / notas.length).toFixed(2))
-      : 0;
-
-  const creditosAprobados = aprobados.reduce((acc, n) => acc + toNumber(n.creditos), 0);
+  const aprobados = notas.filter(n => n.estado === "aprobado");
+  const reprobados = notas.filter(n => n.estado === "reprobado");
+  
+  const promedioGeneral = notas.length > 0 
+    ? Number((notas.reduce((a, n) => a + n.notaFinal, 0) / notas.length).toFixed(2))
+    : 0;
 
   return {
     alumno,
-    idAlumno,
+    idAlumno: idAlumnoInt,
     cursos,
-    matriculas,
     notas,
     resumen: {
       promedioGeneral,
       totalCursos: notas.length,
       cursosAprobados: aprobados.length,
       cursosReprobados: reprobados.length,
-      creditosAprobados,
+      creditosAprobados: aprobados.reduce((a, n) => a + n.creditos, 0),
     },
   };
 }
 
-// 🔧 SOLVENCIA: Llama a la API del Grupo 6 (pagos)
+// Solvencia Grupo 6
 export async function obtenerSolvenciaPagos(origin, carnet) {
   try {
-    const [estadoSolvencia, estadoMora] = await Promise.all([
-      fetchApi(`${origin}/api/solvencia/${encodeURIComponent(carnet)}`),
-      fetchApi(`${origin}/api/mora/${encodeURIComponent(carnet)}`)
+    const [solv, mora] = await Promise.all([
+      fetchApi(`${origin}${API_BASE.SOLVENCIA}/${encodeURIComponent(carnet)}`),
+      fetchApi(`${origin}${API_BASE.MORA}/${encodeURIComponent(carnet)}`)
     ]);
 
-    const totalPendiente = parseMoney(estadoMora.total_pendiente);
-    const totalMora = parseMoney(estadoMora.total_mora);
-    const montoPendiente = totalPendiente + totalMora;
-
-    const pagosPendientes = Array.isArray(estadoMora.detalle)
-      ? estadoMora.detalle.map((item) => ({
-          mes: item.mes,
-          estado: item.estado,
-          precio: parseMoney(item.precio),
-          mora: parseMoney(item.mora),
-          diasMora: Number(item.dias_mora ?? 0),
-          fechaLimite: item.fecha_limite,
-        }))
-      : [];
-
-    const solvente =
-      estadoSolvencia.solvente === true &&
-      estadoSolvencia.matricula_activa === true &&
-      estadoSolvencia.facultado_procesos_academicos === true &&
-      estadoMora.en_mora !== true &&
-      montoPendiente <= 0;
-
+    const montoPendiente = parseMoney(mora?.total_pendiente || 0) + parseMoney(mora?.total_mora || 0);
+    
     return {
-      solvente,
+      solvente: solv?.solvente === true && mora?.en_mora !== true,
       montoPendiente,
-      montoMensualidades: totalPendiente,
-      montoMora: totalMora,
-      mensualidadesPendientes: Number(estadoSolvencia.mensualidades_pendientes ?? pagosPendientes.length),
-      matriculaActiva: estadoSolvencia.matricula_activa === true,
-      facultadoProcesosAcademicos: estadoSolvencia.facultado_procesos_academicos === true,
-      enMora: estadoMora.en_mora === true,
-      pagosPendientes,
-      raw: { solvencia: estadoSolvencia, mora: estadoMora },
+      mensualidadesPendientes: solv?.mensualidades_pendientes || mora?.detalle?.length || 0,
+      matriculaActiva: solv?.matricula_activa === true,
+      enMora: mora?.en_mora === true,
+      pagosPendientes: mora?.detalle || [],
     };
   } catch (e) {
-    // Si falla la API de pagos, devolver como solvente para no bloquear
-    console.warn("Error obteniendo solvencia de pagos:", e);
-    return {
-      solvente: true,
-      montoPendiente: 0,
-      mensualidadesPendientes: 0,
-      enMora: false,
-      pagosPendientes: []
-    };
+    console.warn("Error solvencia:", e);
+    return { solvente: true, montoPendiente: 0, mensualidadesPendientes: 0, enMora: false, pagosPendientes: [] };
   }
 }
