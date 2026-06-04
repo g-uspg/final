@@ -1,99 +1,103 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import prisma from "@/lib/prisma";
 
 export async function GET(request, { params }) {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🚀 API NOTAS - USANDO GRUPO 1');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  
   try {
     const { carnet } = params;
-    console.log('📝 Carnet recibido:', carnet);
 
     if (!carnet) {
-      return NextResponse.json(
-        { success: false, message: 'Carnet requerido' },
+      return Response.json(
+        { success: false, message: "Carnet no proporcionado" },
         { status: 400 }
       );
     }
 
-    // 1. Buscar alumno en grupo1_academico
-    console.log('🔍 Buscando alumno en grupo1_academico...');
+    // Buscar al alumno por su carnet
     const alumno = await prisma.alumno.findUnique({
-      where: { carnet: String(carnet) },
+      where: { carnet },
       include: {
         carrera: true,
         asignaciones: {
           include: {
-            curso: true
-          }
-        }
-      }
+            curso: true,
+          },
+        },
+      },
     });
 
     if (!alumno) {
-      console.log('❌ Alumno no encontrado');
-      return NextResponse.json(
-        { success: false, message: 'Alumno no encontrado' },
+      return Response.json(
+        { success: false, message: "Alumno no encontrado" },
         { status: 404 }
       );
     }
 
-    console.log('✅ Alumno encontrado:', alumno.nombre, alumno.apellido);
-    console.log('📚 Asignaciones (cursos):', alumno.asignaciones.length);
+    // Procesar las notas de cada asignación
+    const notas = alumno.asignaciones.map(asignacion => {
+      const nota = asignacion.notaFinal;
+      let estado = "pendiente";
+      
+      if (nota !== null) {
+        // Asumiendo que la nota mínima para aprobar es 61 o 70 según la universidad
+        estado = nota >= 61 ? "aprobado" : "reprobado";
+      }
 
-    // 2. Convertir asignaciones a formato de notas
-    // Por ahora sin calificaciones, solo mostramos los cursos asignados
-    const notasFormateadas = alumno.asignaciones.map(asignacion => ({
-      curso: asignacion.curso.codigo,
-      nombreCurso: asignacion.curso.nombre,
-      periodo: asignacion.ciclo || '2024-01',
-      zona: 0,
-      examenFinal: 0,
-      notaFinal: 0,
-      estado: 'pendiente',
-      creditos: asignacion.curso.creditos
-    }));
+      return {
+        id: asignacion.id,
+        curso: asignacion.curso.codigo,
+        nombreCurso: asignacion.curso.nombre,
+        creditos: asignacion.curso.creditos,
+        periodo: asignacion.periodo,
+        nota: nota,
+        estado: estado,
+        calificaciones: {
+          zona: asignacion.zona || null,
+          examen: asignacion.examen || null,
+          final: nota,
+        },
+      };
+    });
 
-    console.log('✅ Cursos procesados:', notasFormateadas.length);
-
-    // 3. Calcular resumen (todo en 0 por ahora)
-    const resumen = {
-      promedioGeneral: 0,
-      totalCursos: notasFormateadas.length,
-      cursosAprobados: 0,
-      cursosReprobados: 0,
-      creditosAprobados: 0
-    };
-
-    const response = {
-      success: true,
-      alumno: {
-        carnet: alumno.carnet,
-        nombre: `${alumno.nombre} ${alumno.apellido}`,
-        email: alumno.email,
-        carrera: alumno.carrera?.nombre || 'Sin asignar'
-      },
-      notas: notasFormateadas,
-      resumen: resumen
-    };
-
-    console.log('✅ Respuesta enviada');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-
-    return NextResponse.json(response);
-
-  } catch (error) {
-    console.error('❌ ERROR:', error);
-    console.error('Stack:', error.stack);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    // Calcular resumen académico
+    const totalCursos = notas.length;
+    const cursosAprobados = notas.filter(n => n.estado === "aprobado").length;
+    const cursosReprobados = notas.filter(n => n.estado === "reprobado").length;
+    const cursosPendientes = notas.filter(n => n.estado === "pendiente").length;
     
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Error interno del servidor',
-        error: error.message 
+    const creditosAprobados = notas
+      .filter(n => n.estado === "aprobado")
+      .reduce((sum, n) => sum + n.creditos, 0);
+    
+    const promedio = notas
+      .filter(n => n.nota !== null)
+      .reduce((sum, n) => sum + n.nota, 0) / (notas.filter(n => n.nota !== null).length || 1);
+
+    const resumen = {
+      totalCursos,
+      cursosAprobados,
+      cursosReprobados,
+      cursosPendientes,
+      creditosAprobados,
+      promedio: promedio.toFixed(2),
+    };
+
+    return Response.json({
+      success: true,
+      data: {
+        alumno: {
+          carnet: alumno.carnet,
+          nombre: `${alumno.nombre} ${alumno.apellido}`,
+          carrera: alumno.carrera?.nombre || "Sin asignar",
+          email: alumno.email,
+          correoInstitucional: alumno.correoInstitucional,
+        },
+        notas,
+        resumen,
       },
+    });
+  } catch (error) {
+    console.error("Error en API notas:", error);
+    return Response.json(
+      { success: false, message: error.message || "Error interno del servidor" },
       { status: 500 }
     );
   }

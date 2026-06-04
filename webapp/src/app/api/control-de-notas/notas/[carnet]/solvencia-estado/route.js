@@ -1,74 +1,80 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import prisma from "@/lib/prisma";
 
 export async function GET(request, { params }) {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🚀 API SOLVENCIA - USANDO GRUPO 1');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  
   try {
     const { carnet } = params;
-    console.log('📝 Carnet recibido:', carnet);
 
     if (!carnet) {
-      return NextResponse.json(
-        { success: false, message: 'Carnet requerido' },
+      return Response.json(
+        { success: false, message: "Carnet no proporcionado" },
         { status: 400 }
       );
     }
 
-    // 1. Buscar alumno
-    console.log('🔍 Buscando alumno...');
+    // Buscar al alumno
     const alumno = await prisma.alumno.findUnique({
-      where: { carnet: String(carnet) },
+      where: { carnet },
       include: {
-        carrera: true
-      }
+        asignaciones: {
+          include: {
+            curso: true,
+          },
+        },
+        pagos: true, // Asumiendo que hay un modelo de pagos
+      },
     });
 
     if (!alumno) {
-      console.log('❌ Alumno no encontrado');
-      return NextResponse.json(
-        { success: false, message: 'Alumno no encontrado' },
+      return Response.json(
+        { success: false, message: "Alumno no encontrado" },
         { status: 404 }
       );
     }
 
-    console.log('✅ Alumno encontrado:', alumno.nombre, alumno.apellido);
+    // Verificar solvencia académica (no tener cursos reprobados o pendientes)
+    const cursosReprobados = alumno.asignaciones.filter(a => {
+      const nota = a.notaFinal;
+      return nota !== null && nota < 61;
+    }).length;
 
-    // Por ahora, todos están solventes porque no tenemos sistema de notas
-    const response = {
-      success: true,
-      solvenciaGeneral: true,
-      solvenciaNotas: {
-        solvente: true,
-        totalReprobados: 0,
-        cursosReprobados: []
+    const cursosPendientes = alumno.asignaciones.filter(a => a.notaFinal === null).length;
+
+    // Verificar solvencia financiera (pagos al día)
+    const pagosVencidos = alumno.pagos?.filter(pago => 
+      pago.estado === "PENDIENTE" && new Date(pago.fechaLimite) < new Date()
+    ).length || 0;
+
+    const solvenciaAcademica = cursosReprobados === 0 && cursosPendientes === 0;
+    const solvenciaFinanciera = pagosVencidos === 0;
+    const solvenciaGeneral = solvenciaAcademica && solvenciaFinanciera;
+
+    // Detalles de solvencia
+    const detalles = {
+      academica: {
+        solvente: solvenciaAcademica,
+        cursosReprobados,
+        cursosPendientes,
       },
-      solvenciaPagos: {
-        solvente: true,
-        montoPendiente: 0.00,
-        mensualidadesPendientes: 0,
-        enMora: false
-      }
+      financiera: {
+        solvente: solvenciaFinanciera,
+        pagosVencidos,
+      },
     };
 
-    console.log('✅ Solvencia verificada - TODO SOLVENTE');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-
-    return NextResponse.json(response);
-
-  } catch (error) {
-    console.error('❌ ERROR:', error);
-    console.error('Stack:', error.stack);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
-    
-    return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Error interno del servidor',
-        error: error.message 
+    return Response.json({
+      success: true,
+      data: {
+        carnet: alumno.carnet,
+        nombre: `${alumno.nombre} ${alumno.apellido}`,
+        solvenciaGeneral,
+        detalles,
+        fechaConsulta: new Date().toISOString(),
       },
+    });
+  } catch (error) {
+    console.error("Error en API solvencia:", error);
+    return Response.json(
+      { success: false, message: error.message || "Error interno del servidor" },
       { status: 500 }
     );
   }
