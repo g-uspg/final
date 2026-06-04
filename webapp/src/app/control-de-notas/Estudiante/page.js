@@ -2,18 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// ── APIs que consumimos ───────────────────────────────────────────────────────
-// GET /api/control-de-notas/notas/:carnet
-// GET /api/control-de-notas/notas/:carnet/solvencia-estado
-// GET /api/control-de-notas/asistencias/:carnet/:curso
-// ─────────────────────────────────────────────────────────────────────────────
-
 // ── Toast flotante ────────────────────────────────────────────────────────────
 function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onClose }) {
-  const [show,     setShow]     = useState(false);
+  const [show, setShow] = useState(false);
   const [barWidth, setBarWidth] = useState(100);
-  const timerRef                = useRef(null);
-  const duration                = 5000;
+  const timerRef = useRef(null);
+  const duration = 5000;
 
   useEffect(() => {
     if (visible) {
@@ -68,7 +62,7 @@ function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onC
 // ── Badge de estado de nota ───────────────────────────────────────────────────
 function BadgeNota({ nota }) {
   const color = nota >= 61 ? "#2e7d32" : "#c62828";
-  const bg    = nota >= 61 ? "#e8f5e9" : "#ffebee";
+  const bg = nota >= 61 ? "#e8f5e9" : "#ffebee";
   return (
     <span style={{ padding: "3px 10px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, background: bg, color }}>
       {nota}
@@ -88,49 +82,72 @@ function BarraProgreso({ valor, max, color }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function EstudiantePage() {
-  const [usuario,       setUsuario]       = useState(null);
-  const [notas,         setNotas]         = useState(null);
-  const [solvencia,     setSolvencia]     = useState(null);
-  const [cargando,      setCargando]      = useState(true);
-  const [error,         setError]         = useState("");
-  const [tabActiva,     setTabActiva]     = useState("notas");
-  const [toastVisible,  setToastVisible]  = useState({ solvencia: false });
+  const [usuario, setUsuario] = useState(null);
+  const [notas, setNotas] = useState(null);
+  const [solvencia, setSolvencia] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [tabActiva, setTabActiva] = useState("notas");
+  const [toastVisible, setToastVisible] = useState({ solvencia: false });
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cn_usuario");
     if (!raw) { window.location.href = "/control-de-notas"; return; }
+    
     const u = JSON.parse(raw);
     if (u.rol !== "ALUMNO") { window.location.href = "/control-de-notas"; return; }
+    
     setUsuario(u);
-    cargarDatos(u.id);
+    
+    // 🔧 CORRECCIÓN: Usar carnet si existe, sino el id
+    const carnet = u.carnet ?? u.id;
+    cargarDatos(carnet);
   }, []);
 
   const cargarDatos = async (carnet) => {
     setCargando(true);
     setError("");
+    
     try {
+      const encodedCarnet = encodeURIComponent(carnet);
+      
       const [resNotas, resSolvencia] = await Promise.all([
-        fetch(`/api/control-de-notas/notas/${carnet}`),
-        fetch(`/api/control-de-notas/notas/${carnet}/solvencia-estado`),
+        fetch(`/api/control-de-notas/notas/${encodedCarnet}`),
+        fetch(`/api/control-de-notas/notas/${encodedCarnet}/solvencia-estado`),
       ]);
+
+      // Verificar status HTTP primero
+      if (!resNotas.ok) {
+        const errData = await resNotas.json().catch(() => ({}));
+        throw new Error(errData.message || errData.error || `Error ${resNotas.status} cargando notas`);
+      }
+      
+      if (!resSolvencia.ok) {
+        const errData = await resSolvencia.json().catch(() => ({}));
+        throw new Error(errData.message || errData.error || `Error ${resSolvencia.status} cargando solvencia`);
+      }
 
       const [dNotas, dSolvencia] = await Promise.all([
         resNotas.json(),
         resSolvencia.json(),
       ]);
 
-      if (!dNotas.success)     throw new Error(dNotas.message);
-      if (!dSolvencia.success) throw new Error(dSolvencia.message);
+      // 🔧 CORRECCIÓN: Manejar tanto 'message' como 'error'
+      if (!dNotas.success) {
+        throw new Error(dNotas.message || dNotas.error || "Error cargando notas");
+      }
+      
+      if (!dSolvencia.success) {
+        throw new Error(dSolvencia.message || dSolvencia.error || "Error cargando solvencia");
+      }
 
-      setNotas(dSolvencia);
-      setSolvencia(dSolvencia);
-
-      // guardar notas separado
+      // 🔧 CORRECCIÓN: Asignar solo una vez, sin duplicados
       setNotas(dNotas);
       setSolvencia(dSolvencia);
 
     } catch (e) {
-      setError(e.message);
+      console.error("Error cargando datos:", e);
+      setError(e.message || "Error desconocido al cargar los datos");
     } finally {
       setCargando(false);
     }
@@ -149,13 +166,16 @@ export default function EstudiantePage() {
     </div>
   );
 
-  const notasLista   = notas?.notas         ?? [];
-  const resumen      = notas?.resumen        ?? {};
-  const solvGeneral  = solvencia?.solvenciaGeneral ?? false;
-  const reprobados   = solvencia?.solvenciaNotas?.cursosReprobados ?? [];
+  const notasLista = notas?.notas ?? [];
+  const resumen = notas?.resumen ?? {};
+  const solvGeneral = solvencia?.solvenciaGeneral ?? false;
+  const reprobados = solvencia?.solvenciaNotas?.cursosReprobados ?? [];
 
-  const aprobados  = notasLista.filter((n) => n.estado === "aprobado");
-  const reproList  = notasLista.filter((n) => n.estado === "reprobado");
+  const aprobados = notasLista.filter((n) => n.estado === "aprobado");
+  const reproList = notasLista.filter((n) => n.estado === "reprobado");
+
+  // 🔧 CORRECCIÓN: Mostrar carnet correcto
+  const carnetDisplay = usuario?.carnet ?? usuario?.id ?? notas?.alumno?.carnet ?? "—";
 
   return (
     <div className="row clearfix">
@@ -172,7 +192,7 @@ export default function EstudiantePage() {
                 👨‍🎓 {notas?.alumno?.nombre ?? usuario?.nombre}
               </h3>
               <p style={{ color: "#666", margin: 0 }}>
-                Carnet: {usuario?.id} | Carrera: {notas?.alumno?.carrera ?? "—"}
+                Carnet: {carnetDisplay} | Carrera: {notas?.alumno?.carrera ?? "—"}
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -198,10 +218,10 @@ export default function EstudiantePage() {
             {/* ── Stats rápidos ── */}
             <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
               {[
-                { label: "Promedio General",   valor: resumen.promedioGeneral   ?? "—", color: "#1976d2", bg: "#e3f2fd", suffix: "" },
-                { label: "Cursos Aprobados",   valor: resumen.cursosAprobados   ?? 0,   color: "#2e7d32", bg: "#e8f5e9", suffix: "" },
-                { label: "Cursos Reprobados",  valor: resumen.cursosReprobados  ?? 0,   color: "#c62828", bg: "#ffebee", suffix: "" },
-                { label: "Créditos Obtenidos", valor: resumen.creditosAprobados ?? 0,   color: "#e65100", bg: "#fff3e0", suffix: "" },
+                { label: "Promedio General", valor: resumen.promedioGeneral ?? "—", color: "#1976d2", bg: "#e3f2fd", suffix: "" },
+                { label: "Cursos Aprobados", valor: resumen.cursosAprobados ?? 0, color: "#2e7d32", bg: "#e8f5e9", suffix: "" },
+                { label: "Cursos Reprobados", valor: resumen.cursosReprobados ?? 0, color: "#c62828", bg: "#ffebee", suffix: "" },
+                { label: "Créditos Obtenidos", valor: resumen.creditosAprobados ?? 0, color: "#e65100", bg: "#fff3e0", suffix: "" },
               ].map((s) => (
                 <div key={s.label} style={{
                   padding: "14px 20px", borderRadius: "10px", background: s.bg,
@@ -218,7 +238,7 @@ export default function EstudiantePage() {
             {/* ── Tabs ── */}
             <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0" }}>
               {[
-                { id: "notas",      label: "📝 Mis Notas" },
+                { id: "notas", label: "📝 Mis Notas" },
                 { id: "reprobados", label: `❌ Reprobados (${reproList.length})` },
               ].map((tab) => (
                 <button key={tab.id} onClick={() => setTabActiva(tab.id)} style={{
