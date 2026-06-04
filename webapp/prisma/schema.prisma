@@ -1317,9 +1317,8 @@ model ReporteMantenimiento {
   @@schema("grupo8_administracion")
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+
 // GRUPO 2 — Control de Notas (schema: notas)
-// ─────────────────────────────────────────────────────────────────────────────
 
 model Matricula {
   id_matricula   Int      @id @default(autoincrement())
