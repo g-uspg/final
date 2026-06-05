@@ -10,14 +10,17 @@ import {
   ESTADO_RESERVA_LABEL,
   TIPO_COBRO_LABEL,
   ESTADO_EQUIPO_LABEL,
+  TIPO_CURSO_LIBRE_LABEL,
 } from '@/lib/laboratorios/constants'
 import { getDisponibilidadLab } from '@/lib/laboratorios/disponibilidad'
 import NuevoLaboratorioModal from './components/NuevoLaboratorioModal'
 import NuevaReservaModal from './components/NuevaReservaModal'
 import NuevoPagoModal from './components/NuevoPagoModal'
+import NuevoCursoLibreModal from './components/NuevoCursoLibreModal'
 import RechazarReservaModal from './components/RechazarReservaModal'
 import { useLabToast } from './components/ToastProvider'
-import { resolverReserva } from './actions'
+import { resolverReserva, toggleCursoLibreActivo } from './actions'
+import { etiquetasAsientosReserva } from '@/lib/laboratorios/asientos'
 
 function estadoLabClass(estado) {
   if (estado === 'ACTIVO') return 'lab-badge-activo'
@@ -32,6 +35,7 @@ export default function LaboratoriosDashboard({ initialData }) {
   const [showLabModal, setShowLabModal] = useState(false)
   const [showReservaModal, setShowReservaModal] = useState(false)
   const [showPagoModal, setShowPagoModal] = useState(false)
+  const [showCursoModal, setShowCursoModal] = useState(false)
   const [rechazarReserva, setRechazarReserva] = useState(null)
   const [pending, startTransition] = useTransition()
 
@@ -42,6 +46,7 @@ export default function LaboratoriosDashboard({ initialData }) {
     pagosRecientes,
     stats,
     usuarios,
+    cursosLibres = [],
   } = initialData
 
   const pendientes = stats.reservasPendientes
@@ -79,6 +84,7 @@ export default function LaboratoriosDashboard({ initialData }) {
     { id: 'resumen', label: 'Laboratorios', icon: 'fa-flask' },
     { id: 'reservas', label: 'Reservaciones', icon: 'fa-calendar', badge: pendientes },
     { id: 'equipos', label: 'Equipos', icon: 'fa-desktop' },
+    { id: 'cursos', label: 'Cursos libres', icon: 'fa-graduation-cap', badge: cursosLibres.length },
     { id: 'pagos', label: 'Cobros', icon: 'fa-money' },
   ]
 
@@ -106,7 +112,7 @@ export default function LaboratoriosDashboard({ initialData }) {
               USPG · Facultad de Ingeniería
             </p>
             <h1>Sistema de Gestión de Laboratorios</h1>
-            <p>Administración, reservaciones, cobros y monitoreo — Fase 1: Computación</p>
+            <p>Administración, reservaciones, cobros y monitoreo — Panel administrativo</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {pendientes > 0 && (
@@ -128,6 +134,9 @@ export default function LaboratoriosDashboard({ initialData }) {
             </button>
             <button type="button" className="lab-btn-ghost" onClick={() => setShowPagoModal(true)}>
               <i className="fa fa-credit-card" aria-hidden="true" /> Registrar pago
+            </button>
+            <button type="button" className="lab-btn-ghost" onClick={() => setShowCursoModal(true)}>
+              <i className="fa fa-graduation-cap" aria-hidden="true" /> Nuevo curso libre
             </button>
             <button type="button" className="lab-btn-ghost" onClick={() => setShowLabModal(true)}>
               <i className="fa fa-plus" aria-hidden="true" /> Nuevo laboratorio
@@ -237,7 +246,7 @@ export default function LaboratoriosDashboard({ initialData }) {
                       href={`/laboratorios/${lab.id}`}
                       className="lab-btn-primary w-full justify-center"
                     >
-                      <i className="fa fa-cog" aria-hidden="true" /> Gestionar
+                      <i className="fa fa-cog" aria-hidden="true" /> Administrar
                     </Link>
                   </article>
                 )
@@ -259,6 +268,9 @@ export default function LaboratoriosDashboard({ initialData }) {
                     <p className="font-semibold mb-1">{r.laboratorio?.nombre}</p>
                     <p className="text-sm opacity-80 mb-2">
                       {r.usuario?.nombre} {r.usuario?.apellido || ''}
+                    </p>
+                    <p className="text-xs opacity-60 mb-1">
+                      Butacas: {etiquetasAsientosReserva(r) || '—'}
                     </p>
                     <p className="text-xs opacity-60 mb-3">
                       {new Date(r.fechaInicio).toLocaleString('es-GT')} —{' '}
@@ -290,7 +302,7 @@ export default function LaboratoriosDashboard({ initialData }) {
                   <tr>
                     <th>Laboratorio</th>
                     <th>Solicitante</th>
-                    <th>Configuración</th>
+                    <th>Butacas</th>
                     <th>Inicio</th>
                     <th>Fin</th>
                     <th>Estado</th>
@@ -306,7 +318,7 @@ export default function LaboratoriosDashboard({ initialData }) {
                         <br />
                         <span className="text-xs opacity-60">{r.usuario?.correo}</span>
                       </td>
-                      <td>{r.configuracionDivision?.etiqueta || '—'}</td>
+                      <td>{etiquetasAsientosReserva(r) || '—'}</td>
                       <td>{new Date(r.fechaInicio).toLocaleString('es-GT')}</td>
                       <td>{new Date(r.fechaFin).toLocaleString('es-GT')}</td>
                       <td>
@@ -378,6 +390,63 @@ export default function LaboratoriosDashboard({ initialData }) {
         </div>
       )}
 
+      {tab === 'cursos' && (
+        <div className="space-y-4">
+          {cursosLibres.length === 0 ? (
+            <div className="lab-empty dashboard-card">No hay cursos libres. Crea uno con el botón superior.</div>
+          ) : (
+            cursosLibres.map((curso) => (
+              <article key={curso.id} className="dashboard-card lab-card lab-curso-card">
+                <div className="flex flex-wrap justify-between gap-3">
+                  <div>
+                    <p className="text-xs opacity-60">{curso.codigo}</p>
+                    <h3 className="lab-card-title">{curso.nombre}</h3>
+                    <p className="text-sm opacity-70 mt-1">{curso.laboratorio?.nombre}</p>
+                  </div>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span className="lab-chip lab-chip--tipo">{TIPO_CURSO_LIBRE_LABEL[curso.tipo]}</span>
+                    {(curso.certificadoUSPG ?? curso.certificado_uspg) && (
+                      <span className="lab-chip lab-chip--cert">
+                        <i className="fa fa-certificate" aria-hidden="true" /> Certificado USPG
+                      </span>
+                    )}
+                    {(curso.usaLLM ?? curso.usa_llm) && (
+                      <span className="lab-chip lab-chip--llm">
+                        <i className="fa fa-comments" aria-hidden="true" /> LLM
+                      </span>
+                    )}
+                    <span className={`lab-badge ${curso.activo ? 'lab-badge-activo' : 'lab-badge-inactivo'}`}>
+                      {curso.activo ? 'Activo' : 'Inactivo'}
+                    </span>
+                    <button
+                      type="button"
+                      className="lab-btn-ghost text-sm"
+                      disabled={pending}
+                      onClick={() => {
+                        startTransition(async () => {
+                          const result = await toggleCursoLibreActivo(curso.id, !curso.activo)
+                          if (result.success) {
+                            showToast(curso.activo ? 'Curso desactivado.' : 'Curso activado.')
+                            router.refresh()
+                          }
+                        })
+                      }}
+                    >
+                      {curso.activo ? 'Desactivar' : 'Activar'}
+                    </button>
+                  </div>
+                </div>
+                <p className="text-sm opacity-80 mt-3">{curso.descripcion}</p>
+                <p className="text-xs opacity-60 mt-2">
+                  {curso._count?.inscripciones ?? 0} inscritos · {curso.examenesAnuales} exámenes ·{' '}
+                  {curso.duracionMinutos} min
+                </p>
+              </article>
+            ))
+          )}
+        </div>
+      )}
+
       {tab === 'pagos' && (
         <div className="lab-table-wrap">
           {pagosRecientes.length === 0 ? (
@@ -411,6 +480,16 @@ export default function LaboratoriosDashboard({ initialData }) {
         </div>
       )}
 
+      {showCursoModal && (
+        <NuevoCursoLibreModal
+          laboratorios={laboratorios}
+          onClose={(msg, type) => {
+            setShowCursoModal(false)
+            if (typeof msg === 'string' && msg) showToast(msg, type)
+            router.refresh()
+          }}
+        />
+      )}
       {showLabModal && (
         <NuevoLaboratorioModal
           onClose={(msg, type) => {

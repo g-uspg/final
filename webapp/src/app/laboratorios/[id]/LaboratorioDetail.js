@@ -20,6 +20,7 @@ import {
 import NuevaReservaModal from '../components/NuevaReservaModal'
 import RechazarReservaModal from '../components/RechazarReservaModal'
 import { useLabToast } from '../components/ToastProvider'
+import { etiquetasAsientosReserva } from '@/lib/laboratorios/asientos'
 
 function estadoLabClass(estado) {
   if (estado === 'ACTIVO') return 'lab-badge-activo'
@@ -285,7 +286,7 @@ export default function LaboratorioDetail({ laboratorio: lab, usuarios }) {
               <thead>
                 <tr>
                   <th>Solicitante</th>
-                  <th>Configuración</th>
+                  <th>Butacas</th>
                   <th>Inicio</th>
                   <th>Fin</th>
                   <th>Estado</th>
@@ -296,7 +297,7 @@ export default function LaboratorioDetail({ laboratorio: lab, usuarios }) {
                 {lab.reservas.map((r) => (
                   <tr key={r.id}>
                     <td>{r.usuario?.nombre} {r.usuario?.apellido}</td>
-                    <td>{r.configuracionDivision?.etiqueta || '—'}</td>
+                    <td>{etiquetasAsientosReserva(r) || '—'}</td>
                     <td>{new Date(r.fechaInicio).toLocaleString('es-GT')}</td>
                     <td>{new Date(r.fechaFin).toLocaleString('es-GT')}</td>
                     <td>{ESTADO_RESERVA_LABEL[r.estado]}</td>

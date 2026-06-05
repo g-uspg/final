@@ -11,14 +11,44 @@ export default function TemplateShell({ children }) {
   const [isDark, setIsDark] = useState(true);
   const [nombreUsuario, setNombreUsuario] = useState("");
   const [menuItems, setMenuItems] = useState([]);
+  const [themeReady, setThemeReady] = useState(false);
 
   useEffect(() => {
-    if (isDark) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
+    if (pathname?.startsWith("/login") || pathname?.startsWith("/kiosco")) return
+    if (document.querySelector('script[data-uspg-vendor="1"]')) return
+
+    const vendor = document.createElement("script")
+    vendor.src = "/assets/bundles/lib.vendor.bundle.js"
+    vendor.dataset.uspgVendor = "1"
+    vendor.onload = () => {
+      if (document.querySelector('script[data-uspg-core="1"]')) return
+      const core = document.createElement("script")
+      core.src = "/assets/js/core.js"
+      core.dataset.uspgCore = "1"
+      document.body.appendChild(core)
     }
-  }, [isDark]);
+    document.body.appendChild(vendor)
+  }, [pathname])
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("uspg-theme");
+      setIsDark(saved !== "light");
+    } catch (_) {}
+    setThemeReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!themeReady) return;
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode", "theme-dark");
+    }
+    try {
+      localStorage.setItem("uspg-theme", isDark ? "dark" : "light");
+    } catch (_) {}
+  }, [isDark, themeReady]);
 
   useEffect(() => {
     async function cargarSesion() {

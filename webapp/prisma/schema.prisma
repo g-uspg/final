@@ -892,6 +892,14 @@ enum EstadoReporteDano {
   @@schema("grupo3_laboratorios")
 }
 
+enum TipoCursoLibre {
+  GENERAL
+  INGLES_LLM
+  CERTIFICACION
+
+  @@schema("grupo3_laboratorios")
+}
+
 model Usuario {
   id               String           @id @default(uuid())
   correo           String           @unique
@@ -917,6 +925,7 @@ model Usuario {
   danosResponsable       ReporteDano[]             @relation("DanoResponsable")
   infracciones           Infraccion[]
   mantenimientos         MantenimientoEquipo[]     @relation("MantenimientoTecnico")
+  inscripcionesCurso     CursoLibreInscripcion[]
 
   @@map("usuario")
   @@schema("grupo3_laboratorios")
@@ -961,6 +970,8 @@ model Laboratorio {
   reservas        Reserva[]
   pagos           Pago[]
   sesionesUso     SesionUso[]
+  asientos        AsientoLaboratorio[]
+  cursosLibres    CursoLibre[]
 
   @@map("laboratorio")
   @@schema("grupo3_laboratorios")
@@ -992,6 +1003,7 @@ model Estacion {
   activo        Boolean     @default(true)
 
   laboratorio Laboratorio @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  reservas    Reserva[]
 
   @@map("estacion")
   @@schema("grupo3_laboratorios")
@@ -1058,6 +1070,8 @@ model Reserva {
   id                      String        @id @default(uuid())
   usuarioId               String        @map("usuario_id")
   laboratorioId           Int           @map("laboratorio_id")
+  cursoLibreId            String?       @map("curso_libre_id")
+  estacionId              Int?          @map("estacion_id")
   configuracionDivisionId Int?          @map("configuracion_division_id")
   fechaInicio             DateTime      @map("fecha_inicio")
   fechaFin                DateTime      @map("fecha_fin")
@@ -1073,9 +1087,12 @@ model Reserva {
 
   usuario               Usuario             @relation("ReservaSolicitante", fields: [usuarioId], references: [id])
   laboratorio           Laboratorio            @relation(fields: [laboratorioId], references: [id])
+  cursoLibre            CursoLibre?         @relation(fields: [cursoLibreId], references: [id])
+  estacion              Estacion?           @relation(fields: [estacionId], references: [id])
   configuracionDivision ConfiguracionDivision? @relation(fields: [configuracionDivisionId], references: [id])
   aprobadaPor           Usuario?            @relation("ReservaAprobador", fields: [aprobadaPorId], references: [id])
   pagos                 Pago[]
+  asientosReservados    ReservaAsiento[]
 
   @@map("reserva")
   @@schema("grupo3_laboratorios")
@@ -1099,6 +1116,88 @@ model Pago {
   reserva     Reserva?  @relation(fields: [reservaId], references: [id])
 
   @@map("pago")
+  @@schema("grupo3_laboratorios")
+}
+
+model AsientoLaboratorio {
+  id            Int     @id @default(autoincrement())
+  laboratorioId Int     @map("laboratorio_id")
+  fila          String
+  numero        Int
+  etiqueta      String
+  activo        Boolean @default(true)
+  esSimulado    Boolean @default(false) @map("es_simulado")
+
+  laboratorio       Laboratorio      @relation(fields: [laboratorioId], references: [id], onDelete: Cascade)
+  reservasAsiento   ReservaAsiento[]
+
+  @@unique([laboratorioId, fila, numero])
+  @@map("asiento_laboratorio")
+  @@schema("grupo3_laboratorios")
+}
+
+model ReservaAsiento {
+  id        String @id @default(uuid())
+  reservaId String @map("reserva_id")
+  asientoId Int    @map("asiento_id")
+
+  reserva Reserva            @relation(fields: [reservaId], references: [id], onDelete: Cascade)
+  asiento AsientoLaboratorio @relation(fields: [asientoId], references: [id], onDelete: Cascade)
+
+  @@unique([reservaId, asientoId])
+  @@map("reserva_asiento")
+  @@schema("grupo3_laboratorios")
+}
+
+model CursoLibre {
+  id              String         @id @default(uuid())
+  codigo          String         @unique
+  nombre          String
+  descripcion     String?
+  laboratorioId   Int            @map("laboratorio_id")
+  tipo            TipoCursoLibre @default(GENERAL)
+  usaLLM          Boolean        @default(false) @map("usa_llm")
+  certificadoUSPG Boolean        @default(false) @map("certificado_uspg")
+  examenesAnuales Int            @default(0) @map("examenes_anuales")
+  duracionMinutos Int            @default(60) @map("duracion_minutos")
+  activo          Boolean        @default(true)
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  laboratorio   Laboratorio             @relation(fields: [laboratorioId], references: [id])
+  inscripciones CursoLibreInscripcion[]
+  examenes      ExamenCurso[]
+  reservas      Reserva[]
+
+  @@map("curso_libre")
+  @@schema("grupo3_laboratorios")
+}
+
+model CursoLibreInscripcion {
+  id           String   @id @default(uuid())
+  cursoLibreId String   @map("curso_libre_id")
+  usuarioId    String   @map("usuario_id")
+  estado       String   @default("ACTIVA")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  cursoLibre CursoLibre @relation(fields: [cursoLibreId], references: [id], onDelete: Cascade)
+  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@unique([cursoLibreId, usuarioId])
+  @@map("curso_libre_inscripcion")
+  @@schema("grupo3_laboratorios")
+}
+
+model ExamenCurso {
+  id              String   @id @default(uuid())
+  cursoLibreId    String   @map("curso_libre_id")
+  nombre          String
+  fechaProgramada DateTime @map("fecha_programada")
+  orden           Int      @default(1)
+
+  cursoLibre CursoLibre @relation(fields: [cursoLibreId], references: [id], onDelete: Cascade)
+
+  @@map("examen_curso")
   @@schema("grupo3_laboratorios")
 }
 

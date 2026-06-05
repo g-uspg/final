@@ -40,3 +40,17 @@ export const ESTADO_EQUIPO_LABEL = {
   DANADO: 'Dañado',
   BAJA: 'Baja',
 }
+
+export const CATEGORIA_USUARIO_LABEL = {
+  ESTUDIANTE_UNIVERSITARIO: 'Estudiante universitario',
+  PERSONAL_COLEGIO: 'Personal de colegio',
+  PERSONAL_IGLESIA: 'Personal de iglesia',
+  EVENTO_EXTERNO: 'Visitante externo',
+  CATEDRATICO: 'Catedrático',
+}
+
+export const TIPO_CURSO_LIBRE_LABEL = {
+  GENERAL: 'Curso general',
+  INGLES_LLM: 'Inglés con LLM',
+  CERTIFICACION: 'Certificación',
+}

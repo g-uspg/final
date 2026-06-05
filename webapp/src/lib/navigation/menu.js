@@ -2,7 +2,7 @@ const ALL_ITEMS = [
   { name: 'Dashboard',                   path: '/',                          icon: 'fa-dashboard',   roles: ['ADMIN','TEACHER','STUDENT','SECURITY'] },
   { name: 'Sistema Académico',           path: '/sistema-academico',         icon: 'fa-graduation-cap', roles: ['ADMIN','TEACHER','STUDENT'] },
   { name: 'Control de Notas',            path: '/control-de-notas',          icon: 'fa-file-text-o', roles: ['ADMIN','TEACHER','STUDENT'] },
-  { name: 'Laboratorios',                path: '/laboratorios',              icon: 'fa-flask',       roles: ['ADMIN','TEACHER','STUDENT'] },
+  { name: 'Laboratorios',                path: '/laboratorios',              icon: 'fa-flask',       roles: ['ADMIN','TEACHER','STUDENT','VISITOR'] },
   { name: 'Biblioteca',                  path: '/biblioteca',                icon: 'fa-book',        roles: ['ADMIN','TEACHER','STUDENT'] },
   { name: 'Parqueo',                     path: '/parqueo',                   icon: 'fa-car',         roles: ['ADMIN','TEACHER','STUDENT','SECURITY','VISITOR'] },
   { name: 'Pagos Alumnos',              path: '/pagos-alumnos',             icon: 'fa-money',       roles: ['ADMIN','STUDENT'] },
