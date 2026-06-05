@@ -1,7 +1,8 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
-// ── Modal Ver Notas (ya existente) ─────────────────────────────────────
+// ── Modal Ver Notas ─────────────────────────────────────────────────────
 function ModalNotasAlumno({ alumno, onCerrar }) {
   const [notas, setNotas] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -12,7 +13,7 @@ function ModalNotasAlumno({ alumno, onCerrar }) {
       try {
         const res = await fetch(`/api/control-de-notas/notas/${alumno.carnet}`);
         const data = await res.json();
-        if (!data.success) throw new Error(data.message);
+        if (!data.success) throw new Error(data.message || "Error al cargar notas");
         setNotas(data);
       } catch (e) {
         setError(e.message);
@@ -31,11 +32,11 @@ function ModalNotasAlumno({ alumno, onCerrar }) {
             <h5 style={{ margin: 0, color: "#333" }}>📝 Notas — {alumno.nombre}</h5>
             <p style={{ margin: 0, fontSize: "13px", color: "#888" }}>Carnet: {alumno.carnet}</p>
           </div>
-          <button onClick={onCerrar} style={{ background: "#f5f5f5", border: "none", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", fontSize: "16px" }}>✕</button>
+          <button onClick={onCerrar} style={{ background: "#f5f5f5", border: "none", borderRadius: "8px", padding: "8px 14px", cursor: "pointer" }}>✕</button>
         </div>
         <div style={{ padding: "20px 24px" }}>
-          {cargando && <p style={{ textAlign: "center", color: "#888" }}>⏳ Cargando notas...</p>}
-          {error && <p style={{ color: "#c62828" }}>⚠️ {error}</p>}
+          {cargando && <p style={{ textAlign: "center" }}>Cargando notas...</p>}
+          {error && <p style={{ color: "#c62828" }}>{error}</p>}
           {notas && (
             <>
               <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
@@ -61,13 +62,13 @@ function ModalNotasAlumno({ alumno, onCerrar }) {
                 <tbody>
                   {(notas.notas ?? []).map((n, i) => (
                     <tr key={i} style={{ background: n.estado === "reprobado" ? "#fff8f8" : "white" }}>
-                      <td><span style={{ fontWeight: 600, fontSize: "12px" }}>{n.curso}</span><br /><span style={{ fontSize: "12px", color: "#888" }}>{n.nombreCurso}</span></td>
-                      <td style={{ fontSize: "13px", color: "#888" }}>{n.periodo}</td>
+                      <td><span style={{ fontWeight: 600 }}>{n.curso}</span><br /><span style={{ fontSize: "12px", color: "#888" }}>{n.nombreCurso}</span></td>
+                      <td>{n.periodo}</td>
                       <td className="text-center">{n.zona}</td>
                       <td className="text-center">{n.examenFinal}</td>
-                      <td className="text-center"><span style={{ fontWeight: 700, color: n.notaFinal >= 61 ? "#2e7d32" : "#c62828" }}>{n.notaFinal}</span></td>
+                      <td className="text-center" style={{ fontWeight: 700, color: n.notaFinal >= 61 ? "#2e7d32" : "#c62828" }}>{n.notaFinal}</td>
                       <td className="text-center">
-                        <span style={{ padding: "2px 8px", borderRadius: "999px", fontSize: "11px", fontWeight: 600, background: n.estado === "aprobado" ? "#e8f5e9" : "#ffebee", color: n.estado === "aprobado" ? "#2e7d32" : "#c62828" }}>
+                        <span style={{ padding: "4px 10px", borderRadius: "999px", background: n.estado === "aprobado" ? "#e8f5e9" : "#ffebee", color: n.estado === "aprobado" ? "#2e7d32" : "#c62828" }}>
                           {n.estado === "aprobado" ? "✅ Aprobado" : "❌ Reprobado"}
                         </span>
                       </td>
@@ -83,11 +84,11 @@ function ModalNotasAlumno({ alumno, onCerrar }) {
   );
 }
 
-// ── Nuevo: Modal Editar Notas ─────────────────────────────────────────────
-function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
+// ── Modal Editar Notas ─────────────────────────────────────────────────────
+function ModalEditarNotas({ alumno, onCerrar }) {
   const [cursos, setCursos] = useState([
-    { id: 1, curso: "MAT101", nombre: "Matemática I", zona: 25, examenFinal: 35, notaFinal: 60 },
-    { id: 2, curso: "SIS201", nombre: "Programación II", zona: 30, examenFinal: 40, notaFinal: 70 },
+    { id: 1, curso: "MAT101", nombre: "Matemática I", zona: 28, examenFinal: 35 },
+    { id: 2, curso: "SIS201", nombre: "Programación II", zona: 32, examenFinal: 40 },
   ]);
   const [guardando, setGuardando] = useState(false);
 
@@ -98,7 +99,7 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
   const guardar = () => {
     setGuardando(true);
     setTimeout(() => {
-      onGuardar(alumno.carnet, cursos);
+      alert(`✅ Notas guardadas para ${alumno.nombre}`);
       onCerrar();
       setGuardando(false);
     }, 800);
@@ -106,21 +107,14 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "800px", maxHeight: "90vh", overflow: "auto" }}>
-        <div style={{ padding: "20px 24px", borderBottom: "2px solid #ff9800", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "780px", maxHeight: "90vh", overflow: "auto" }}>
+        <div style={{ padding: "20px 24px", borderBottom: "2px solid #ff9800", display: "flex", justifyContent: "space-between" }}>
           <h5>✏️ Editar Notas — {alumno.nombre}</h5>
           <button onClick={onCerrar}>✕</button>
         </div>
         <div style={{ padding: "20px 24px" }}>
           <table className="table">
-            <thead>
-              <tr>
-                <th>Curso</th>
-                <th>Zona</th>
-                <th>Examen Final</th>
-                <th>Nota Final</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Curso</th><th>Zona</th><th>Examen Final</th><th>Nota Final</th></tr></thead>
             <tbody>
               {cursos.map(c => (
                 <tr key={c.id}>
@@ -133,9 +127,9 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
             </tbody>
           </table>
         </div>
-        <div style={{ padding: "15px 24px", borderTop: "1px solid #eee", textAlign: "right" }}>
-          <button onClick={onCerrar} style={{ marginRight: "10px" }}>Cancelar</button>
-          <button onClick={guardar} disabled={guardando} style={{ background: "#ff9800", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px" }}>
+        <div style={{ padding: "15px 24px", textAlign: "right", borderTop: "1px solid #eee" }}>
+          <button onClick={onCerrar}>Cancelar</button>
+          <button onClick={guardar} disabled={guardando} style={{ background: "#ff9800", color: "white", padding: "10px 20px", marginLeft: "10px" }}>
             {guardando ? "Guardando..." : "💾 Guardar Cambios"}
           </button>
         </div>
@@ -144,7 +138,7 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
   );
 }
 
-// ── Nuevo: Modal Asistencias ─────────────────────────────────────────────
+// ── Modal Asistencias ─────────────────────────────────────────────────────
 function ModalAsistencias({ alumno, onCerrar }) {
   const [asistencias, setAsistencias] = useState([
     { fecha: "2026-05-10", presente: true },
@@ -160,21 +154,18 @@ function ModalAsistencias({ alumno, onCerrar }) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "600px" }}>
-        <div style={{ padding: "20px 24px", borderBottom: "2px solid #ff9800", display: "flex", justifyContent: "space-between" }}>
+        <div style={{ padding: "20px 24px", borderBottom: "2px solid #ff9800" }}>
           <h5>📅 Asistencias — {alumno.nombre}</h5>
-          <button onClick={onCerrar}>✕</button>
         </div>
         <div style={{ padding: "20px 24px" }}>
           <table className="table">
-            <thead>
-              <tr><th>Fecha</th><th>Asistencia</th></tr>
-            </thead>
+            <thead><tr><th>Fecha</th><th>Asistencia</th></tr></thead>
             <tbody>
               {asistencias.map((a, i) => (
                 <tr key={i}>
                   <td>{a.fecha}</td>
                   <td>
-                    <button onClick={() => toggle(i)} style={{ padding: "6px 12px", borderRadius: "999px", background: a.presente ? "#e8f5e9" : "#ffebee", color: a.presente ? "#2e7d32" : "#c62828", border: "none" }}>
+                    <button onClick={() => toggle(i)} style={{ padding: "6px 14px", borderRadius: "999px", background: a.presente ? "#e8f5e9" : "#ffebee", color: a.presente ? "#2e7d32" : "#c62828" }}>
                       {a.presente ? "✅ Presente" : "❌ Ausente"}
                     </button>
                   </td>
@@ -183,14 +174,15 @@ function ModalAsistencias({ alumno, onCerrar }) {
             </tbody>
           </table>
         </div>
-        <div style={{ padding: "15px 24px", textAlign: "right", borderTop: "1px solid #eee" }}>
-          <button onClick={onCerrar} style={{ background: "#ff9800", color: "white", padding: "10px 20px", border: "none", borderRadius: "8px" }}>Guardar Asistencias</button>
+        <div style={{ padding: "15px 24px", textAlign: "right" }}>
+          <button onClick={onCerrar} style={{ background: "#ff9800", color: "white" }}>Guardar Asistencias</button>
         </div>
       </div>
     </div>
   );
 }
 
+// ── Página Profesor ───────────────────────────────────────────────────────
 export default function ProfesorPage() {
   const [usuario, setUsuario] = useState(null);
   const [tabActiva, setTabActiva] = useState("mis-alumnos");
@@ -198,7 +190,6 @@ export default function ProfesorPage() {
   const [modalAlumno, setModalAlumno] = useState(null);
   const [modalEditarNotas, setModalEditarNotas] = useState(null);
   const [modalAsistencias, setModalAsistencias] = useState(null);
-  const [solicitudesCierre, setSolicitudesCierre] = useState({}); // carnet -> estado
 
   const alumnosMock = [
     { carnet: "2021001", nombre: "Carlos Andrés Pérez López", carrera: "Ingeniería en Sistemas" },
@@ -222,18 +213,10 @@ export default function ProfesorPage() {
     [a.carnet, a.nombre, a.carrera].some(v => v.toLowerCase().includes(busqueda.toLowerCase()))
   );
 
-  const solicitarCierre = (carnet) => {
-    setSolicitudesCierre(prev => ({ ...prev, [carnet]: "pendiente" }));
-    alert(`✅ Solicitud de cierre de pensum enviada para el alumno ${carnet}`);
-  };
-
   return (
     <>
       {modalAlumno && <ModalNotasAlumno alumno={modalAlumno} onCerrar={() => setModalAlumno(null)} />}
-      {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} onGuardar={(carnet, nuevasNotas) => {
-        console.log("Notas guardadas:", carnet, nuevasNotas);
-        // Aquí podrías actualizar notasPorAlumno
-      }} />}
+      {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} />}
       {modalAsistencias && <ModalAsistencias alumno={modalAsistencias} onCerrar={() => setModalAsistencias(null)} />}
 
       <div className="row clearfix">
@@ -241,59 +224,43 @@ export default function ProfesorPage() {
           <div className="card">
             <div className="card-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "2px solid #ff9800" }}>
               <div>
-                <h3 style={{ color: "#e65100", marginBottom: "4px" }}>👨‍🏫 {usuario?.nombre} {usuario?.apellido}</h3>
-                <p style={{ color: "#888", margin: 0 }}>Código: {usuario?.id} | Panel Catedrático</p>
+                <h3 style={{ color: "#e65100" }}>👨‍🏫 {usuario?.nombre} {usuario?.apellido}</h3>
+                <p style={{ color: "#888" }}>Panel Catedrático</p>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <span className="badge" style={{ background: "#fff3e0", color: "#e65100", padding: "8px 16px", borderRadius: "20px" }}>
-                  ✏️ {alumnosMock.length} alumnos
-                </span>
-                <a href="/control-de-notas" style={{ color: "#888", fontSize: "13px" }}>🚪 Salir</a>
-              </div>
+              <a href="/control-de-notas" style={{ color: "#888" }}>Salir</a>
             </div>
 
             <div className="card-body">
-              {/* Tabs */}
-              <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0" }}>
                 {[
-                  { id: "mis-alumnos", label: "👨‍🎓 Mis Alumnos" },
-                  { id: "resumen", label: "📊 Resumen del Grupo" },
-                  { id: "editar-notas", label: "✏️ Editar Notas" },
-                  { id: "asistencias", label: "📅 Asistencias" },
-                  { id: "cierre-pensum", label: "📋 Cierre de Pensum" },
+                  { id: "mis-alumnos", label: "Mis Alumnos" },
+                  { id: "editar-notas", label: "Editar Notas" },
+                  { id: "asistencias", label: "Asistencias" },
                 ].map(tab => (
                   <button key={tab.id} onClick={() => setTabActiva(tab.id)} style={{
-                    padding: "10px 20px", border: "none", background: "none", cursor: "pointer",
-                    borderBottom: tabActiva === tab.id ? "3px solid #ff9800" : "3px solid transparent",
-                    color: tabActiva === tab.id ? "#e65100" : "#666",
-                    fontWeight: tabActiva === tab.id ? 700 : 400,
+                    padding: "10px 20px", borderBottom: tabActiva === tab.id ? "3px solid #ff9800" : "none",
+                    fontWeight: tabActiva === tab.id ? 700 : 400, color: tabActiva === tab.id ? "#e65100" : "#666"
                   }}>
                     {tab.label}
                   </button>
                 ))}
               </div>
 
-              <div style={{ marginBottom: "16px" }}>
-                <input className="form-control" placeholder="🔍 Buscar alumno..." value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ maxWidth: "360px" }} />
-              </div>
+              <input className="form-control" placeholder="Buscar alumno..." value={busqueda} onChange={e => setBusqueda(e.target.value)} style={{ maxWidth: "360px", marginBottom: "16px" }} />
 
-              {/* Tab Mis Alumnos */}
               {tabActiva === "mis-alumnos" && (
                 <table className="table">
-                  <thead>
-                    <tr style={{ background: "#f9f9f9" }}>
-                      <th>Carnet</th><th>Nombre</th><th>Carrera</th><th className="text-center">Acciones</th>
-                    </tr>
-                  </thead>
+                  <thead><tr><th>Carnet</th><th>Nombre</th><th>Carrera</th><th>Acciones</th></tr></thead>
                   <tbody>
                     {alumnosFiltrados.map(a => (
                       <tr key={a.carnet}>
-                        <td><strong>{a.carnet}</strong></td>
+                        <td>{a.carnet}</td>
                         <td>{a.nombre}</td>
                         <td>{a.carrera}</td>
-                        <td className="text-center">
-                          <button className="btn btn-sm" style={{ background: "#ff9800", color: "white", marginRight: "5px" }} onClick={() => setModalAlumno(a)}>Ver Notas</button>
-                          <button className="btn btn-sm" style={{ background: "#1976d2", color: "white" }} onClick={() => setModalEditarNotas(a)}>Editar Notas</button>
+                        <td>
+                          <button onClick={() => setModalAlumno(a)}>Ver Notas</button>
+                          <button onClick={() => setModalEditarNotas(a)}>Editar Notas</button>
+                          <button onClick={() => setModalAsistencias(a)}>Asistencias</button>
                         </td>
                       </tr>
                     ))}
@@ -301,7 +268,6 @@ export default function ProfesorPage() {
                 </table>
               )}
 
-              {/* Tab Editar Notas */}
               {tabActiva === "editar-notas" && (
                 <table className="table">
                   <thead><tr><th>Carnet</th><th>Alumno</th><th>Acción</th></tr></thead>
@@ -310,14 +276,13 @@ export default function ProfesorPage() {
                       <tr key={a.carnet}>
                         <td>{a.carnet}</td>
                         <td>{a.nombre}</td>
-                        <td><button className="btn btn-sm" style={{ background: "#ff9800", color: "white" }} onClick={() => setModalEditarNotas(a)}>✏️ Editar Notas</button></td>
+                        <td><button onClick={() => setModalEditarNotas(a)}>Editar Notas</button></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               )}
 
-              {/* Tab Asistencias */}
               {tabActiva === "asistencias" && (
                 <table className="table">
                   <thead><tr><th>Carnet</th><th>Alumno</th><th>Acción</th></tr></thead>
@@ -326,47 +291,11 @@ export default function ProfesorPage() {
                       <tr key={a.carnet}>
                         <td>{a.carnet}</td>
                         <td>{a.nombre}</td>
-                        <td><button className="btn btn-sm" style={{ background: "#1976d2", color: "white" }} onClick={() => setModalAsistencias(a)}>📅 Gestionar Asistencias</button></td>
+                        <td><button onClick={() => setModalAsistencias(a)}>Gestionar Asistencias</button></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              )}
-
-              {/* Tab Cierre de Pensum */}
-              {tabActiva === "cierre-pensum" && (
-                <div>
-                  <div style={{ padding: "12px 16px", background: "#f3e5f5", borderRadius: "8px", marginBottom: "16px", color: "#4a148c" }}>
-                    Solicita el cierre de pensum para alumnos que hayan completado todos los requisitos.
-                  </div>
-                  <table className="table">
-                    <thead><tr><th>Carnet</th><th>Alumno</th><th>Estado</th><th>Acción</th></tr></thead>
-                    <tbody>
-                      {alumnosMock.map(a => {
-                        const estado = solicitudesCierre[a.carnet];
-                        return (
-                          <tr key={a.carnet}>
-                            <td>{a.carnet}</td>
-                            <td>{a.nombre}</td>
-                            <td>
-                              {estado === "pendiente" ? <span style={{ color: "#f57c00" }}>⏳ Pendiente</span> : <span style={{ color: "#666" }}>Sin solicitud</span>}
-                            </td>
-                            <td>
-                              <button onClick={() => solicitarCierre(a.carnet)} disabled={estado === "pendiente"} style={{ background: "#4a148c", color: "white", padding: "8px 16px", border: "none", borderRadius: "8px" }}>
-                                Solicitar Cierre
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Resumen (mantengo tu tab original) */}
-              {tabActiva === "resumen" && (
-                <div>Tu código original de resumen aquí...</div>
               )}
             </div>
           </div>
