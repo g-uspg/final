@@ -1,111 +1,457 @@
 "use client";
-import { useState } from "react";
 
-const notasMock = [
-  { curso: "ING101", nombre: "Matemática 1",         zona: 35, final: 40, nota: 75, estado: "aprobado" },
-  { curso: "ING102", nombre: "Programación 1",        zona: 30, final: 25, nota: 55, estado: "reprobado" },
-  { curso: "ING201", nombre: "Estructuras de Datos",  zona: 38, final: 42, nota: 80, estado: "aprobado" },
-  { curso: "GEN101", nombre: "Comunicación",          zona: 36, final: 38, nota: 74, estado: "aprobado" },
-];
+import { useEffect, useRef, useState } from "react";
 
-export default function EstudiantePage() {
-  const [busqueda, setBusqueda] = useState("");
+// ── DATOS LOCALES (Fallback cuando fallan las APIs) ──────────────────────────
+const DATOS_MOCK = {
+  alumno: {
+    id: 1,
+    carnet: "2600001",
+    nombre: "Juan Carlos Pérez García",
+    email: "juan.perez@alumno.uspg.edu.gt",
+    correoInstitucional: "juan.perez@alumno.uspg.edu.gt",
+    carrera: "Ingeniería en Sistemas"
+  },
+  notas: [
+    { curso: "MAT101", nombreCurso: "Matemática I", periodo: "2024-01", zona: 45, examenFinal: 35, notaFinal: 80, estado: "aprobado", creditos: 5 },
+    { curso: "FIS101", nombreCurso: "Física I", periodo: "2024-01", zona: 40, examenFinal: 30, notaFinal: 70, estado: "aprobado", creditos: 5 },
+    { curso: "PRO101", nombreCurso: "Programación I", periodo: "2024-01", zona: 50, examenFinal: 40, notaFinal: 90, estado: "aprobado", creditos: 6 },
+    { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55, estado: "reprobado", creditos: 5 },
+    { curso: "FIS102", nombreCurso: "Física II", periodo: "2024-02", zona: 42, examenFinal: 38, notaFinal: 80, estado: "aprobado", creditos: 5 },
+  ],
+  resumen: {
+    promedioGeneral: 75,
+    totalCursos: 5,
+    cursosAprobados: 4,
+    cursosReprobados: 1,
+    creditosAprobados: 21
+  },
+  solvencia: {
+    solvenciaGeneral: false,
+    solvenciaNotas: {
+      solvente: false,
+      totalReprobados: 1,
+      cursosReprobados: [
+        { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55 }
+      ]
+    },
+    solvenciaPagos: {
+      solvente: false,
+      montoPendiente: 1250.00,
+      montoMensualidades: 1000.00,
+      montoMora: 250.00,
+      mensualidadesPendientes: 2,
+      matriculaActiva: true,
+      facultadoProcesosAcademicos: false,
+      enMora: true,
+      pagosPendientes: [
+        { mes: "Octubre 2024", estado: "Vencido", precio: 500, mora: 125, diasMora: 15, fechaLimite: "2024-10-31" },
+        { mes: "Noviembre 2024", estado: "Pendiente", precio: 500, mora: 125, diasMora: 5, fechaLimite: "2024-11-30" }
+      ]
+    }
+  }
+};
 
-  const filtradas = notasMock.filter((n) =>
-    n.curso.toLowerCase().includes(busqueda.toLowerCase()) ||
-    n.nombre.toLowerCase().includes(busqueda.toLowerCase())
+// ── Toast flotante ────────────────────────────────────────────────────────────
+function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onClose }) {
+  const [show, setShow] = useState(false);
+  const [barWidth, setBarWidth] = useState(100);
+  const timerRef = useRef(null);
+  const duration = 5000;
+
+  useEffect(() => {
+    if (visible) {
+      setBarWidth(100);
+      requestAnimationFrame(() => {
+        setShow(true);
+        requestAnimationFrame(() => setBarWidth(0));
+      });
+      timerRef.current = setTimeout(() => onClose(), duration);
+    } else {
+      setShow(false);
+      clearTimeout(timerRef.current);
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [visible]);
+
+  return (
+    <div style={{
+      width: "340px", background: "white", borderRadius: "12px",
+      border: "0.5px solid #e0e0e0",
+      borderTop: `3px solid ${solvente ? "#2e7d32" : "#c62828"}`,
+      boxShadow: "0 8px 24px rgba(0,0,0,0.14)", overflow: "hidden",
+      transform: show ? "translateX(0) scale(1)" : "translateX(400px) scale(0.96)",
+      opacity: show ? 1 : 0,
+      transition: "transform 0.38s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
+      pointerEvents: show ? "all" : "none",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <span style={{ fontSize: "18px" }}>{icono}</span>
+          <span style={{ fontSize: "14px", fontWeight: 600, color: "#222" }}>{titulo}</span>
+          <span style={{
+            padding: "3px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: 600,
+            backgroundColor: solvente ? "#e8f5e9" : "#ffebee",
+            color: solvente ? "#2e7d32" : "#c62828",
+          }}>{badge}</span>
+        </div>
+        <button onClick={onClose} style={{ background: "none", border: "none", fontSize: "16px", cursor: "pointer", color: "#aaa" }}>✕</button>
+      </div>
+      <div style={{ height: "3px", background: "#f0f0f0" }}>
+        <div style={{
+          height: "100%", background: solvente ? "#2e7d32" : "#c62828",
+          width: `${barWidth}%`,
+          transition: barWidth === 0 ? `width ${duration}ms linear` : "none",
+        }} />
+      </div>
+      <div style={{ padding: "10px 14px 14px" }}>{children}</div>
+    </div>
   );
+}
+
+// ── Badge de estado de nota ───────────────────────────────────────────────────
+function BadgeNota({ nota }) {
+  const color = nota >= 61 ? "#2e7d32" : "#c62828";
+  const bg = nota >= 61 ? "#e8f5e9" : "#ffebee";
+  return (
+    <span style={{ padding: "3px 10px", borderRadius: "999px", fontSize: "12px", fontWeight: 700, background: bg, color }}>
+      {nota}
+    </span>
+  );
+}
+
+// ── Barra de progreso ─────────────────────────────────────────────────────────
+function BarraProgreso({ valor, max, color }) {
+  const pct = Math.min(100, (valor / max) * 100);
+  return (
+    <div style={{ background: "#f0f0f0", borderRadius: "999px", height: "8px", width: "100%" }}>
+      <div style={{ width: `${pct}%`, background: color, borderRadius: "999px", height: "100%", transition: "width 0.6s ease" }} />
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+export default function EstudiantePage() {
+  const [usuario, setUsuario] = useState(null);
+  const [notas, setNotas] = useState(null);
+  const [solvencia, setSolvencia] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [tabActiva, setTabActiva] = useState("notas");
+  const [toastVisible, setToastVisible] = useState({ solvencia: false });
+  const [usandoDatosLocales, setUsandoDatosLocales] = useState(false);
+
+  useEffect(() => {
+    const raw = sessionStorage.getItem("cn_usuario");
+    if (!raw) { window.location.href = "/control-de-notas"; return; }
+    
+    const u = JSON.parse(raw);
+    if (u.rol !== "ALUMNO") { window.location.href = "/control-de-notas"; return; }
+    
+    setUsuario(u);
+    cargarDatos(u.carnet ?? u.id);
+  }, []);
+
+  const cargarDatos = async (carnet) => {
+    setCargando(true);
+    setError("");
+    setUsandoDatosLocales(false);
+    
+    try {
+      const encodedCarnet = encodeURIComponent(carnet);
+      
+      // Intentar cargar de la API
+      const [resNotas, resSolvencia] = await Promise.all([
+        fetch(`/api/control-de-notas/notas/${encodedCarnet}`),
+        fetch(`/api/control-de-notas/notas/${encodedCarnet}/solvencia-estado`),
+      ]);
+
+      if (!resNotas.ok || !resSolvencia.ok) {
+        throw new Error("Error en APIs");
+      }
+
+      const [dNotas, dSolvencia] = await Promise.all([
+        resNotas.json(),
+        resSolvencia.json(),
+      ]);
+
+      if (!dNotas.success || !dSolvencia.success) {
+        throw new Error("Datos inválidos");
+      }
+
+      setNotas(dNotas);
+      setSolvencia(dSolvencia);
+
+    } catch (e) {
+      console.warn("⚠️ APIs no disponibles, usando datos locales:", e);
+      // 🔧 FALLBACK: Usar datos mock
+      setUsandoDatosLocales(true);
+      setNotas({
+        success: true,
+        alumno: DATOS_MOCK.alumno,
+        notas: DATOS_MOCK.notas,
+        resumen: DATOS_MOCK.resumen
+      });
+      setSolvencia({
+        success: true,
+        alumno: DATOS_MOCK.alumno,
+        ...DATOS_MOCK.solvencia
+      });
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  if (cargando) return (
+    <div style={{ textAlign: "center", padding: "80px" }}>
+      <p style={{ fontSize: "18px", color: "#666" }}>⏳ Cargando tu información...</p>
+    </div>
+  );
+
+  const notasLista = notas?.notas ?? [];
+  const resumen = notas?.resumen ?? {};
+  const solvGeneral = solvencia?.solvenciaGeneral ?? false;
+  const reprobados = solvencia?.solvenciaNotas?.cursosReprobados ?? [];
+  const aprobados = notasLista.filter((n) => n.estado === "aprobado");
+  const reproList = notasLista.filter((n) => n.estado === "reprobado");
+  const carnetDisplay = usuario?.carnet ?? usuario?.id ?? notas?.alumno?.carnet ?? "—";
 
   return (
     <div className="row clearfix">
       <div className="col-lg-12">
-        <div className="card">
+        <div className="card" style={{ background: "#fff" }}>
 
-          {/* Header */}
+          {/* Banner de modo local */}
+          {usandoDatosLocales && (
+            <div style={{
+              background: "#fff3cd", 
+              border: "1px solid #ffc107", 
+              color: "#856404", 
+              padding: "12px 20px",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              borderRadius: "0 0 8px 8px"
+            }}>
+              <span>⚠️</span>
+              <span><strong>Modo demostración:</strong> Mostrando datos de ejemplo. Las APIs no están conectadas.</span>
+            </div>
+          )}
+
+          {/* ── Header ── */}
           <div className="card-header" style={{
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            borderBottom: "2px solid #1976d2",
+            background: "#fff", display: "flex", justifyContent: "space-between",
+            alignItems: "center", borderBottom: "2px solid #800020", padding: "20px",
           }}>
             <div>
-              <h3 style={{ color: "#0d47a1", marginBottom: "4px" }}>🎓 Portal del Estudiante</h3>
-              <p style={{ color: "#888", margin: 0 }}>Control de Notas — Vista alumno</p>
+              <h3 style={{ color: "#800020", marginBottom: "4px" }}>
+                👨‍🎓 {notas?.alumno?.nombre ?? usuario?.nombre}
+              </h3>
+              <p style={{ color: "#666", margin: 0 }}>
+                Carnet: {carnetDisplay} | Carrera: {notas?.alumno?.carrera ?? "—"}
+              </p>
             </div>
-            <a href="/control-de-notas" style={{ color: "#888", fontSize: "13px" }}>🚪 Salir</a>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                onClick={() => setToastVisible((p) => ({ ...p, solvencia: !p.solvencia }))}
+                style={{
+                  display: "flex", alignItems: "center", gap: "8px",
+                  padding: "8px 16px", borderRadius: "10px", cursor: "pointer",
+                  border: `1.5px solid ${solvGeneral ? "#2e7d32" : "#c62828"}`,
+                  background: solvGeneral ? "#e8f5e9" : "#ffebee",
+                  color: solvGeneral ? "#2e7d32" : "#c62828",
+                  fontWeight: 600, fontSize: "13px",
+                }}
+              >
+                {solvGeneral ? "✅" : "⚠️"} Solvencia
+              </button>
+              <a href="/control-de-notas" style={{ color: "#888", fontSize: "13px" }}>🚪 Salir</a>
+            </div>
           </div>
 
-          <div className="card-body">
+          <div className="card-body" style={{ padding: "20px" }}>
 
-            {/* Stats */}
+            {/* ── Stats rápidos ── */}
             <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
               {[
-                { label: "Promedio",   valor: "71.0", color: "#1976d2", bg: "#e3f2fd" },
-                { label: "Aprobados",  valor: "3",    color: "#2e7d32", bg: "#e8f5e9" },
-                { label: "Reprobados", valor: "1",    color: "#c62828", bg: "#ffebee" },
-                { label: "Créditos",   valor: "12",   color: "#e65100", bg: "#fff3e0" },
+                { label: "Promedio General", valor: resumen.promedioGeneral ?? "—", color: "#1976d2", bg: "#e3f2fd" },
+                { label: "Cursos Aprobados", valor: resumen.cursosAprobados ?? 0, color: "#2e7d32", bg: "#e8f5e9" },
+                { label: "Cursos Reprobados", valor: resumen.cursosReprobados ?? 0, color: "#c62828", bg: "#ffebee" },
+                { label: "Créditos Obtenidos", valor: resumen.creditosAprobados ?? 0, color: "#e65100", bg: "#fff3e0" },
               ].map((s) => (
                 <div key={s.label} style={{
-                  padding: "12px 20px", borderRadius: "10px",
-                  background: s.bg, border: `1.5px solid ${s.color}22`,
-                  minWidth: "100px", textAlign: "center",
+                  padding: "14px 20px", borderRadius: "10px", background: s.bg,
+                  border: `1.5px solid ${s.color}22`, minWidth: "130px", textAlign: "center",
                 }}>
-                  <p style={{ margin: 0, fontSize: "24px", fontWeight: 700, color: s.color }}>{s.valor}</p>
-                  <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>{s.label}</p>
+                  <p style={{ margin: 0, fontSize: "26px", fontWeight: 700, color: s.color }}>
+                    {s.valor}
+                  </p>
+                  <p style={{ margin: 0, fontSize: "11px", color: "#666" }}>{s.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Buscador */}
-            <div style={{ marginBottom: "16px" }}>
-              <input
-                className="form-control"
-                placeholder="🔍 Buscar por curso..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                style={{ maxWidth: "360px" }}
-              />
+            {/* ── Tabs ── */}
+            <div style={{ display: "flex", gap: "4px", marginBottom: "20px", borderBottom: "2px solid #f0f0f0" }}>
+              {[
+                { id: "notas", label: "📝 Mis Notas" },
+                { id: "reprobados", label: `❌ Reprobados (${reproList.length})` },
+              ].map((tab) => (
+                <button key={tab.id} onClick={() => setTabActiva(tab.id)} style={{
+                  padding: "10px 20px", border: "none", background: "none", cursor: "pointer",
+                  borderBottom: tabActiva === tab.id ? "3px solid #800020" : "3px solid transparent",
+                  color: tabActiva === tab.id ? "#800020" : "#666",
+                  fontWeight: tabActiva === tab.id ? 700 : 400,
+                  fontSize: "14px", marginBottom: "-2px",
+                }}>
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            {/* Tabla */}
-            <table className="table" style={{ width: "100%" }}>
-              <thead>
-                <tr style={{ background: "#f9f9f9" }}>
-                  <th>Curso</th>
-                  <th className="text-center">Zona</th>
-                  <th className="text-center">Final</th>
-                  <th className="text-center">Nota</th>
-                  <th className="text-center">Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtradas.length === 0 ? (
-                  <tr><td colSpan={5} style={{ textAlign: "center", color: "#aaa", padding: "30px" }}>Sin resultados.</td></tr>
-                ) : filtradas.map((n, i) => (
-                  <tr key={i} style={{ background: n.estado === "reprobado" ? "#fff8f8" : "white" }}>
-                    <td>
-                      <span style={{ fontWeight: 600, fontSize: "12px" }}>{n.curso}</span><br />
-                      <span style={{ fontSize: "12px", color: "#888" }}>{n.nombre}</span>
-                    </td>
-                    <td className="text-center">{n.zona}</td>
-                    <td className="text-center">{n.final}</td>
-                    <td className="text-center">
-                      <span style={{ fontWeight: 700, color: n.nota >= 61 ? "#2e7d32" : "#c62828" }}>{n.nota}</span>
-                    </td>
-                    <td className="text-center">
-                      <span style={{
-                        padding: "2px 8px", borderRadius: "999px", fontSize: "11px", fontWeight: 600,
-                        background: n.estado === "aprobado" ? "#e8f5e9" : "#ffebee",
-                        color: n.estado === "aprobado" ? "#2e7d32" : "#c62828",
-                      }}>
-                        {n.estado === "aprobado" ? "✅ Aprobado" : "❌ Reprobado"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* ── Tab: Todas las notas ── */}
+            {tabActiva === "notas" && (
+              <div>
+                {notasLista.length === 0 ? (
+                  <p style={{ textAlign: "center", color: "#aaa", padding: "40px" }}>
+                    No hay notas registradas.
+                  </p>
+                ) : (
+                  <>
+                    <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ background: "#f9f9f9" }}>
+                          <th style={{ padding: "12px", textAlign: "left" }}>Código</th>
+                          <th style={{ padding: "12px", textAlign: "left" }}>Curso</th>
+                          <th style={{ padding: "12px", textAlign: "left" }}>Período</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Zona</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Final</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Nota Final</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Estado</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Créditos</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {notasLista.map((n, i) => (
+                          <tr key={i} style={{ background: n.estado === "reprobado" ? "#fff8f8" : "white", borderBottom: "1px solid #eee" }}>
+                            <td style={{ padding: "12px", fontWeight: 600, fontSize: "13px" }}>{n.curso}</td>
+                            <td style={{ padding: "12px" }}>{n.nombreCurso}</td>
+                            <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{n.periodo}</td>
+                            <td style={{ padding: "12px", textAlign: "center" }}>{n.zona}</td>
+                            <td style={{ padding: "12px", textAlign: "center" }}>{n.examenFinal}</td>
+                            <td style={{ padding: "12px", textAlign: "center" }}><BadgeNota nota={n.notaFinal} /></td>
+                            <td style={{ padding: "12px", textAlign: "center" }}>
+                              <span style={{
+                                padding: "3px 10px", borderRadius: "999px", fontSize: "11px", fontWeight: 600,
+                                background: n.estado === "aprobado" ? "#e8f5e9" : "#ffebee",
+                                color: n.estado === "aprobado" ? "#2e7d32" : "#c62828",
+                              }}>
+                                {n.estado === "aprobado" ? "✅ Aprobado" : "❌ Reprobado"}
+                              </span>
+                            </td>
+                            <td style={{ padding: "12px", textAlign: "center" }}>{n.creditos}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    {/* Barra de progreso de créditos */}
+                    <div style={{ marginTop: "20px", padding: "16px", background: "#f9f9f9", borderRadius: "10px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                        <span style={{ fontWeight: 600, fontSize: "14px" }}>📊 Progreso de créditos</span>
+                        <span style={{ fontSize: "13px", color: "#666" }}>
+                          {resumen.creditosAprobados ?? 0} / 200
+                        </span>
+                      </div>
+                      <BarraProgreso valor={resumen.creditosAprobados ?? 0} max={200} color="#800020" />
+                      <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#888" }}>
+                        Te faltan {200 - (resumen.creditosAprobados ?? 0)} créditos para completar la carrera
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* ── Tab: Reprobados ── */}
+            {tabActiva === "reprobados" && (
+              <div>
+                {reproList.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "40px" }}>
+                    <p style={{ fontSize: "40px" }}>🎉</p>
+                    <p style={{ color: "#2e7d32", fontWeight: 600 }}>¡No tenés cursos reprobados!</p>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{
+                      padding: "12px 16px", borderRadius: "8px", marginBottom: "16px",
+                      background: "#ffebee", border: "1px solid #ef9a9a", fontSize: "13px", color: "#c62828",
+                    }}>
+                      ⚠️ Tenés <strong>{reproList.length}</strong> curso(s) reprobado(s). Debés repetirlos para completar tu pensum.
+                    </div>
+                    <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <thead>
+                        <tr style={{ background: "#f9f9f9" }}>
+                          <th style={{ padding: "12px" }}>Código</th>
+                          <th style={{ padding: "12px" }}>Curso</th>
+                          <th style={{ padding: "12px" }}>Período</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Zona</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Examen Final</th>
+                          <th style={{ padding: "12px", textAlign: "center" }}>Nota Final</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {reproList.map((n, i) => (
+                          <tr key={i} style={{ background: "#fff8f8", borderBottom: "1px solid #eee" }}>
+                            <td style={{ padding: "12px", fontWeight: 600 }}>{n.curso}</td>
+                            <td style={{ padding: "12px" }}>{n.nombreCurso}</td>
+                            <td style={{ padding: "12px", fontSize: "13px", color: "#888" }}>{n.periodo}</td>
+                            <td style={{ padding: "12px", textAlign: "center", color: "#c62828" }}>{n.zona}</td>
+                            <td style={{ padding: "12px", textAlign: "center", color: "#c62828" }}>{n.examenFinal}</td>
+                            <td style={{ padding: "12px", textAlign: "center" }}><BadgeNota nota={n.notaFinal} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+            )}
 
           </div>
         </div>
+      </div>
+
+      {/* ── Toast solvencia ── */}
+      <div style={{
+        position: "fixed", top: "16px", right: "16px",
+        display: "flex", flexDirection: "column", gap: "10px",
+        zIndex: 9999, pointerEvents: "none",
+      }}>
+        <SolvenciaToast
+          icono={solvGeneral ? "✅" : "⚠️"}
+          titulo="Estado de Solvencia"
+          badge={solvGeneral ? "Solvente" : "Con pendientes"}
+          solvente={solvGeneral}
+          visible={toastVisible.solvencia}
+          onClose={() => setToastVisible((p) => ({ ...p, solvencia: false }))}
+        >
+          <div style={{ fontSize: "13px" }}>
+            <p style={{ margin: "0 0 6px", fontWeight: 600, color: "#444" }}>Notas:</p>
+            <p style={{ margin: "0 0 4px", color: solvencia?.solvenciaNotas?.solvente ? "#2e7d32" : "#c62828" }}>
+              {solvencia?.solvenciaNotas?.solvente
+                ? "✅ Sin cursos reprobados"
+                : `❌ ${solvencia?.solvenciaNotas?.totalReprobados} curso(s) reprobado(s)`}
+            </p>
+            <p style={{ margin: "8px 0 6px", fontWeight: 600, color: "#444" }}>Pagos:</p>
+            <p style={{ margin: 0, color: solvencia?.solvenciaPagos?.solvente ? "#2e7d32" : "#c62828" }}>
+              {solvencia?.solvenciaPagos?.solvente
+                ? "✅ Sin mora pendiente"
+                : `❌ Q${solvencia?.solvenciaPagos?.montoPendiente?.toFixed(2)} pendiente`}
+            </p>
+          </div>
+        </SolvenciaToast>
       </div>
     </div>
   );
