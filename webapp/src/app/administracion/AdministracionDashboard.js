@@ -47,11 +47,11 @@ function formatHora(date) {
 function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending }) {
   const hoy = new Date()
   const [anio, setAnio] = useState(hoy.getFullYear())
-  const [mes, setMes] = useState(hoy.getMonth()) // 0-indexed
+  const [mes, setMes] = useState(hoy.getMonth())
   const [reservasMes, setReservasMes] = useState([])
   const [cargando, setCargando] = useState(false)
   const [diaSeleccionado, setDiaSeleccionado] = useState(null)
-  const [conflictoModal, setConflictoModal] = useState(null) // { reservaPendiente, conflictos }
+  const [conflictoModal, setConflictoModal] = useState(null)
 
   const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
   const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
@@ -77,7 +77,6 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
     setDiaSeleccionado(null)
   }
 
-  // Construir grilla del mes
   const primerDia = new Date(anio, mes, 1).getDay()
   const diasEnMes = new Date(anio, mes + 1, 0).getDate()
 
@@ -101,22 +100,18 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
     })
   }
 
-  const esHoy = (dia) => {
-    return dia && anio === hoy.getFullYear() && mes === hoy.getMonth() && dia === hoy.getDate()
-  }
+  const esHoy = (dia) =>
+      dia && anio === hoy.getFullYear() && mes === hoy.getMonth() && dia === hoy.getDate()
 
-  // Verificar conflictos antes de aprobar
   const verificarYAprobar = (reservaPendiente) => {
     const inicio = new Date(reservaPendiente.fechaInicio)
     const fin = new Date(reservaPendiente.fechaFin)
-
     const conflictos = reservasMes.filter(r => {
       if (r.espacioId !== reservaPendiente.espacioId) return false
       const rInicio = new Date(r.fechaInicio)
       const rFin = new Date(r.fechaFin)
       return rInicio < fin && rFin > inicio
     })
-
     if (conflictos.length > 0) {
       setConflictoModal({ reservaPendiente, conflictos })
     } else {
@@ -130,7 +125,6 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
 
   return (
       <div>
-        {/* Navegación del mes */}
         <div className="flex items-center justify-between mb-4 dashboard-card" style={{ padding: '12px 16px' }}>
           <button type="button" className="adm-btn-ghost" onClick={irMesAnterior}>
             <i className="fa fa-chevron-left" />
@@ -144,9 +138,7 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
           </button>
         </div>
 
-        {/* Grilla del calendario */}
         <div className="dashboard-card" style={{ padding: '16px' }}>
-          {/* Encabezados días semana */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
             {DIAS_SEMANA.map(d => (
                 <div key={d} style={{ textAlign: 'center', fontSize: '11px', opacity: 0.5, fontWeight: 600, padding: '4px' }}>
@@ -155,7 +147,6 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
             ))}
           </div>
 
-          {/* Celdas */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
             {celdas.map((dia, i) => {
               if (!dia) return <div key={`empty-${i}`} />
@@ -190,18 +181,12 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
                   {dia}
                 </span>
                     {aprobadas.length > 0 && (
-                        <span style={{
-                          fontSize: '9px', background: '#22c55e', color: '#fff',
-                          borderRadius: '4px', padding: '1px 4px', fontWeight: 600,
-                        }}>
+                        <span style={{ fontSize: '9px', background: '#22c55e', color: '#fff', borderRadius: '4px', padding: '1px 4px', fontWeight: 600 }}>
                     {aprobadas.length} res.
                   </span>
                     )}
                     {pendientes.length > 0 && (
-                        <span style={{
-                          fontSize: '9px', background: '#f59e0b', color: '#fff',
-                          borderRadius: '4px', padding: '1px 4px', fontWeight: 600,
-                        }}>
+                        <span style={{ fontSize: '9px', background: '#f59e0b', color: '#fff', borderRadius: '4px', padding: '1px 4px', fontWeight: 600 }}>
                     {pendientes.length} pend.
                   </span>
                     )}
@@ -211,7 +196,6 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
           </div>
         </div>
 
-        {/* Detalle del día seleccionado */}
         {diaSeleccionado && (
             <div className="dashboard-card" style={{ marginTop: '12px', padding: '16px' }}>
               <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', opacity: 0.8 }}>
@@ -268,7 +252,6 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
             </div>
         )}
 
-        {/* Modal de conflicto */}
         {conflictoModal && (
             <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && setConflictoModal(null)}>
               <div className="adm-modal">
@@ -302,23 +285,58 @@ function CalendarioMensual({ reservasPendientes, onAprobar, onRechazar, pending 
                     <i className="fa fa-calendar" /> Cancelar / Reprogramar
                   </button>
                   <button type="button" className="adm-btn-ghost" disabled={pending}
-                          onClick={() => {
-                            onRechazar(conflictoModal.reservaPendiente.id)
-                            setConflictoModal(null)
-                          }}>
+                          onClick={() => { onRechazar(conflictoModal.reservaPendiente.id); setConflictoModal(null) }}>
                     <i className="fa fa-times" /> Rechazar
                   </button>
                   <button type="button" className="adm-btn-primary" disabled={pending}
-                          onClick={() => {
-                            onAprobar(conflictoModal.reservaPendiente.id)
-                            setConflictoModal(null)
-                          }}>
+                          onClick={() => { onAprobar(conflictoModal.reservaPendiente.id); setConflictoModal(null) }}>
                     <i className="fa fa-check" /> Aprobar de todas formas
                   </button>
                 </div>
               </div>
             </div>
         )}
+      </div>
+  )
+}
+
+// ── Modal de rechazo con input nativo (reemplaza window.prompt) ───────────────
+function RechazarReservaModal({ onConfirmar, onCancelar, pending }) {
+  const [motivo, setMotivo] = useState('')
+  return (
+      <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && onCancelar()}>
+        <div className="adm-modal" style={{ maxWidth: '420px' }}>
+          <div className="adm-modal-header">
+            <h2><i className="fa fa-times-circle" style={{ color: '#f87171' }} /> Rechazar reserva</h2>
+            <button type="button" className="adm-modal-close" onClick={onCancelar}>
+              <i className="fa fa-times" />
+            </button>
+          </div>
+          <div className="adm-modal-body">
+            <div className="adm-form-group">
+              <label className="adm-label">Motivo del rechazo (opcional)</label>
+              <textarea
+                  className="adm-input adm-textarea"
+                  rows={3}
+                  placeholder="Indica el motivo para notificar al solicitante…"
+                  value={motivo}
+                  onChange={(e) => setMotivo(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="adm-modal-footer">
+            <button type="button" className="adm-btn-ghost" onClick={onCancelar} disabled={pending}>
+              Cancelar
+            </button>
+            <button type="button" className="adm-btn-primary"
+                    style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}
+                    onClick={() => onConfirmar(motivo)} disabled={pending}>
+              {pending
+                  ? <><i className="fa fa-spinner fa-spin" /> Rechazando…</>
+                  : <><i className="fa fa-times" /> Confirmar rechazo</>}
+            </button>
+          </div>
+        </div>
       </div>
   )
 }
@@ -332,9 +350,21 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
   const [showEspacioModal, setShowEspacioModal] = useState(false)
   const [showReservaModal, setShowReservaModal] = useState(false)
   const [showReporteModal, setShowReporteModal] = useState(false)
+  const [espacioPreseleccionado, setEspacioPreseleccionado] = useState(null)
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null)
+  // FIX: reemplaza window.prompt con modal propio
+  const [rechazarModal, setRechazarModal] = useState(null) // id de la reserva a rechazar
   const [pending, startTransition] = useTransition()
 
-  const { espacios, reservasPendientes, reservasHoy, reportesAbiertos, usuarios, stats } = initialData
+  // FIX: desestructurar con fallbacks para evitar undefined en los .map()
+  const {
+    espacios = [],
+    reservasPendientes = [],
+    reservasHoy = [],
+    reportesAbiertos = [],
+    usuarios = [],
+    stats = {},
+  } = initialData ?? {}
 
   const goTab = (id) => {
     setTab(id)
@@ -353,9 +383,14 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
     })
   }
 
+  // FIX: usa modal propio en lugar de window.prompt
   const handleRechazarReserva = (id) => {
-    const motivo = window.prompt('Motivo del rechazo (opcional):')
-    if (motivo === null) return
+    setRechazarModal(id)
+  }
+
+  const confirmarRechazo = (motivo) => {
+    const id = rechazarModal
+    setRechazarModal(null)
     startTransition(async () => {
       const result = await resolverReservaEspacio(id, 'rechazar', motivo)
       if (result.success) {
@@ -380,7 +415,13 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
   }
 
   const handleEliminarEspacio = (id, nombre) => {
-    if (!window.confirm(`¿Eliminar "${nombre}"? Esta acción no se puede deshacer.`)) return
+    setConfirmarEliminar({ id, nombre })
+  }
+
+  const confirmarYEliminar = () => {
+    if (!confirmarEliminar) return
+    const { id } = confirmarEliminar
+    setConfirmarEliminar(null)
     startTransition(async () => {
       const r = await eliminarEspacio(id)
       if (r.success) {
@@ -399,15 +440,15 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
     { id: 'mantenimiento', label: 'Mantenimiento', icon: 'fa-wrench',    badge: stats.reportesAbiertos },
   ]
   const tabs = isStudent
-    ? allTabs.filter((t) => t.id === 'mantenimiento')
-    : allTabs
+      ? allTabs.filter((t) => t.id === 'mantenimiento')
+      : allTabs
 
   const statItems = [
-    { id: 'espacios', label: 'Total Espacios', value: stats.totalEspacios },
-    { id: 'espacios', label: 'Disponibles', value: stats.espaciosDisponibles },
-    { id: 'calendario', label: 'Reservas Hoy', value: stats.reservasHoy },
-    { id: 'reservas', label: 'Pendientes', value: stats.reservasPendientes, alert: stats.reservasPendientes > 0 },
-    { id: 'mantenimiento', label: 'Reportes Abiertos', value: stats.reportesAbiertos, alert: stats.reportesUrgentes > 0 },
+    { id: 'espacios',      label: 'Total Espacios',   value: stats.totalEspacios },
+    { id: 'espacios',      label: 'Disponibles',      value: stats.espaciosDisponibles },
+    { id: 'calendario',    label: 'Reservas Hoy',     value: stats.reservasHoy },
+    { id: 'reservas',      label: 'Pendientes',       value: stats.reservasPendientes, alert: stats.reservasPendientes > 0 },
+    { id: 'mantenimiento', label: 'Reportes Abiertos',value: stats.reportesAbiertos,   alert: stats.reportesUrgentes > 0 },
   ]
 
   return (
@@ -432,17 +473,17 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                   </button>
               )}
               {!isStudent && (
-                <button type="button" className="adm-btn-ghost" onClick={() => setShowReservaModal(true)}>
-                  <i className="fa fa-calendar-plus-o" /> Reservar espacio
-                </button>
+                  <button type="button" className="adm-btn-ghost" onClick={() => setShowReservaModal(true)}>
+                    <i className="fa fa-calendar-plus-o" /> Reservar espacio
+                  </button>
               )}
               <button type="button" className="adm-btn-ghost" onClick={() => setShowReporteModal(true)}>
                 <i className="fa fa-wrench" /> Reportar problema
               </button>
               {!isStudent && (
-                <button type="button" className="adm-btn-ghost" onClick={() => setShowEspacioModal(true)}>
-                  <i className="fa fa-plus" /> Nuevo espacio
-                </button>
+                  <button type="button" className="adm-btn-ghost" onClick={() => setShowEspacioModal(true)}>
+                    <i className="fa fa-plus" /> Nuevo espacio
+                  </button>
               )}
             </div>
           </div>
@@ -490,9 +531,9 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                     <i className="fa fa-building text-3xl mb-3 opacity-40" aria-hidden="true" />
                     <p className="mb-2">No hay espacios registrados.</p>
                     {!isStudent && (
-                      <button type="button" className="adm-btn-primary" onClick={() => setShowEspacioModal(true)}>
-                        <i className="fa fa-plus" /> Agregar primer espacio
-                      </button>
+                        <button type="button" className="adm-btn-primary" onClick={() => setShowEspacioModal(true)}>
+                          <i className="fa fa-plus" /> Agregar primer espacio
+                        </button>
                     )}
                   </div>
               ) : (
@@ -512,6 +553,12 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                             <div className={`adm-estado-badge ${estadoEspacioClass(esp.estado)} mb-2`}>
                               {ESTADO_ESPACIO_LABEL[esp.estado]}
                             </div>
+                            {esp.estado === 'MANTENIMIENTO' && (
+                                <div style={{ fontSize: '11px', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '6px', padding: '4px 8px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                  <i className="fa fa-exclamation-triangle" />
+                                  <span>En mantenimiento — no se permiten nuevas reservas</span>
+                                </div>
+                            )}
                             <p className="text-sm opacity-70 mb-2 line-clamp-2 min-h-[2.5rem]">
                               {esp.descripcion || 'Sin descripción'}
                             </p>
@@ -538,10 +585,20 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                                 </div>
                             )}
                             <div className="flex gap-2 mt-3 flex-wrap">
-                              <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
-                                      onClick={() => setShowReservaModal(true)}>
-                                <i className="fa fa-calendar-plus-o" /> Reservar
-                              </button>
+                              {esp.estado === 'MANTENIMIENTO' || esp.estado === 'FUERA_DE_SERVICIO' ? (
+                                  <div
+                                      className="adm-btn-ghost flex-1 justify-center text-xs opacity-40"
+                                      style={{ cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                      title={`No disponible: espacio en ${esp.estado === 'MANTENIMIENTO' ? 'mantenimiento' : 'fuera de servicio'}`}
+                                  >
+                                    <i className="fa fa-ban" /> Sin reservas
+                                  </div>
+                              ) : (
+                                  <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
+                                          onClick={() => setShowReservaModal(true)}>
+                                    <i className="fa fa-calendar-plus-o" /> Reservar
+                                  </button>
+                              )}
                               {esp.estado === 'MANTENIMIENTO' ? (
                                   <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
                                           disabled={pending}
@@ -557,21 +614,19 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                                   <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
                                           disabled={pending}
                                           onClick={() => {
-                                            startTransition(async () => {
-                                              const r = await actualizarEstadoEspacio(esp.id, 'MANTENIMIENTO')
-                                              if (r.success) { showToast('Espacio en mantenimiento.'); router.refresh() }
-                                            })
+                                            setEspacioPreseleccionado(esp.id)
+                                            setShowReporteModal(true)
                                           }}>
                                     <i className="fa fa-wrench" /> Mantenimiento
                                   </button>
                               )}
                               {!isStudent && (
-                                <button type="button"
-                                        className="adm-btn-ghost flex-1 justify-center text-xs text-red-400 hover:text-red-300"
-                                        disabled={pending}
-                                        onClick={() => handleEliminarEspacio(esp.id, esp.nombre)}>
-                                  <i className="fa fa-trash" /> Borrar
-                                </button>
+                                  <button type="button"
+                                          className="adm-btn-ghost flex-1 justify-center text-xs text-red-400 hover:text-red-300"
+                                          disabled={pending}
+                                          onClick={() => handleEliminarEspacio(esp.id, esp.nombre)}>
+                                    <i className="fa fa-trash" /> Borrar
+                                  </button>
                               )}
                             </div>
                           </article>
@@ -727,22 +782,22 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                       {new Date(rep.createdAt).toLocaleDateString('es-GT')}
                     </span>
                             {!isStudent && (
-                              <div className="flex gap-1">
-                                {rep.estado === 'ABIERTO' && (
-                                    <button type="button" className="adm-btn-ghost adm-btn-xs"
-                                            disabled={pending}
-                                            onClick={() => handleResolverReporte(rep.id, 'EN_PROCESO')}>
-                                      <i className="fa fa-play" /> En proceso
-                                    </button>
-                                )}
-                                {rep.estado !== 'RESUELTO' && rep.estado !== 'CERRADO' && (
-                                    <button type="button" className="adm-btn-primary adm-btn-xs"
-                                            disabled={pending}
-                                            onClick={() => handleResolverReporte(rep.id, 'RESUELTO')}>
-                                      <i className="fa fa-check" /> Resuelto
-                                    </button>
-                                )}
-                              </div>
+                                <div className="flex gap-1">
+                                  {rep.estado === 'ABIERTO' && (
+                                      <button type="button" className="adm-btn-ghost adm-btn-xs"
+                                              disabled={pending}
+                                              onClick={() => handleResolverReporte(rep.id, 'EN_PROCESO')}>
+                                        <i className="fa fa-play" /> En proceso
+                                      </button>
+                                  )}
+                                  {rep.estado !== 'RESUELTO' && rep.estado !== 'CERRADO' && (
+                                      <button type="button" className="adm-btn-primary adm-btn-xs"
+                                              disabled={pending}
+                                              onClick={() => handleResolverReporte(rep.id, 'RESUELTO')}>
+                                        <i className="fa fa-check" /> Resuelto
+                                      </button>
+                                  )}
+                                </div>
                             )}
                           </div>
                         </div>
@@ -752,13 +807,14 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
             </div>
         )}
 
-        {/* Modals */}
+        {/* ── Modals ─────────────────────────────────────────────────────────── */}
         {showEspacioModal && (
             <NuevoEspacioModal onClose={(msg, type) => {
               setShowEspacioModal(false)
               if (msg) { showToast(msg, type); router.refresh() }
             }} />
         )}
+
         {showReservaModal && (
             <NuevaReservaEspacioModal
                 espacios={espacios}
@@ -769,14 +825,68 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                 }}
             />
         )}
+
         {showReporteModal && (
             <NuevoReporteModal
                 espacios={espacios}
+                espacioPreseleccionadoId={espacioPreseleccionado}
                 onClose={(msg, type) => {
                   setShowReporteModal(false)
+                  // FIX: siempre limpiar el espacio preseleccionado al cerrar
+                  setEspacioPreseleccionado(null)
                   if (msg) { showToast(msg, type); router.refresh() }
                 }}
             />
+        )}
+
+        {/* FIX: modal de rechazo en lugar de window.prompt */}
+        {rechazarModal !== null && (
+            <RechazarReservaModal
+                pending={pending}
+                onConfirmar={confirmarRechazo}
+                onCancelar={() => setRechazarModal(null)}
+            />
+        )}
+
+        {/* Modal confirmación eliminar */}
+        {confirmarEliminar && (
+            <div className="adm-modal-overlay" onClick={() => setConfirmarEliminar(null)}>
+              <div className="adm-modal" style={{ maxWidth: '420px' }} onClick={(e) => e.stopPropagation()}>
+                <div className="adm-modal-header" style={{ borderBottom: '1px solid rgba(239,68,68,0.2)' }}>
+                  <h2 style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa fa-trash" /> Eliminar espacio
+                  </h2>
+                  <button type="button" className="adm-modal-close" onClick={() => setConfirmarEliminar(null)}>
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+                <div className="adm-modal-body" style={{ textAlign: 'center', padding: '28px 24px' }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.8 }}>🗑️</div>
+                  <p style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>
+                    ¿Eliminar &ldquo;{confirmarEliminar.nombre}&rdquo;?
+                  </p>
+                  <p style={{ fontSize: '13px', opacity: 0.6, lineHeight: 1.5 }}>
+                    Esta acción es permanente y no se puede deshacer.<br />
+                    Se eliminarán también todas sus reservas y reportes asociados.
+                  </p>
+                </div>
+                <div className="adm-modal-footer" style={{ gap: '10px' }}>
+                  <button type="button" className="adm-btn-ghost flex-1 justify-center"
+                          onClick={() => setConfirmarEliminar(null)} disabled={pending}>
+                    <i className="fa fa-arrow-left" /> Cancelar
+                  </button>
+                  <button type="button"
+                          className="adm-btn-primary flex-1 justify-center"
+                          style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}
+                          onClick={confirmarYEliminar}
+                          disabled={pending}>
+                    {pending
+                        ? <><i className="fa fa-spinner fa-spin" /> Eliminando…</>
+                        : <><i className="fa fa-trash" /> Sí, eliminar</>}
+                  </button>
+                </div>
+              </div>
+            </div>
         )}
       </div>
   )
