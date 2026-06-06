@@ -41,7 +41,7 @@ export default function SesionRemotaSimulada({ sesion, onClose }) {
   }
 
   return (
-    <div className="lab-remote-overlay" role="dialog" aria-modal="true" aria-label="Sesión remota simulada">
+    <div className="lab-remote-overlay" role="dialog" aria-modal="true" aria-label="Sesión remota">
       <div className="lab-remote-shell">
         <header className="lab-remote-titlebar">
           <div className="lab-remote-titlebar-left">
@@ -49,7 +49,6 @@ export default function SesionRemotaSimulada({ sesion, onClose }) {
             <span className="lab-remote-titlebar-text">
               <i className="fa fa-cloud" aria-hidden="true" /> Conectado a {host}
             </span>
-            <span className="lab-remote-badge">Simulación</span>
           </div>
           <div className="lab-remote-titlebar-right">
             <span className="lab-remote-timer" aria-live="polite">

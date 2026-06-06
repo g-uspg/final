@@ -17,6 +17,7 @@ import {
   minutosTranscurridos,
   montoPorMinutos,
 } from '@/lib/laboratorios/sesion-remota'
+import { getRemotoConfig, metaRegistroRemoto } from '@/lib/laboratorios/remoto-config'
 
 const labInclude = {
   configuraciones: { where: { activo: true }, orderBy: { orden: 'asc' } },
@@ -1037,10 +1038,25 @@ export async function iniciarSesionRemota(reservaId) {
       where: { usuarioId: labUsuario.id, tipoConexion: 'REMOTA', fin: null },
     })
     if (sesionAbierta) {
-      return { success: true, sesion: sesionAbierta, yaActiva: true }
+      const meta = sesionAbierta.registroActividad || {}
+      return {
+        success: true,
+        sesion: sesionAbierta,
+        yaActiva: true,
+        modo: meta.modo || 'simulacion',
+        connectUrl: meta.guacamoleUrl || null,
+        nuevaPestana: meta.nuevaPestana !== false,
+      }
     }
 
     const equipo = await resolverEquipoRemoto(reserva.laboratorioId, acceso.etiqueta)
+    const remotoConfig = getRemotoConfig()
+    const registro = metaRegistroRemoto({
+      reservaId: reserva.id,
+      acceso,
+      laboratorioNombre: reserva.laboratorio?.nombre,
+      config: remotoConfig,
+    })
 
     const sesion = await prisma.sesionUso.create({
       data: {
@@ -1048,13 +1064,7 @@ export async function iniciarSesionRemota(reservaId) {
         laboratorioId: reserva.laboratorioId,
         equipoId: equipo?.id ?? null,
         tipoConexion: 'REMOTA',
-        registroActividad: {
-          simulado: true,
-          reservaId: reserva.id,
-          asientoEtiqueta: acceso.etiqueta,
-          host: acceso.host,
-          laboratorio: reserva.laboratorio?.nombre,
-        },
+        registroActividad: registro,
       },
       include: {
         laboratorio: { select: { nombre: true } },
@@ -1063,7 +1073,13 @@ export async function iniciarSesionRemota(reservaId) {
     })
 
     revalidatePath('/laboratorios')
-    return { success: true, sesion }
+    return {
+      success: true,
+      sesion,
+      modo: registro.modo,
+      connectUrl: registro.guacamoleUrl || null,
+      nuevaPestana: remotoConfig.nuevaPestana,
+    }
   } catch (error) {
     console.error('iniciarSesionRemota:', error)
     return { success: false, error: 'No se pudo iniciar la sesión remota.' }
@@ -1100,6 +1116,7 @@ export async function finalizarSesionRemota(sesionId) {
 
     const eligibility = await getLabEligibility(jwtUser, labUsuario)
     let montoCobrado = 0
+    const etiquetaRemota = meta.modo === 'guacamole' ? 'Guacamole' : 'simulada'
 
     if (eligibility.modoCobro === 'PAGO_HORA' && minutos > 0) {
       montoCobrado = montoPorMinutos(minutos)
@@ -1112,7 +1129,7 @@ export async function finalizarSesionRemota(sesionId) {
           tipoCobro: 'PAGO_HORA',
           metodoPago: 'PENDIENTE_FIN_MES',
           estado: 'PENDIENTE',
-          notas: `Sesión remota simulada · ${minutos} min · ${meta.asientoEtiqueta || '—'}`,
+          notas: `Sesión remota ${etiquetaRemota} · ${minutos} min · ${meta.asientoEtiqueta || '—'}`,
         },
       })
     }

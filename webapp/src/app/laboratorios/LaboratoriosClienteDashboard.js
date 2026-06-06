@@ -18,6 +18,8 @@ import { cancelarMiReserva, inscribirCursoLibre, iniciarSesionRemota } from './a
 import { evaluarAccesoRemoto } from '@/lib/laboratorios/sesion-remota'
 import { etiquetasAsientosReserva } from '@/lib/laboratorios/asientos'
 import SesionRemotaSimulada from './components/SesionRemotaSimulada'
+import ConexionRemotaGuacamole from './components/ConexionRemotaGuacamole'
+import { esSesionGuacamole } from '@/lib/laboratorios/remoto-config'
 
 function estadoReservaClass(estado) {
   if (estado === 'APROBADA') return 'lab-badge-activo'
@@ -77,8 +79,17 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
     startTransition(async () => {
       const result = await iniciarSesionRemota(reserva.id)
       if (result.success && result.sesion) {
+        if (result.modo === 'guacamole' && result.connectUrl && result.nuevaPestana !== false) {
+          window.open(result.connectUrl, '_blank', 'noopener,noreferrer')
+        }
         setSesionRemota(result.sesion)
-        if (!result.yaActiva) showToast('Sesión remota iniciada (simulación).')
+        if (!result.yaActiva) {
+          showToast(
+            result.modo === 'guacamole'
+              ? 'Sesión Guacamole iniciada. Se abrió el escritorio remoto.'
+              : 'Sesión remota iniciada (simulación).'
+          )
+        }
       } else {
         showToast(result.error || 'No se pudo conectar.', 'error')
       }
@@ -204,7 +215,7 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
           <p className="text-sm opacity-90">
             <i className="fa fa-info-circle mr-2 text-blue-400" aria-hidden="true" />
             El uso del laboratorio se cobra por hora. Recibirás la factura consolidada a fin de mes.
-            Las estaciones de la <strong>fila B</strong> permiten acceso remoto simulado desde casa.
+            Las estaciones de la <strong>fila B</strong> permiten acceso remoto desde casa (simulación o Guacamole).
           </p>
         </div>
       )}
@@ -486,7 +497,11 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
         />
       )}
 
-      {sesionRemota && (
+      {sesionRemota && esSesionGuacamole(sesionRemota) && (
+        <ConexionRemotaGuacamole sesion={sesionRemota} onClose={handleCerrarSesionRemota} />
+      )}
+
+      {sesionRemota && !esSesionGuacamole(sesionRemota) && (
         <SesionRemotaSimulada sesion={sesionRemota} onClose={handleCerrarSesionRemota} />
       )}
     </div>

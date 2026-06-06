@@ -1,0 +1,39 @@
+services:
+  guacd:
+    image: guacamole/guacd:1.5.5
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: guacamole_db
+      POSTGRES_USER: guacamole_user
+      POSTGRES_PASSWORD: change_me_guacamole
+    volumes:
+      - guacamole-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U guacamole_user -d guacamole_db']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  guacamole:
+    image: guacamole/guacamole:1.5.5
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      GUACD_HOSTNAME: guacd
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_USER: guacamole_user
+      POSTGRESQL_PASSWORD: change_me_guacamole
+    depends_on:
+      guacd:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+volumes:
+  guacamole-postgres:
