@@ -20,12 +20,12 @@ const PRIORIDADES = [
   { value: 'URGENTE', label: 'Urgente', desc: 'Requiere atención inmediata' },
 ]
 
-export default function NuevoReporteModal({ espacios, onClose }) {
+export default function NuevoReporteModal({ espacios, espacioPreseleccionadoId, onClose }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState(null)
   const [usuarioLogueado, setUsuarioLogueado] = useState(null)
   const [form, setForm] = useState({
-    espacioId: '',
+    espacioId: espacioPreseleccionadoId ? String(espacioPreseleccionadoId) : '',
     titulo: '',
     descripcion: '',
     tipoElemento: 'OTRO',
@@ -79,7 +79,7 @@ export default function NuevoReporteModal({ espacios, onClose }) {
 
             <div className="adm-form-grid">
               <div className="adm-form-group">
-                <label className="adm-label">Espacio (opcional)</label>
+                <label className="adm-label">Espacio {espacioPreseleccionadoId ? '*' : '(opcional)'}</label>
                 <select className="adm-input" value={form.espacioId} onChange={(e) => set('espacioId', e.target.value)}>
                   <option value="">— Sin espacio específico —</option>
                   {espacios.map((e) => (

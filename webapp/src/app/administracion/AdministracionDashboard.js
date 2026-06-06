@@ -332,6 +332,8 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
   const [showEspacioModal, setShowEspacioModal] = useState(false)
   const [showReservaModal, setShowReservaModal] = useState(false)
   const [showReporteModal, setShowReporteModal] = useState(false)
+  const [espacioPreseleccionado, setEspacioPreseleccionado] = useState(null)
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null) // { id, nombre }
   const [pending, startTransition] = useTransition()
 
   const { espacios, reservasPendientes, reservasHoy, reportesAbiertos, usuarios, stats } = initialData
@@ -380,7 +382,13 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
   }
 
   const handleEliminarEspacio = (id, nombre) => {
-    if (!window.confirm(`¿Eliminar "${nombre}"? Esta acción no se puede deshacer.`)) return
+    setConfirmarEliminar({ id, nombre })
+  }
+
+  const confirmarYEliminar = () => {
+    if (!confirmarEliminar) return
+    const { id } = confirmarEliminar
+    setConfirmarEliminar(null)
     startTransition(async () => {
       const r = await eliminarEspacio(id)
       if (r.success) {
@@ -512,6 +520,12 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                             <div className={`adm-estado-badge ${estadoEspacioClass(esp.estado)} mb-2`}>
                               {ESTADO_ESPACIO_LABEL[esp.estado]}
                             </div>
+                            {esp.estado === 'MANTENIMIENTO' && (
+                              <div style={{ fontSize: '11px', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '6px', padding: '4px 8px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <i className="fa fa-exclamation-triangle" />
+                                <span>En mantenimiento — no se permiten nuevas reservas</span>
+                              </div>
+                            )}
                             <p className="text-sm opacity-70 mb-2 line-clamp-2 min-h-[2.5rem]">
                               {esp.descripcion || 'Sin descripción'}
                             </p>
@@ -538,10 +552,17 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                                 </div>
                             )}
                             <div className="flex gap-2 mt-3 flex-wrap">
-                              <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
-                                      onClick={() => setShowReservaModal(true)}>
-                                <i className="fa fa-calendar-plus-o" /> Reservar
-                              </button>
+                              {esp.estado === 'MANTENIMIENTO' || esp.estado === 'FUERA_DE_SERVICIO' ? (
+                                <div className="adm-btn-ghost flex-1 justify-center text-xs opacity-40" style={{ cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                     title={`No disponible: espacio en ${esp.estado === 'MANTENIMIENTO' ? 'mantenimiento' : 'fuera de servicio'}`}>
+                                  <i className="fa fa-ban" /> Sin reservas
+                                </div>
+                              ) : (
+                                <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
+                                        onClick={() => setShowReservaModal(true)}>
+                                  <i className="fa fa-calendar-plus-o" /> Reservar
+                                </button>
+                              )}
                               {esp.estado === 'MANTENIMIENTO' ? (
                                   <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
                                           disabled={pending}
@@ -557,10 +578,8 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                                   <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
                                           disabled={pending}
                                           onClick={() => {
-                                            startTransition(async () => {
-                                              const r = await actualizarEstadoEspacio(esp.id, 'MANTENIMIENTO')
-                                              if (r.success) { showToast('Espacio en mantenimiento.'); router.refresh() }
-                                            })
+                                            setEspacioPreseleccionado(esp.id)
+                                            setShowReporteModal(true)
                                           }}>
                                     <i className="fa fa-wrench" /> Mantenimiento
                                   </button>
@@ -772,11 +791,54 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
         {showReporteModal && (
             <NuevoReporteModal
                 espacios={espacios}
+                espacioPreseleccionadoId={espacioPreseleccionado}
                 onClose={(msg, type) => {
                   setShowReporteModal(false)
+                  setEspacioPreseleccionado(null)
                   if (msg) { showToast(msg, type); router.refresh() }
                 }}
             />
+        )}
+
+        {/* ── Modal confirmación eliminar ───────────────────────────────── */}
+        {confirmarEliminar && (
+          <div className="adm-modal-overlay" onClick={() => setConfirmarEliminar(null)}>
+            <div className="adm-modal" style={{ maxWidth: '420px' }} onClick={(e) => e.stopPropagation()}>
+              <div className="adm-modal-header" style={{ borderBottom: '1px solid rgba(239,68,68,0.2)' }}>
+                <h2 style={{ color: '#f87171', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa fa-trash" /> Eliminar espacio
+                </h2>
+                <button type="button" className="adm-modal-close" onClick={() => setConfirmarEliminar(null)}>
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+              <div className="adm-modal-body" style={{ textAlign: 'center', padding: '28px 24px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px', opacity: 0.8 }}>🗑️</div>
+                <p style={{ fontSize: '16px', fontWeight: 600, marginBottom: '8px' }}>
+                  ¿Eliminar &ldquo;{confirmarEliminar.nombre}&rdquo;?
+                </p>
+                <p style={{ fontSize: '13px', opacity: 0.6, lineHeight: 1.5 }}>
+                  Esta acción es permanente y no se puede deshacer.<br />
+                  Se eliminarán también todas sus reservas y reportes asociados.
+                </p>
+              </div>
+              <div className="adm-modal-footer" style={{ gap: '10px' }}>
+                <button type="button" className="adm-btn-ghost flex-1 justify-center"
+                        onClick={() => setConfirmarEliminar(null)} disabled={pending}>
+                  <i className="fa fa-arrow-left" /> Cancelar
+                </button>
+                <button type="button"
+                        className="adm-btn-primary flex-1 justify-center"
+                        style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#f87171' }}
+                        onClick={confirmarYEliminar}
+                        disabled={pending}>
+                  {pending
+                    ? <><i className="fa fa-spinner fa-spin" /> Eliminando…</>
+                    : <><i className="fa fa-trash" /> Sí, eliminar</>}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
   )
