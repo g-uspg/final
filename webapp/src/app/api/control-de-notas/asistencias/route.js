@@ -13,12 +13,12 @@ export const dynamic = "force-dynamic";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { carnet, curso, id_evaluacion, valor, registrado_por } = body;
+    const { carnet, curso, fecha, presente, origen } = body;
     const origin = request.nextUrl.origin;
 
-    if (!carnet || !curso || !id_evaluacion || valor === undefined) {
+    if (!carnet || !curso || !fecha) {
       return Response.json(
-        { success: false, message: "Carnet, curso, id_evaluacion y valor son requeridos" },
+        { success: false, message: "Carnet, curso y fecha son requeridos" },
         { status: 400 }
       );
     }
@@ -36,18 +36,6 @@ export async function POST(request) {
     if (!idAlumno) throw crearError("El alumno no tiene un id válido", 400);
     if (!idCurso) throw crearError("El curso no tiene un id válido", 400);
 
-    // Verificar que la evaluación pertenece al curso
-    const evaluacion = await prisma.evaluacion.findFirst({
-      where: {
-        id_evaluacion: parseInt(id_evaluacion),
-        id_curso: idCurso,
-      },
-    });
-
-    if (!evaluacion) {
-      throw crearError(`La evaluación ${id_evaluacion} no pertenece al curso ${curso}`, 400);
-    }
-
     // Obtener matrícula
     const matricula = await prisma.matricula.findFirst({
       where: {
@@ -61,44 +49,37 @@ export async function POST(request) {
       throw crearError(`El alumno no está matriculado en el curso ${curso}`, 404);
     }
 
-    // Validar valor
-    const valorNum = parseFloat(valor);
-    if (isNaN(valorNum) || valorNum < 0 || valorNum > 100) {
-      throw crearError("El valor de la nota debe estar entre 0 y 100", 400);
-    }
-
-    // Crear o actualizar nota
-    const nota = await prisma.nota.upsert({
+    // Registrar asistencia
+    const asistencia = await prisma.asistencia.upsert({
       where: {
-        id_matricula_id_evaluacion: {
+        id_matricula_fecha: {
           id_matricula: matricula.id_matricula,
-          id_evaluacion: parseInt(id_evaluacion),
+          fecha: new Date(fecha),
         },
       },
       update: {
-        valor: valorNum,
-        registrado_por: registrado_por || "sistema",
-        fecha_registro: new Date(),
+        presente: presente === true || presente === "true",
+        origen: origen || "manual",
       },
       create: {
         id_matricula: matricula.id_matricula,
-        id_evaluacion: parseInt(id_evaluacion),
-        valor: valorNum,
-        registrado_por: registrado_por || "sistema",
+        fecha: new Date(fecha),
+        presente: presente === true || presente === "true",
+        origen: origen || "manual",
       },
     });
 
     return Response.json({
       success: true,
-      message: "Nota registrada correctamente",
-      nota,
+      message: "Asistencia registrada correctamente",
+      asistencia,
     });
   } catch (error) {
-    console.error("[POST_NOTA]", error);
+    console.error("[POST_ASISTENCIA]", error);
     return Response.json(
       {
         success: false,
-        message: error.message || "Error registrando la nota",
+        message: error.message || "Error registrando la asistencia",
         error: error.message,
       },
       { status: error.status || 500 }

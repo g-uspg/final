@@ -2,56 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// ── DATOS LOCALES (Fallback cuando fallan las APIs) ──────────────────────────
-const DATOS_MOCK = {
-  alumno: {
-    id: 1,
-    carnet: "2600001",
-    nombre: "Juan Carlos Pérez García",
-    email: "juan.perez@alumno.uspg.edu.gt",
-    correoInstitucional: "juan.perez@alumno.uspg.edu.gt",
-    carrera: "Ingeniería en Sistemas"
-  },
-  notas: [
-    { curso: "MAT101", nombreCurso: "Matemática I", periodo: "2024-01", zona: 45, examenFinal: 35, notaFinal: 80, estado: "aprobado", creditos: 5 },
-    { curso: "FIS101", nombreCurso: "Física I", periodo: "2024-01", zona: 40, examenFinal: 30, notaFinal: 70, estado: "aprobado", creditos: 5 },
-    { curso: "PRO101", nombreCurso: "Programación I", periodo: "2024-01", zona: 50, examenFinal: 40, notaFinal: 90, estado: "aprobado", creditos: 6 },
-    { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55, estado: "reprobado", creditos: 5 },
-    { curso: "FIS102", nombreCurso: "Física II", periodo: "2024-02", zona: 42, examenFinal: 38, notaFinal: 80, estado: "aprobado", creditos: 5 },
-  ],
-  resumen: {
-    promedioGeneral: 75,
-    totalCursos: 5,
-    cursosAprobados: 4,
-    cursosReprobados: 1,
-    creditosAprobados: 21
-  },
-  solvencia: {
-    solvenciaGeneral: false,
-    solvenciaNotas: {
-      solvente: false,
-      totalReprobados: 1,
-      cursosReprobados: [
-        { curso: "MAT102", nombreCurso: "Matemática II", periodo: "2024-02", zona: 35, examenFinal: 20, notaFinal: 55 }
-      ]
-    },
-    solvenciaPagos: {
-      solvente: false,
-      montoPendiente: 1250.00,
-      montoMensualidades: 1000.00,
-      montoMora: 250.00,
-      mensualidadesPendientes: 2,
-      matriculaActiva: true,
-      facultadoProcesosAcademicos: false,
-      enMora: true,
-      pagosPendientes: [
-        { mes: "Octubre 2024", estado: "Vencido", precio: 500, mora: 125, diasMora: 15, fechaLimite: "2024-10-31" },
-        { mes: "Noviembre 2024", estado: "Pendiente", precio: 500, mora: 125, diasMora: 5, fechaLimite: "2024-11-30" }
-      ]
-    }
-  }
-};
-
 // ── Toast flotante ────────────────────────────────────────────────────────────
 function SolvenciaToast({ icono, titulo, badge, solvente, children, visible, onClose }) {
   const [show, setShow] = useState(false);
@@ -139,14 +89,19 @@ export default function EstudiantePage() {
   const [error, setError] = useState("");
   const [tabActiva, setTabActiva] = useState("notas");
   const [toastVisible, setToastVisible] = useState({ solvencia: false });
-  const [usandoDatosLocales, setUsandoDatosLocales] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cn_usuario");
-    if (!raw) { window.location.href = "/control-de-notas"; return; }
+    if (!raw) { 
+      window.location.href = "/control-de-notas"; 
+      return; 
+    }
     
     const u = JSON.parse(raw);
-    if (u.rol !== "ALUMNO") { window.location.href = "/control-de-notas"; return; }
+    if (u.rol !== "ALUMNO") { 
+      window.location.href = "/control-de-notas"; 
+      return; 
+    }
     
     setUsuario(u);
     cargarDatos(u.carnet ?? u.id);
@@ -155,48 +110,55 @@ export default function EstudiantePage() {
   const cargarDatos = async (carnet) => {
     setCargando(true);
     setError("");
-    setUsandoDatosLocales(false);
     
     try {
       const encodedCarnet = encodeURIComponent(carnet);
       
-      // Intentar cargar de la API
+      // Usar las APIs reales
       const [resNotas, resSolvencia] = await Promise.all([
         fetch(`/api/control-de-notas/notas/${encodedCarnet}`),
-        fetch(`/api/control-de-notas/notas/${encodedCarnet}/solvencia-estado`),
+        fetch(`/api/solvencia/${encodedCarnet}`),
       ]);
 
-      if (!resNotas.ok || !resSolvencia.ok) {
-        throw new Error("Error en APIs");
+      if (!resNotas.ok) {
+        throw new Error("Error al cargar notas");
       }
 
-      const [dNotas, dSolvencia] = await Promise.all([
-        resNotas.json(),
-        resSolvencia.json(),
-      ]);
+      const dNotas = await resNotas.json();
+      let dSolvencia = null;
+      
+      if (resSolvencia.ok) {
+        dSolvencia = await resSolvencia.json();
+      }
 
-      if (!dNotas.success || !dSolvencia.success) {
-        throw new Error("Datos inválidos");
+      if (!dNotas.success) {
+        throw new Error(dNotas.message || "Error en datos de notas");
       }
 
       setNotas(dNotas);
-      setSolvencia(dSolvencia);
+      
+      if (dSolvencia?.success) {
+        setSolvencia({
+          solvenciaGeneral: dSolvencia.solvente,
+          solvenciaNotas: {
+            solvente: (dNotas.resumen?.cursosReprobados || 0) === 0,
+            totalReprobados: dNotas.resumen?.cursosReprobados || 0,
+            cursosReprobados: dNotas.notas?.filter(n => n.estado === "reprobado") || [],
+          },
+          solvenciaPagos: {
+            solvente: dSolvencia.solvente,
+            montoPendiente: dSolvencia.total_pendiente || 0,
+            mensualidadesPendientes: dSolvencia.mensualidades_pendientes || 0,
+            matriculaActiva: dSolvencia.matricula_activa || false,
+            enMora: dSolvencia.en_mora || false,
+            pagosPendientes: dSolvencia.detalle || [],
+          },
+        });
+      }
 
     } catch (e) {
-      console.warn("⚠️ APIs no disponibles, usando datos locales:", e);
-      // 🔧 FALLBACK: Usar datos mock
-      setUsandoDatosLocales(true);
-      setNotas({
-        success: true,
-        alumno: DATOS_MOCK.alumno,
-        notas: DATOS_MOCK.notas,
-        resumen: DATOS_MOCK.resumen
-      });
-      setSolvencia({
-        success: true,
-        alumno: DATOS_MOCK.alumno,
-        ...DATOS_MOCK.solvencia
-      });
+      console.error("❌ Error cargando datos:", e);
+      setError(e.message);
     } finally {
       setCargando(false);
     }
@@ -208,11 +170,18 @@ export default function EstudiantePage() {
     </div>
   );
 
+  if (error) return (
+    <div style={{ textAlign: "center", padding: "80px" }}>
+      <p style={{ fontSize: "18px", color: "#c62828" }}>❌ Error: {error}</p>
+      <button onClick={() => window.location.reload()} style={{ marginTop: "20px", padding: "10px 20px", background: "#1976d2", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}>
+        Reintentar
+      </button>
+    </div>
+  );
+
   const notasLista = notas?.notas ?? [];
   const resumen = notas?.resumen ?? {};
   const solvGeneral = solvencia?.solvenciaGeneral ?? false;
-  const reprobados = solvencia?.solvenciaNotas?.cursosReprobados ?? [];
-  const aprobados = notasLista.filter((n) => n.estado === "aprobado");
   const reproList = notasLista.filter((n) => n.estado === "reprobado");
   const carnetDisplay = usuario?.carnet ?? usuario?.id ?? notas?.alumno?.carnet ?? "—";
 
@@ -220,24 +189,6 @@ export default function EstudiantePage() {
     <div className="row clearfix">
       <div className="col-lg-12">
         <div className="card" style={{ background: "#fff" }}>
-
-          {/* Banner de modo local */}
-          {usandoDatosLocales && (
-            <div style={{
-              background: "#fff3cd", 
-              border: "1px solid #ffc107", 
-              color: "#856404", 
-              padding: "12px 20px",
-              fontSize: "14px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              borderRadius: "0 0 8px 8px"
-            }}>
-              <span>⚠️</span>
-              <span><strong>Modo demostración:</strong> Mostrando datos de ejemplo. Las APIs no están conectadas.</span>
-            </div>
-          )}
 
           {/* ── Header ── */}
           <div className="card-header" style={{

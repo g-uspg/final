@@ -42,7 +42,7 @@ function ModalDetalleAlumno({ carnet, nombre, onCerrar }) {
         ]);
         const [d1, d2, d3] = await Promise.all([r1.json(), r2.json(), r3.json()]);
         if (d1.success) setNotas(d1);
-        setSolvencia(d2);
+        if (d2.success) setSolvencia(d2);
         if (d3.success) setGraduacion(d3);
       } catch (e) {
         console.error(e);
@@ -123,9 +123,20 @@ function ModalDetalleAlumno({ carnet, nombre, onCerrar }) {
 
               {tabActiva === "solvencia" && solvencia && (
                 <div style={{ padding: "14px 16px", borderRadius: "8px", background: solvencia.solvente ? "#e8f5e9" : "#ffebee" }}>
-                  <h6>Solvencia Económica (Grupo 6)</h6>
+                  <h6>Solvencia Económica</h6>
                   <p><strong>Estado:</strong> {solvencia.solvente ? "✅ Solvente" : "❌ Con Mora"}</p>
-                  {solvencia.total_pendiente && <p><strong>Pendiente:</strong> Q{solvencia.total_pendiente}</p>}
+                  {solvencia.total_pendiente > 0 && <p><strong>Pendiente:</strong> Q{solvencia.total_pendiente.toFixed(2)}</p>}
+                  {solvencia.mensualidades_pendientes > 0 && <p><strong>Mensualidades pendientes:</strong> {solvencia.mensualidades_pendientes}</p>}
+                </div>
+              )}
+
+              {tabActiva === "graduacion" && graduacion?.data && (
+                <div style={{ padding: "14px 16px", borderRadius: "8px", background: graduacion.data.puedeGraduarse ? "#e8f5e9" : "#ffebee" }}>
+                  <h6>Estado de Graduación</h6>
+                  <p><strong>Puede graduarse:</strong> {graduacion.data.puedeGraduarse ? "✅ Sí" : "❌ No"}</p>
+                  <p><strong>Cursos aprobados:</strong> {graduacion.data.cursosAprobados} / {graduacion.data.cursosMinimos}</p>
+                  <p><strong>Solicitud activa:</strong> {graduacion.data.tieneSolicitudActiva ? "Sí" : "No"}</p>
+                  <p><strong>Título emitido:</strong> {graduacion.data.tieneTituloEmitido ? "Sí" : "No"}</p>
                 </div>
               )}
             </>
@@ -137,25 +148,65 @@ function ModalDetalleAlumno({ carnet, nombre, onCerrar }) {
 }
 
 // ── Modal Editar Notas ─────────────────────────────────────────────────────
-function ModalEditarNotas({ alumno, onCerrar }) {
-  const [cursos, setCursos] = useState([
-    { id: 1, curso: "MAT101", nombre: "Matemática I", zona: 28, examenFinal: 35 },
-    { id: 2, curso: "SIS201", nombre: "Programación II", zona: 32, examenFinal: 40 },
-  ]);
+function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
+  const [cursos, setCursos] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const res = await fetch(`/api/control-de-notas/notas/${alumno.carnet}`);
+        const data = await res.json();
+        if (data.success && data.notas) {
+          setCursos(data.notas.map(n => ({
+            id: n.id_matricula,
+            curso: n.curso,
+            nombre: n.nombreCurso,
+            zona: n.zona,
+            examenFinal: n.examenFinal,
+          })));
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargar();
+  }, [alumno.carnet]);
 
   const handleChange = (id, campo, valor) => {
     setCursos(prev => prev.map(c => c.id === id ? { ...c, [campo]: Number(valor) } : c));
   };
 
-  const guardar = () => {
+  const guardar = async () => {
     setGuardando(true);
-    setTimeout(() => {
-      alert(`Notas guardadas para ${alumno.nombre}`);
+    try {
+      for (const curso of cursos) {
+        await fetch(`/api/control-de-notas/notas`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            carnet: alumno.carnet,
+            curso: curso.curso,
+            id_evaluacion: 1, // Temporal, deberías obtener el ID real
+            valor: curso.zona + curso.examenFinal,
+            registrado_por: "guia",
+          }),
+        });
+      }
+      alert(`✅ Notas guardadas para ${alumno.nombre}`);
+      if (onGuardar) onGuardar();
       onCerrar();
+    } catch (e) {
+      alert("❌ Error: " + e.message);
+    } finally {
       setGuardando(false);
-    }, 800);
+    }
   };
+
+  if (cargando) return <div style={{ padding: "40px", textAlign: "center" }}>Cargando...</div>;
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -166,7 +217,9 @@ function ModalEditarNotas({ alumno, onCerrar }) {
         </div>
         <div style={{ padding: "20px 24px" }}>
           <table className="table">
-            <thead><tr><th>Curso</th><th>Zona</th><th>Examen Final</th><th>Nota Final</th></tr></thead>
+            <thead>
+              <tr><th>Curso</th><th>Zona</th><th>Examen Final</th><th>Nota Final</th></tr>
+            </thead>
             <tbody>
               {cursos.map(c => (
                 <tr key={c.id}>
@@ -192,15 +245,56 @@ function ModalEditarNotas({ alumno, onCerrar }) {
 
 // ── Modal Asistencias ─────────────────────────────────────────────────────
 function ModalAsistencias({ alumno, onCerrar }) {
-  const [asistencias, setAsistencias] = useState([
-    { fecha: "2026-05-10", presente: true },
-    { fecha: "2026-05-17", presente: false },
-    { fecha: "2026-05-24", presente: true },
-  ]);
+  const [asistencias, setAsistencias] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [guardando, setGuardando] = useState(false);
+
+  useEffect(() => {
+    const cargar = async () => {
+      try {
+        const res = await fetch(`/api/control-de-notas/asistencias/${alumno.carnet}/MAT101`);
+        const data = await res.json();
+        if (data.success) {
+          setAsistencias(data.asistencias || []);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargar();
+  }, [alumno.carnet]);
 
   const toggle = (index) => {
     setAsistencias(prev => prev.map((a, i) => i === index ? { ...a, presente: !a.presente } : a));
   };
+
+  const guardar = async () => {
+    setGuardando(true);
+    try {
+      for (const asist of asistencias) {
+        await fetch(`/api/control-de-notas/asistencias`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            carnet: alumno.carnet,
+            curso: "MAT101",
+            fecha: asist.fecha,
+            presente: asist.presente,
+          }),
+        });
+      }
+      alert("✅ Asistencias guardadas");
+      onCerrar();
+    } catch (e) {
+      alert("❌ Error: " + e.message);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  if (cargando) return <div>Cargando...</div>;
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -226,7 +320,10 @@ function ModalAsistencias({ alumno, onCerrar }) {
           </table>
         </div>
         <div style={{ padding: "15px 24px", textAlign: "right" }}>
-          <button onClick={onCerrar} style={{ background: "#1976d2", color: "white" }}>Guardar Asistencias</button>
+          <button onClick={onCerrar}>Cancelar</button>
+          <button onClick={guardar} disabled={guardando} style={{ background: "#1976d2", color: "white" }}>
+            {guardando ? "Guardando..." : "Guardar Asistencias"}
+          </button>
         </div>
       </div>
     </div>
@@ -246,11 +343,9 @@ export default function GuiaAdminPage() {
   const [alumnos, setAlumnos] = useState([]);
   const [catedraticos, setCatedraticos] = useState([]);
   const [cursos, setCursos] = useState([]);
+  const [cargando, setCargando] = useState(true);
 
-  const [solicitudes, setSolicitudes] = useState([
-    { id: 1, carnet: "2021001", nombre: "Carlos Andrés Pérez López", fecha: "2026-06-02", estado: "pendiente", motivo: "Completó todos los créditos" },
-    { id: 2, carnet: "2019003", nombre: "José Roberto Méndez Cruz", fecha: "2026-06-03", estado: "pendiente", motivo: "Pendiente revisión" },
-  ]);
+  const [solicitudes, setSolicitudes] = useState([]);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("cn_usuario");
@@ -258,10 +353,10 @@ export default function GuiaAdminPage() {
     const u = JSON.parse(raw);
     if (!["ADMIN", "GUIA"].includes(u.rol)) { window.location.href = "/control-de-notas"; return; }
     setUsuario(u);
-    cargarDatosGrupo1();
+    cargarDatos();
   }, []);
 
-  const cargarDatosGrupo1 = async () => {
+  const cargarDatos = async () => {
     try {
       const [r1, r2, r3] = await Promise.all([
         fetch("/api/sistema-academico/alumnos"),
@@ -269,34 +364,63 @@ export default function GuiaAdminPage() {
         fetch("/api/sistema-academico/cursos"),
       ]);
       const [d1, d2, d3] = await Promise.all([r1.json(), r2.json(), r3.json()]);
-      setAlumnos(d1.success ? d1.data : []);
-      setCatedraticos(d2.success ? d2.data : []);
-      setCursos(d3.success ? d3.data : []);
+      if (d1.success) setAlumnos(d1.data);
+      if (d2.success) setCatedraticos(d2.data);
+      if (d3.success) setCursos(d3.data);
+      
+      // Cargar solicitudes de graduación
+      const resGrad = await fetch("/api/control-de-notas/graduacion");
+      if (resGrad.ok) {
+        const gradData = await resGrad.json();
+        if (gradData.success) {
+          setSolicitudes(gradData.solicitudes || []);
+        }
+      }
     } catch (e) {
-      console.error("Error cargando Grupo 1", e);
+      console.error("Error cargando datos", e);
+    } finally {
+      setCargando(false);
     }
   };
 
-  const aprobarCierre = (id) => {
-    setSolicitudes(prev => prev.map(s => s.id === id ? { ...s, estado: "aprobado" } : s));
-    setMensaje({ tipo: "ok", texto: "Solicitud de cierre aprobada" });
+  const aprobarCierre = async (id) => {
+    try {
+      const res = await fetch(`/api/control-de-notas/graduacion/${id}/aprobar`, { method: "PUT" });
+      if (res.ok) {
+        setMensaje({ tipo: "ok", texto: "Solicitud aprobada" });
+        cargarDatos();
+      }
+    } catch (e) {
+      setMensaje({ tipo: "error", texto: "Error al aprobar" });
+    }
     setTimeout(() => setMensaje(null), 3000);
   };
 
-  const rechazarCierre = (id) => {
-    setSolicitudes(prev => prev.map(s => s.id === id ? { ...s, estado: "rechazado" } : s));
-    setMensaje({ tipo: "error", texto: "Solicitud rechazada" });
+  const rechazarCierre = async (id) => {
+    try {
+      const res = await fetch(`/api/control-de-notas/graduacion/${id}/rechazar`, { method: "PUT" });
+      if (res.ok) {
+        setMensaje({ tipo: "error", texto: "Solicitud rechazada" });
+        cargarDatos();
+      }
+    } catch (e) {
+      setMensaje({ tipo: "error", texto: "Error al rechazar" });
+    }
     setTimeout(() => setMensaje(null), 3000);
   };
 
   const alumnosFiltrados = alumnos.filter(a =>
-    [a.carnet, `${a.nombre} ${a.apellido}`, a.email].some(v => String(v).toLowerCase().includes(busqueda.toLowerCase()))
+    [a.carnet, `${a.nombre} ${a.apellido}`, a.email].some(v => 
+      String(v || "").toLowerCase().includes(busqueda.toLowerCase())
+    )
   );
+
+  if (cargando) return <div style={{ padding: "80px", textAlign: "center" }}>Cargando...</div>;
 
   return (
     <>
       {modalDetalle && <ModalDetalleAlumno carnet={modalDetalle.carnet} nombre={`${modalDetalle.nombre} ${modalDetalle.apellido}`} onCerrar={() => setModalDetalle(null)} />}
-      {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} />}
+      {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} onGuardar={cargarDatos} />}
       {modalAsistencias && <ModalAsistencias alumno={modalAsistencias} onCerrar={() => setModalAsistencias(null)} />}
 
       <div className="row clearfix">
@@ -393,19 +517,20 @@ export default function GuiaAdminPage() {
               {/* Tab Solicitudes de Cierre */}
               {tabActiva === "Solicitudes de Cierre" && (
                 <div>
-                  <h5>Solicitudes de Cierre de Pensum</h5>
+                  <h5>Solicitudes de Graduación</h5>
                   <table className="table">
-                    <thead><tr><th>Carnet</th><th>Alumno</th><th>Fecha</th><th>Motivo</th><th>Estado</th><th>Acción</th></tr></thead>
+                    <thead>
+                      <tr><th>Carnet</th><th>Alumno</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr>
+                    </thead>
                     <tbody>
                       {solicitudes.map(s => (
                         <tr key={s.id}>
                           <td>{s.carnet}</td>
-                          <td>{s.nombre}</td>
+                          <td>{s.alumno}</td>
                           <td>{s.fecha}</td>
-                          <td>{s.motivo}</td>
                           <td>{s.estado}</td>
                           <td>
-                            {s.estado === "pendiente" && (
+                            {s.estado === "solicitada" && (
                               <>
                                 <button onClick={() => aprobarCierre(s.id)} style={{ background: "#2e7d32", color: "white", marginRight: "5px" }}>Aprobar</button>
                                 <button onClick={() => rechazarCierre(s.id)} style={{ background: "#c62828", color: "white" }}>Rechazar</button>
