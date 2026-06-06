@@ -20,7 +20,7 @@ const PRIORIDADES = [
   { value: 'URGENTE', label: 'Urgente', desc: 'Requiere atención inmediata' },
 ]
 
-export default function NuevoReporteModal({ espacios = [], onClose }) {
+export default function NuevoReporteModal({ espacios, onClose }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState(null)
   const [usuarioLogueado, setUsuarioLogueado] = useState(null)
@@ -32,6 +32,7 @@ export default function NuevoReporteModal({ espacios = [], onClose }) {
     prioridad: 'MEDIA',
   })
 
+  // Cargar usuario logueado desde localStorage al abrir el modal
   useEffect(() => {
     try {
       const raw = localStorage.getItem('user')
@@ -74,11 +75,7 @@ export default function NuevoReporteModal({ espacios = [], onClose }) {
           </div>
 
           <div className="adm-modal-body">
-            {error && (
-                <div className="adm-alert adm-alert-error">
-                  <i className="fa fa-exclamation-circle" /> {error}
-                </div>
-            )}
+            {error && <div className="adm-alert adm-alert-error"><i className="fa fa-exclamation-circle" /> {error}</div>}
 
             <div className="adm-form-grid">
               <div className="adm-form-group">
@@ -95,10 +92,10 @@ export default function NuevoReporteModal({ espacios = [], onClose }) {
                 <div className="adm-input" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'default', opacity: 0.85 }}>
                   <i className="fa fa-user-circle" style={{ fontSize: '16px' }} />
                   <span>
-                  {usuarioLogueado
+                    {usuarioLogueado
                       ? `${usuarioLogueado.first_name || ''} ${usuarioLogueado.last_name || ''}`.trim() || usuarioLogueado.email
                       : 'Cargando...'}
-                </span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -122,23 +119,15 @@ export default function NuevoReporteModal({ espacios = [], onClose }) {
 
             <div className="adm-form-group">
               <label className="adm-label">Título del problema *</label>
-              <input
-                  className="adm-input"
-                  placeholder="Ej: Aire acondicionado no enfría"
-                  value={form.titulo}
-                  onChange={(e) => set('titulo', e.target.value)}
-              />
+              <input className="adm-input" placeholder="Ej: Aire acondicionado no enfría"
+                     value={form.titulo} onChange={(e) => set('titulo', e.target.value)} />
             </div>
 
             <div className="adm-form-group">
               <label className="adm-label">Descripción detallada *</label>
-              <textarea
-                  className="adm-input adm-textarea"
-                  rows={3}
-                  placeholder="Describe el problema con el mayor detalle posible"
-                  value={form.descripcion}
-                  onChange={(e) => set('descripcion', e.target.value)}
-              />
+              <textarea className="adm-input adm-textarea" rows={3}
+                        placeholder="Describe el problema con el mayor detalle posible"
+                        value={form.descripcion} onChange={(e) => set('descripcion', e.target.value)} />
             </div>
 
             <div className="adm-form-group">

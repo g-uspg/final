@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { crearReservaEspacio } from '../actions'
 
-export default function NuevaReservaEspacioModal({ espacios = [], usuarios = [], onClose }) {
+export default function NuevaReservaEspacioModal({ espacios, usuarios, onClose }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState(null)
 
@@ -38,6 +38,7 @@ export default function NuevaReservaEspacioModal({ espacios = [], usuarios = [],
 
   const espacioSeleccionado = espacios.find((e) => e.id === parseInt(form.espacioId))
 
+  // Calcular cuántas ocurrencias se generarán (preview)
   const calcularOcurrencias = () => {
     if (!form.recurrente || !form.fechaFinRecurrencia || form.diasRecurrencia.length === 0) return null
     const diasSemana = { Lunes: 1, Martes: 2, 'Miércoles': 3, Jueves: 4, Viernes: 5, Sábado: 6 }
@@ -208,6 +209,7 @@ export default function NuevaReservaEspacioModal({ espacios = [], usuarios = [],
               />
             </div>
 
+            {/* ── Reserva Recurrente ───────────────────────────────────── */}
             <div className="adm-form-group">
               <label className="adm-checkbox-item">
                 <input
