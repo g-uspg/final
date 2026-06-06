@@ -32,6 +32,10 @@ export async function getDashboardAdminData() {
             orderBy: { fechaInicio: 'asc' },
             take: 3,
           },
+          reportesMantenimiento: {
+            where: { estado: { in: ['ABIERTO', 'EN_PROCESO'] } },
+            select: { id: true, estado: true },
+          },
         },
         orderBy: [{ tipo: 'asc' }, { nombre: 'asc' }],
       }),
@@ -43,7 +47,6 @@ export async function getDashboardAdminData() {
         orderBy: { createdAt: 'desc' },
         take: 20,
       }),
-      // Solo conteo para el stat "Reservas Hoy"
       prisma.reservaEspacio.findMany({
         where: {
           estado: 'APROBADA',
@@ -160,52 +163,126 @@ export async function crearReservaEspacio(data) {
       return { success: false, error: 'La fecha de fin debe ser posterior al inicio.' }
     }
 
-    // Verificar capacidad del espacio
+    // Verificar que el espacio no esté en mantenimiento o fuera de servicio
     const espacio = await prisma.espacio.findUnique({
       where: { id: parseInt(data.espacioId) },
-      select: { capacidad: true, nombre: true },
+      select: { capacidad: true, nombre: true, estado: true },
     })
+
+    if (espacio?.estado === 'MANTENIMIENTO') {
+      return {
+        success: false,
+        error: `"${espacio.nombre}" está en mantenimiento y no puede reservarse.`,
+      }
+    }
+
+    if (espacio?.estado === 'FUERA_DE_SERVICIO') {
+      return {
+        success: false,
+        error: `"${espacio.nombre}" está fuera de servicio y no puede reservarse.`,
+      }
+    }
 
     if (espacio && parseInt(data.cantidadPersonas) > espacio.capacidad) {
       return {
         success: false,
-        error: `Capacidad superada. "${espacio.nombre}" tiene un máximo de ${espacio.capacidad} personas. Elige otro salón o reduce el número de personas.`,
+        error: `Capacidad superada. "${espacio.nombre}" tiene un máximo de ${espacio.capacidad} personas.`,
       }
     }
 
-    // Verificar conflictos de horario
-    const conflicto = await prisma.reservaEspacio.findFirst({
-      where: {
-        espacioId: parseInt(data.espacioId),
-        estado: { in: ['PENDIENTE', 'APROBADA'] },
-        OR: [{ fechaInicio: { lt: fin }, fechaFin: { gt: inicio } }],
-      },
-    })
+    // ── Generar todas las ocurrencias ─────────────────────────────────────────
+    // NOTA: La BD solo tiene los campos: recurrente (boolean) y diasRecurrencia (varchar 100).
+    // No existen grupoRecurrenciaId ni fechaFinRecurrencia en la tabla.
+    // Para recurrencia solo guardamos la PRIMERA ocurrencia marcada como recurrente.
+    const ocurrencias = []
 
-    if (conflicto) {
-      return { success: false, error: 'El espacio ya tiene una reserva en ese horario.' }
+    if (data.recurrente && Array.isArray(data.diasRecurrencia) && data.diasRecurrencia.length > 0 && data.fechaFinRecurrencia) {
+      const diasSemana = { Lunes: 1, Martes: 2, 'Miércoles': 3, Jueves: 4, Viernes: 5, Sábado: 6 }
+      const diasElegidos = data.diasRecurrencia.map((d) => diasSemana[d]).filter(Boolean)
+      const fechaLimite = new Date(data.fechaFinRecurrencia)
+      fechaLimite.setHours(23, 59, 59, 999)
+      const duracionMs = fin - inicio
+
+      const cursor = new Date(inicio)
+      cursor.setHours(0, 0, 0, 0)
+
+      while (cursor <= fechaLimite) {
+        if (diasElegidos.includes(cursor.getDay())) {
+          const ocInicio = new Date(cursor)
+          ocInicio.setHours(inicio.getHours(), inicio.getMinutes(), 0, 0)
+          const ocFin = new Date(ocInicio.getTime() + duracionMs)
+          ocurrencias.push({ fechaInicio: ocInicio, fechaFin: ocFin })
+        }
+        cursor.setDate(cursor.getDate() + 1)
+      }
+    } else {
+      // Reserva simple (una sola vez)
+      ocurrencias.push({ fechaInicio: inicio, fechaFin: fin })
     }
 
-    const reserva = await prisma.reservaEspacio.create({
-      data: {
+    if (ocurrencias.length === 0) {
+      return {
+        success: false,
+        error: 'No se generaron fechas con los días y rango seleccionados. Verifica que la fecha límite sea posterior al inicio.',
+      }
+    }
+
+    // ── Verificar conflictos para TODAS las ocurrencias ───────────────────────
+    for (const oc of ocurrencias) {
+      const conflicto = await prisma.reservaEspacio.findFirst({
+        where: {
+          espacioId: parseInt(data.espacioId),
+          estado: { in: ['PENDIENTE', 'APROBADA'] },
+          OR: [{ fechaInicio: { lt: oc.fechaFin }, fechaFin: { gt: oc.fechaInicio } }],
+        },
+      })
+      if (conflicto) {
+        const fechaStr = oc.fechaInicio.toLocaleDateString('es-GT', { weekday: 'long', day: 'numeric', month: 'long' })
+        const horaIni = oc.fechaInicio.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })
+        const horaFin = oc.fechaFin.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })
+        return {
+          success: false,
+          error: `Conflicto de horario: el ${fechaStr} de ${horaIni} a ${horaFin} ya hay una reserva en ese espacio.`,
+        }
+      }
+    }
+
+    // ── Crear todas las reservas en una sola transacción ─────────────────────
+    // Solo se usan los campos que existen en la tabla de la BD:
+    // id, espacioId, solicitanteId, titulo, proposito, fechaInicio, fechaFin,
+    // cantidadPersonas, recurrente, diasRecurrencia, notas, estado, motivoRechazo, createdAt
+    await prisma.reservaEspacio.createMany({
+      data: ocurrencias.map((oc) => ({
         espacioId: parseInt(data.espacioId),
         solicitanteId: String(data.solicitanteId),
         titulo: data.titulo,
         proposito: data.proposito,
-        fechaInicio: inicio,
-        fechaFin: fin,
+        fechaInicio: oc.fechaInicio,
+        fechaFin: oc.fechaFin,
         cantidadPersonas: parseInt(data.cantidadPersonas),
         recurrente: data.recurrente === true,
-        diasRecurrencia: data.diasRecurrencia || null,
+        diasRecurrencia: Array.isArray(data.diasRecurrencia)
+          ? data.diasRecurrencia.join(',')
+          : (data.diasRecurrencia || null),
         notas: data.notas || null,
-      },
+      })),
     })
 
     revalidatePath('/administracion')
-    return { success: true, reserva }
+    return { success: true, totalOcurrencias: ocurrencias.length }
   } catch (error) {
     console.error('crearReservaEspacio error:', error)
     return { success: false, error: 'No se pudo crear la reserva.' }
+  }
+}
+
+export async function eliminarReservaEspacio(id) {
+  try {
+    await prisma.reservaEspacio.delete({ where: { id } })
+    revalidatePath('/administracion')
+    return { success: true }
+  } catch {
+    return { success: false, error: 'No se pudo eliminar la reserva.' }
   }
 }
 
@@ -230,6 +307,7 @@ export async function resolverReservaEspacio(id, accion, motivo = null) {
 
 export async function crearReporteMantenimiento(data) {
   try {
+    // Crear el reporte
     const reporte = await prisma.reporteMantenimiento.create({
       data: {
         espacioId: data.espacioId ? parseInt(data.espacioId) : null,
@@ -240,6 +318,15 @@ export async function crearReporteMantenimiento(data) {
         prioridad: data.prioridad,
       },
     })
+
+    // Si el reporte tiene espacio asociado → poner espacio en MANTENIMIENTO automáticamente
+    if (data.espacioId) {
+      await prisma.espacio.update({
+        where: { id: parseInt(data.espacioId) },
+        data: { estado: 'MANTENIMIENTO' },
+      })
+    }
+
     revalidatePath('/administracion')
     return { success: true, reporte }
   } catch (error) {
@@ -250,6 +337,13 @@ export async function crearReporteMantenimiento(data) {
 
 export async function actualizarEstadoReporte(id, estado, notasResolucion = null) {
   try {
+    // Obtener reporte para saber a qué espacio pertenece
+    const reporte = await prisma.reporteMantenimiento.findUnique({
+      where: { id },
+      select: { espacioId: true },
+    })
+
+    // Actualizar el reporte
     await prisma.reporteMantenimiento.update({
       where: { id },
       data: {
@@ -258,6 +352,26 @@ export async function actualizarEstadoReporte(id, estado, notasResolucion = null
         fechaResolucion: ['RESUELTO', 'CERRADO'].includes(estado) ? new Date() : null,
       },
     })
+
+    // Si se resolvió/cerró y tiene espacio, verificar si quedan más reportes activos.
+    // Solo volver a DISPONIBLE si NO quedan más reportes abiertos para ese espacio.
+    if (['RESUELTO', 'CERRADO'].includes(estado) && reporte?.espacioId) {
+      const reportesActivosRestantes = await prisma.reporteMantenimiento.count({
+        where: {
+          espacioId: reporte.espacioId,
+          id: { not: id },
+          estado: { in: ['ABIERTO', 'EN_PROCESO'] },
+        },
+      })
+
+      if (reportesActivosRestantes === 0) {
+        await prisma.espacio.update({
+          where: { id: reporte.espacioId },
+          data: { estado: 'DISPONIBLE' },
+        })
+      }
+    }
+
     revalidatePath('/administracion')
     return { success: true }
   } catch {

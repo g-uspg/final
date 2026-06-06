@@ -1,49 +1,63 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { crearEspacio } from '../actions'
+import { useState, useTransition, useEffect } from 'react'
+import { crearReporteMantenimiento } from '../actions'
 
-const TIPOS = [
-  { value: 'SALON', label: 'Salón' },
-  { value: 'AUDITORIO', label: 'Auditorio' },
-  { value: 'LABORATORIO_ADMIN', label: 'Laboratorio' },
-  { value: 'SALA_REUNIONES', label: 'Sala de Reuniones' },
-  { value: 'CANCHA', label: 'Cancha / Área Deportiva' },
-  { value: 'OTRO', label: 'Otro' },
+const TIPOS_ELEMENTO = [
+  { value: 'AIRE_ACONDICIONADO', label: 'Aire Acondicionado', icon: 'fa-snowflake-o' },
+  { value: 'PROYECTOR', label: 'Proyector', icon: 'fa-video-camera' },
+  { value: 'ILUMINACION', label: 'Iluminación', icon: 'fa-lightbulb-o' },
+  { value: 'MOBILIARIO', label: 'Mobiliario', icon: 'fa-chair' },
+  { value: 'PUERTA_VENTANA', label: 'Puerta / Ventana', icon: 'fa-window-maximize' },
+  { value: 'SANITARIO', label: 'Sanitario', icon: 'fa-tint' },
+  { value: 'OTRO', label: 'Otro', icon: 'fa-wrench' },
 ]
 
-export default function NuevoEspacioModal({ onClose }) {
+const PRIORIDADES = [
+  { value: 'BAJA', label: 'Baja', desc: 'No afecta el uso normal' },
+  { value: 'MEDIA', label: 'Media', desc: 'Afecta parcialmente' },
+  { value: 'ALTA', label: 'Alta', desc: 'Impide uso óptimo' },
+  { value: 'URGENTE', label: 'Urgente', desc: 'Requiere atención inmediata' },
+]
+
+export default function NuevoReporteModal({ espacios, espacioPreseleccionadoId, onClose }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState(null)
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null)
   const [form, setForm] = useState({
-    codigo: '',
-    nombre: '',
+    espacioId: espacioPreseleccionadoId ? String(espacioPreseleccionadoId) : '',
+    titulo: '',
     descripcion: '',
-    tipo: 'SALON',
-    capacidad: '30',
-    ubicacion: '',
-    piso: '',
-    tieneProyector: false,
-    tieneAireAcondicionado: false,
-    tieneInternetWifi: false,
-    tienePizarron: false,
-    tienePizarronDigital: false,
-    notasRecursos: '',
+    tipoElemento: 'OTRO',
+    prioridad: 'MEDIA',
   })
 
+  // Cargar usuario logueado desde localStorage al abrir el modal
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('user')
+      if (raw) {
+        const u = JSON.parse(raw)
+        setUsuarioLogueado(u)
+      }
+    } catch {}
+  }, [])
+
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }))
-  const toggle = (k) => setForm((f) => ({ ...f, [k]: !f[k] }))
 
   const handleSubmit = () => {
-    if (!form.codigo || !form.nombre || !form.ubicacion || !form.capacidad) {
-      setError('Completa los campos requeridos: código, nombre, ubicación y capacidad.')
+    if (!usuarioLogueado?.id || !form.titulo || !form.descripcion) {
+      setError('Completa los campos requeridos: título y descripción.')
       return
     }
     setError(null)
     startTransition(async () => {
-      const result = await crearEspacio(form)
+      const result = await crearReporteMantenimiento({
+        ...form,
+        reportadoPorId: String(usuarioLogueado.id),
+      })
       if (result.success) {
-        onClose('Espacio creado correctamente.', 'success')
+        onClose('Reporte enviado correctamente.', 'success')
       } else {
         setError(result.error)
       }
@@ -54,7 +68,7 @@ export default function NuevoEspacioModal({ onClose }) {
       <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
         <div className="adm-modal">
           <div className="adm-modal-header">
-            <h2><i className="fa fa-plus-circle" aria-hidden="true" /> Nuevo Espacio</h2>
+            <h2><i className="fa fa-wrench" /> Reportar Problema de Mantenimiento</h2>
             <button type="button" className="adm-modal-close" onClick={() => onClose()} aria-label="Cerrar">
               <i className="fa fa-times" />
             </button>
@@ -65,71 +79,72 @@ export default function NuevoEspacioModal({ onClose }) {
 
             <div className="adm-form-grid">
               <div className="adm-form-group">
-                <label className="adm-label">Código *</label>
-                <input className="adm-input" placeholder="Ej: SAL-A101" value={form.codigo}
-                       onChange={(e) => set('codigo', e.target.value)} />
-              </div>
-              <div className="adm-form-group">
-                <label className="adm-label">Tipo *</label>
-                <select className="adm-input" value={form.tipo} onChange={(e) => set('tipo', e.target.value)}>
-                  {TIPOS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                <label className="adm-label">Espacio {espacioPreseleccionadoId ? '*' : '(opcional)'}</label>
+                <select className="adm-input" value={form.espacioId} onChange={(e) => set('espacioId', e.target.value)}>
+                  <option value="">— Sin espacio específico —</option>
+                  {espacios.map((e) => (
+                      <option key={e.id} value={e.id}>{e.nombre} ({e.codigo})</option>
+                  ))}
                 </select>
               </div>
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Nombre *</label>
-              <input className="adm-input" placeholder="Ej: Salón A-101" value={form.nombre}
-                     onChange={(e) => set('nombre', e.target.value)} />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Descripción</label>
-              <textarea className="adm-input adm-textarea" placeholder="Descripción del espacio (opcional)"
-                        value={form.descripcion} onChange={(e) => set('descripcion', e.target.value)} rows={2} />
-            </div>
-
-            <div className="adm-form-grid">
               <div className="adm-form-group">
-                <label className="adm-label">Ubicación *</label>
-                <input className="adm-input" placeholder="Ej: Edificio A, Nivel 1" value={form.ubicacion}
-                       onChange={(e) => set('ubicacion', e.target.value)} />
-              </div>
-              <div className="adm-form-group">
-                <label className="adm-label">Piso</label>
-                <input className="adm-input" type="number" min="0" placeholder="Ej: 2" value={form.piso}
-                       onChange={(e) => set('piso', e.target.value)} />
+                <label className="adm-label">Reportado por</label>
+                <div className="adm-input" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'default', opacity: 0.85 }}>
+                  <i className="fa fa-user-circle" style={{ fontSize: '16px' }} />
+                  <span>
+                    {usuarioLogueado
+                        ? `${usuarioLogueado.first_name || ''} ${usuarioLogueado.last_name || ''}`.trim() || usuarioLogueado.email
+                        : 'Cargando...'}
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="adm-form-group">
-              <label className="adm-label">Capacidad (personas) *</label>
-              <input className="adm-input" type="number" min="1" value={form.capacidad}
-                     onChange={(e) => set('capacidad', e.target.value)} />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Recursos disponibles</label>
-              <div className="adm-checkbox-grid">
-                {[
-                  { key: 'tieneProyector', label: 'Proyector' },
-                  { key: 'tieneAireAcondicionado', label: 'Aire Acondicionado' },
-                  { key: 'tieneInternetWifi', label: 'Internet / WiFi' },
-                  { key: 'tienePizarron', label: 'Pizarrón' },
-                  { key: 'tienePizarronDigital', label: 'Pizarrón Digital' },
-                ].map(({ key, label }) => (
-                    <label key={key} className="adm-checkbox-item">
-                      <input type="checkbox" checked={form[key]} onChange={() => toggle(key)} />
-                      <span>{label}</span>
-                    </label>
+              <label className="adm-label">Tipo de elemento afectado</label>
+              <div className="adm-tipo-grid">
+                {TIPOS_ELEMENTO.map((t) => (
+                    <button
+                        key={t.value}
+                        type="button"
+                        className={`adm-tipo-btn ${form.tipoElemento === t.value ? 'active' : ''}`}
+                        onClick={() => set('tipoElemento', t.value)}
+                    >
+                      <i className={`fa ${t.icon}`} />
+                      <span>{t.label}</span>
+                    </button>
                 ))}
               </div>
             </div>
 
             <div className="adm-form-group">
-              <label className="adm-label">Notas sobre recursos</label>
-              <input className="adm-input" placeholder="Ej: Proyector marca Epson, 3000 lúmenes" value={form.notasRecursos}
-                     onChange={(e) => set('notasRecursos', e.target.value)} />
+              <label className="adm-label">Título del problema *</label>
+              <input className="adm-input" placeholder="Ej: Aire acondicionado no enfría"
+                     value={form.titulo} onChange={(e) => set('titulo', e.target.value)} />
+            </div>
+
+            <div className="adm-form-group">
+              <label className="adm-label">Descripción detallada *</label>
+              <textarea className="adm-input adm-textarea" rows={3}
+                        placeholder="Describe el problema con el mayor detalle posible"
+                        value={form.descripcion} onChange={(e) => set('descripcion', e.target.value)} />
+            </div>
+
+            <div className="adm-form-group">
+              <label className="adm-label">Prioridad</label>
+              <div className="adm-prioridad-grid">
+                {PRIORIDADES.map((p) => (
+                    <button
+                        key={p.value}
+                        type="button"
+                        className={`adm-prioridad-btn adm-prioridad-btn--${p.value.toLowerCase()} ${form.prioridad === p.value ? 'active' : ''}`}
+                        onClick={() => set('prioridad', p.value)}
+                    >
+                      <strong>{p.label}</strong>
+                      <span>{p.desc}</span>
+                    </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -138,7 +153,9 @@ export default function NuevoEspacioModal({ onClose }) {
               Cancelar
             </button>
             <button type="button" className="adm-btn-primary" onClick={handleSubmit} disabled={pending}>
-              {pending ? <><i className="fa fa-spinner fa-spin" /> Guardando…</> : <><i className="fa fa-save" /> Crear Espacio</>}
+              {pending
+                  ? <><i className="fa fa-spinner fa-spin" /> Enviando…</>
+                  : <><i className="fa fa-paper-plane" /> Enviar Reporte</>}
             </button>
           </div>
         </div>

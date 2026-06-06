@@ -20,19 +20,24 @@ const PRIORIDADES = [
   { value: 'URGENTE', label: 'Urgente', desc: 'Requiere atención inmediata' },
 ]
 
-export default function NuevoReporteModal({ espacios, onClose }) {
+export default function NuevoReporteModal({ espacios, espacioPreseleccionadoId, onClose }) {
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState(null)
   const [usuarioLogueado, setUsuarioLogueado] = useState(null)
+
+  // Buscar el objeto espacio preseleccionado
+  const espacioFijo = espacioPreseleccionadoId
+    ? espacios.find((e) => e.id === espacioPreseleccionadoId || String(e.id) === String(espacioPreseleccionadoId))
+    : null
+
   const [form, setForm] = useState({
-    espacioId: '',
+    espacioId: espacioFijo ? String(espacioFijo.id) : '',
     titulo: '',
     descripcion: '',
     tipoElemento: 'OTRO',
     prioridad: 'MEDIA',
   })
 
-  // Cargar usuario logueado desde localStorage al abrir el modal
   useEffect(() => {
     try {
       const raw = localStorage.getItem('user')
@@ -65,100 +70,113 @@ export default function NuevoReporteModal({ espacios, onClose }) {
   }
 
   return (
-      <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <div className="adm-modal">
-          <div className="adm-modal-header">
-            <h2><i className="fa fa-wrench" /> Reportar Problema de Mantenimiento</h2>
-            <button type="button" className="adm-modal-close" onClick={() => onClose()} aria-label="Cerrar">
-              <i className="fa fa-times" />
-            </button>
-          </div>
+    <div className="adm-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="adm-modal">
+        <div className="adm-modal-header">
+          <h2><i className="fa fa-wrench" /> Reportar Problema de Mantenimiento</h2>
+          <button type="button" className="adm-modal-close" onClick={() => onClose()} aria-label="Cerrar">
+            <i className="fa fa-times" />
+          </button>
+        </div>
 
-          <div className="adm-modal-body">
-            {error && <div className="adm-alert adm-alert-error"><i className="fa fa-exclamation-circle" /> {error}</div>}
+        <div className="adm-modal-body">
+          {error && <div className="adm-alert adm-alert-error"><i className="fa fa-exclamation-circle" /> {error}</div>}
 
-            <div className="adm-form-grid">
-              <div className="adm-form-group">
-                <label className="adm-label">Espacio (opcional)</label>
+          <div className="adm-form-grid">
+            {/* Si hay espacio preseleccionado, mostrar como campo fijo (no editable) */}
+            <div className="adm-form-group">
+              <label className="adm-label">Espacio</label>
+              {espacioFijo ? (
+                <div
+                  className="adm-input"
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'default', opacity: 0.85 }}
+                >
+                  <i className="fa fa-building" style={{ fontSize: '15px', opacity: 0.6 }} />
+                  <span style={{ fontWeight: 600 }}>{espacioFijo.nombre}</span>
+                  <span style={{ opacity: 0.5, fontSize: '12px' }}>({espacioFijo.codigo})</span>
+                </div>
+              ) : (
                 <select className="adm-input" value={form.espacioId} onChange={(e) => set('espacioId', e.target.value)}>
                   <option value="">— Sin espacio específico —</option>
                   {espacios.map((e) => (
-                      <option key={e.id} value={e.id}>{e.nombre} ({e.codigo})</option>
+                    <option key={e.id} value={e.id}>{e.nombre} ({e.codigo})</option>
                   ))}
                 </select>
-              </div>
-              <div className="adm-form-group">
-                <label className="adm-label">Reportado por</label>
-                <div className="adm-input" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'default', opacity: 0.85 }}>
-                  <i className="fa fa-user-circle" style={{ fontSize: '16px' }} />
-                  <span>
-                    {usuarioLogueado
-                      ? `${usuarioLogueado.first_name || ''} ${usuarioLogueado.last_name || ''}`.trim() || usuarioLogueado.email
-                      : 'Cargando...'}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="adm-form-group">
-              <label className="adm-label">Tipo de elemento afectado</label>
-              <div className="adm-tipo-grid">
-                {TIPOS_ELEMENTO.map((t) => (
-                    <button
-                        key={t.value}
-                        type="button"
-                        className={`adm-tipo-btn ${form.tipoElemento === t.value ? 'active' : ''}`}
-                        onClick={() => set('tipoElemento', t.value)}
-                    >
-                      <i className={`fa ${t.icon}`} />
-                      <span>{t.label}</span>
-                    </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Título del problema *</label>
-              <input className="adm-input" placeholder="Ej: Aire acondicionado no enfría"
-                     value={form.titulo} onChange={(e) => set('titulo', e.target.value)} />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Descripción detallada *</label>
-              <textarea className="adm-input adm-textarea" rows={3}
-                        placeholder="Describe el problema con el mayor detalle posible"
-                        value={form.descripcion} onChange={(e) => set('descripcion', e.target.value)} />
-            </div>
-
-            <div className="adm-form-group">
-              <label className="adm-label">Prioridad</label>
-              <div className="adm-prioridad-grid">
-                {PRIORIDADES.map((p) => (
-                    <button
-                        key={p.value}
-                        type="button"
-                        className={`adm-prioridad-btn adm-prioridad-btn--${p.value.toLowerCase()} ${form.prioridad === p.value ? 'active' : ''}`}
-                        onClick={() => set('prioridad', p.value)}
-                    >
-                      <strong>{p.label}</strong>
-                      <span>{p.desc}</span>
-                    </button>
-                ))}
+              <label className="adm-label">Reportado por</label>
+              <div className="adm-input" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'default', opacity: 0.85 }}>
+                <i className="fa fa-user-circle" style={{ fontSize: '16px' }} />
+                <span>
+                  {usuarioLogueado
+                    ? `${usuarioLogueado.first_name || ''} ${usuarioLogueado.last_name || ''}`.trim() || usuarioLogueado.email
+                    : 'Cargando...'}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="adm-modal-footer">
-            <button type="button" className="adm-btn-ghost" onClick={() => onClose()} disabled={pending}>
-              Cancelar
-            </button>
-            <button type="button" className="adm-btn-primary" onClick={handleSubmit} disabled={pending}>
-              {pending
-                  ? <><i className="fa fa-spinner fa-spin" /> Enviando…</>
-                  : <><i className="fa fa-paper-plane" /> Enviar Reporte</>}
-            </button>
+          <div className="adm-form-group">
+            <label className="adm-label">Tipo de elemento afectado</label>
+            <div className="adm-tipo-grid">
+              {TIPOS_ELEMENTO.map((t) => (
+                <button
+                  key={t.value}
+                  type="button"
+                  className={`adm-tipo-btn ${form.tipoElemento === t.value ? 'active' : ''}`}
+                  onClick={() => set('tipoElemento', t.value)}
+                >
+                  <i className={`fa ${t.icon}`} />
+                  <span>{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="adm-form-group">
+            <label className="adm-label">Título del problema *</label>
+            <input className="adm-input" placeholder="Ej: Aire acondicionado no enfría"
+                   value={form.titulo} onChange={(e) => set('titulo', e.target.value)} />
+          </div>
+
+          <div className="adm-form-group">
+            <label className="adm-label">Descripción detallada *</label>
+            <textarea className="adm-input adm-textarea" rows={3}
+                      placeholder="Describe el problema con el mayor detalle posible"
+                      value={form.descripcion} onChange={(e) => set('descripcion', e.target.value)} />
+          </div>
+
+          <div className="adm-form-group">
+            <label className="adm-label">Prioridad</label>
+            <div className="adm-prioridad-grid">
+              {PRIORIDADES.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  className={`adm-prioridad-btn adm-prioridad-btn--${p.value.toLowerCase()} ${form.prioridad === p.value ? 'active' : ''}`}
+                  onClick={() => set('prioridad', p.value)}
+                >
+                  <strong>{p.label}</strong>
+                  <span>{p.desc}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+
+        <div className="adm-modal-footer">
+          <button type="button" className="adm-btn-ghost" onClick={() => onClose()} disabled={pending}>
+            Cancelar
+          </button>
+          <button type="button" className="adm-btn-primary" onClick={handleSubmit} disabled={pending}>
+            {pending
+              ? <><i className="fa fa-spinner fa-spin" /> Enviando…</>
+              : <><i className="fa fa-paper-plane" /> Enviar Reporte</>}
+          </button>
+        </div>
       </div>
+    </div>
   )
 }
