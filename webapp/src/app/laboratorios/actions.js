@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma-laboratorios'
 import { revalidatePath } from 'next/cache'
 import { requireServerRole, getServerUser } from '@/lib/server-auth'
 import { getOrCreateLabUsuario, getLabEligibility, isLabAdminRole } from '@/lib/laboratorios/usuario-lab'
+import { registrarCobroSesionLab, resumenFacturacionUsuario } from '@/lib/laboratorios/facturacion-mensual'
+import { anclarEventoLab } from '@/lib/laboratorios/blockchain-lab'
 import {
   DEFAULT_FILAS,
   DEFAULT_COLUMNAS,
@@ -18,6 +20,7 @@ import {
   montoPorMinutos,
 } from '@/lib/laboratorios/sesion-remota'
 import { getRemotoConfig, metaRegistroRemoto } from '@/lib/laboratorios/remoto-config'
+import { callLlmChat, isLlmConfigured } from '@/lib/laboratorios/llm-tutor'
 
 const labInclude = {
   configuraciones: { where: { activo: true }, orderBy: { orden: 'asc' } },
@@ -35,7 +38,7 @@ export async function getClientPortalData() {
 
     const eligibility = await getLabEligibility(jwtUser, labUsuario)
 
-    const [laboratorios, misReservas, usoPendiente, cursosLibres, sesionRemotaActiva] =
+    const [laboratorios, misReservas, facturacion, cursosLibres, sesionRemotaActiva] =
       await Promise.all([
       prisma.laboratorio.findMany({
         where: { estado: 'ACTIVO', disponiblePublico: true },
@@ -67,15 +70,7 @@ export async function getClientPortalData() {
         orderBy: { fechaInicio: 'desc' },
         take: 30,
       }),
-      prisma.pago.aggregate({
-        where: {
-          usuarioId: labUsuario.id,
-          tipoCobro: 'PAGO_HORA',
-          estado: 'PENDIENTE',
-        },
-        _sum: { monto: true },
-        _count: true,
-      }),
+      resumenFacturacionUsuario(labUsuario.id),
       getCursosLibres(true),
       prisma.sesionUso.findFirst({
         where: {
@@ -107,8 +102,9 @@ export async function getClientPortalData() {
         .filter((c) => c.inscripciones?.some((i) => i.usuarioId === labUsuario.id))
         .map((c) => c.id),
       cobroPendiente: {
-        total: Number(usoPendiente._sum.monto ?? 0),
-        registros: usoPendiente._count,
+        total: facturacion.totalPendiente,
+        registros: facturacion.registrosPendientes,
+        facturaMesActual: facturacion.facturaMesActual,
       },
       sesionRemotaActiva,
     }
@@ -1017,6 +1013,11 @@ export async function iniciarSesionRemota(reservaId) {
     const labUsuario = await getOrCreateLabUsuario(jwtUser)
     if (!labUsuario) return { success: false, error: 'Usuario de laboratorio no encontrado.' }
 
+    const eligibility = await getLabEligibility(jwtUser, labUsuario)
+    if (!eligibility.canReserve) {
+      return { success: false, error: eligibility.reason || 'No tienes elegibilidad institucional.' }
+    }
+
     const reserva = await prisma.reserva.findUnique({
       where: { id: reservaId },
       include: {
@@ -1072,6 +1073,20 @@ export async function iniciarSesionRemota(reservaId) {
       },
     })
 
+    await anclarEventoLab({
+      sesionId: sesion.id,
+      usuarioId: labUsuario.id,
+      action: 'SESSION_START',
+      data: {
+        reservaId: reserva.id,
+        laboratorioId: reserva.laboratorioId,
+        asiento: acceso.etiqueta,
+        modo: registro.modo,
+        carnet: eligibility.carnet ?? null,
+        modoCobro: eligibility.modoCobro,
+      },
+    })
+
     revalidatePath('/laboratorios')
     return {
       success: true,
@@ -1117,8 +1132,20 @@ export async function finalizarSesionRemota(sesionId) {
     const eligibility = await getLabEligibility(jwtUser, labUsuario)
     let montoCobrado = 0
     const etiquetaRemota = meta.modo === 'guacamole' ? 'Guacamole' : 'simulada'
+    const notasBase = `Sesión remota ${etiquetaRemota} · ${minutos} min · ${meta.asientoEtiqueta || '—'}`
 
-    if (eligibility.modoCobro === 'PAGO_HORA' && minutos > 0) {
+    if (eligibility.modoCobro === 'FACTURACION_MENSUAL' && minutos > 0) {
+      montoCobrado = montoPorMinutos(minutos)
+      await registrarCobroSesionLab(labUsuario.id, {
+        laboratorioId: sesion.laboratorioId,
+        reservaId: meta.reservaId || null,
+        minutos,
+        monto: montoCobrado,
+        tipoCobro: 'FACTURACION_MENSUAL',
+        notas: notasBase,
+        sesionId,
+      })
+    } else if (eligibility.modoCobro === 'PAGO_HORA' && minutos > 0) {
       montoCobrado = montoPorMinutos(minutos)
       await prisma.pago.create({
         data: {
@@ -1129,10 +1156,22 @@ export async function finalizarSesionRemota(sesionId) {
           tipoCobro: 'PAGO_HORA',
           metodoPago: 'PENDIENTE_FIN_MES',
           estado: 'PENDIENTE',
-          notas: `Sesión remota ${etiquetaRemota} · ${minutos} min · ${meta.asientoEtiqueta || '—'}`,
+          notas: notasBase,
         },
       })
     }
+
+    await anclarEventoLab({
+      sesionId,
+      usuarioId: labUsuario.id,
+      action: 'SESSION_END',
+      data: {
+        minutos,
+        montoCobrado,
+        incluidoEnCuota: eligibility.modoCobro === 'INCLUIDO',
+        modoCobro: eligibility.modoCobro,
+      },
+    })
 
     revalidatePath('/laboratorios')
     return {
@@ -1144,6 +1183,60 @@ export async function finalizarSesionRemota(sesionId) {
   } catch (error) {
     console.error('finalizarSesionRemota:', error)
     return { success: false, error: 'No se pudo cerrar la sesión.' }
+  }
+}
+
+export async function getLabLlmDisponible() {
+  return isLlmConfigured()
+}
+
+export async function chatPracticaInglesLLM(sesionId, history) {
+  try {
+    const jwtUser = await getServerUser()
+    if (!jwtUser) return { success: false, error: 'Debe iniciar sesión.' }
+
+    const labUsuario = await getOrCreateLabUsuario(jwtUser)
+    if (!labUsuario) return { success: false, error: 'Usuario no encontrado.' }
+
+    if (!isLlmConfigured()) {
+      return {
+        success: false,
+        error: 'LLM no configurado. Agrega LAB_LLM_API_KEY en webapp/.env.local',
+      }
+    }
+
+    const sesion = await prisma.sesionUso.findUnique({ where: { id: sesionId } })
+    if (!sesion || sesion.usuarioId !== labUsuario.id) {
+      return { success: false, error: 'Sesión no válida.' }
+    }
+    if (sesion.fin) {
+      return { success: false, error: 'La sesión remota ya finalizó.' }
+    }
+
+    const mensajes = Array.isArray(history)
+      ? history.filter(
+          (m) =>
+            m &&
+            ['user', 'assistant'].includes(m.role) &&
+            typeof m.content === 'string' &&
+            m.content.trim()
+        )
+      : []
+
+    if (mensajes.length === 0 || mensajes[mensajes.length - 1]?.role !== 'user') {
+      return { success: false, error: 'Mensaje inválido.' }
+    }
+
+    const result = await callLlmChat(mensajes.map((m) => ({ role: m.role, content: m.content.trim() })))
+
+    if (!result.ok) {
+      return { success: false, error: result.error }
+    }
+
+    return { success: true, reply: result.content }
+  } catch (error) {
+    console.error('chatPracticaInglesLLM:', error)
+    return { success: false, error: 'Error al consultar el tutor LLM.' }
   }
 }
 

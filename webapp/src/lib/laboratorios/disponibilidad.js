@@ -1,14 +1,31 @@
+const MESES_CORTOS = [
+  'ene.',
+  'feb.',
+  'mar.',
+  'abr.',
+  'may.',
+  'jun.',
+  'jul.',
+  'ago.',
+  'sep.',
+  'oct.',
+  'nov.',
+  'dic.',
+]
+
+/** Formato estable servidor/cliente (evita NBSP de Intl en hidratación). */
 function formatHora(date) {
-  return new Date(date).toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })
+  const d = new Date(date)
+  const hours24 = d.getHours()
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const period = hours24 >= 12 ? 'p. m.' : 'a. m.'
+  const hours12 = hours24 % 12 || 12
+  return `${String(hours12).padStart(2, '0')}:${minutes} ${period}`
 }
 
 function formatFechaCorta(date) {
-  return new Date(date).toLocaleString('es-GT', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  const d = new Date(date)
+  return `${d.getDate()} ${MESES_CORTOS[d.getMonth()]} ${formatHora(date)}`
 }
 
 /** Calcula chip de disponibilidad para tarjetas de laboratorio. */

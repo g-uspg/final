@@ -709,3 +709,396 @@ body:not(.dark-mode) .lab-seat-aisle {
   margin-bottom: 0.5rem;
 }
 
+.lab-remote-llm--live {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 42rem;
+}
+
+.lab-remote-llm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.lab-remote-llm-header h3 {
+  margin-bottom: 0;
+}
+
+.lab-remote-llm-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.lab-remote-llm-status .fa-circle {
+  font-size: 0.5rem;
+  color: #64748b;
+}
+
+.lab-remote-llm-status--on {
+  color: #4ade80;
+}
+
+.lab-remote-llm-status--on .fa-circle {
+  color: #22c55e;
+}
+
+.lab-remote-llm-alert {
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  color: #fcd34d;
+  font-size: 0.8125rem;
+  margin-bottom: 0.75rem;
+}
+
+.lab-remote-llm-alert code {
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+}
+
+.lab-remote-chat--scroll {
+  flex: 1;
+  min-height: 12rem;
+  max-height: calc(100vh - 18rem);
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.lab-remote-chat-bubble--user {
+  background: rgba(59, 130, 246, 0.25);
+  align-self: flex-end;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.lab-remote-chat-bubble--typing {
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.lab-remote-llm-error {
+  color: #f87171;
+  font-size: 0.8125rem;
+  margin: 0.35rem 0 0;
+}
+
+.lab-remote-llm-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.lab-remote-llm-input {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+}
+
+.lab-remote-llm-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.lab-remote-llm-input:disabled {
+  opacity: 0.55;
+}
+
+.lab-remote-llm-send {
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.lab-remote-llm-send:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.lab-remote-llm-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ─── Carné digital QR ─────────────────────────────────────── */
+.lab-carnet-card {
+  padding: 1.25rem;
+}
+
+.lab-carnet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.lab-carnet-eyebrow {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.65;
+  margin: 0 0 0.25rem;
+}
+
+.lab-carnet-header h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.lab-carnet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  opacity: 0.7;
+  margin: 0.35rem 0 0;
+}
+
+.lab-carnet-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lab-carnet-status--ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.lab-carnet-status--warn {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.lab-carnet-status--bad {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.lab-carnet-body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .lab-carnet-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+.lab-carnet-qr-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.lab-carnet-qr-wrap {
+  padding: 0.75rem;
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.lab-carnet-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 14rem;
+  padding: 0.55rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(128, 0, 32, 0.35);
+  color: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.lab-carnet-download:hover:not(:disabled) {
+  background: rgba(128, 0, 32, 0.55);
+}
+
+.lab-carnet-download:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.lab-carnet-download-msg {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #4ade80;
+  text-align: center;
+}
+
+.lab-carnet-download-hint {
+  margin: 0;
+  font-size: 0.6875rem;
+  opacity: 0.5;
+  text-align: center;
+  max-width: 14rem;
+  line-height: 1.35;
+}
+
+.lab-carnet-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.lab-carnet-checklist li {
+  font-size: 0.875rem;
+}
+
+.lab-carnet-checklist li.ok {
+  color: #4ade80;
+}
+
+.lab-carnet-checklist li.no {
+  color: #f87171;
+}
+
+.lab-carnet-hint {
+  font-size: 0.8125rem;
+  opacity: 0.85;
+  margin: 0 0 0.35rem;
+}
+
+.lab-carnet-hint--muted {
+  opacity: 0.55;
+  font-size: 0.75rem;
+}
+
+.lab-carnet-loading,
+.lab-carnet-error {
+  padding: 2rem;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.lab-carnet-error {
+  color: #f87171;
+}
+
+/* ─── Kiosco seguridad laboratorios ─────────────────────────── */
+.lab-kiosco {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.lab-kiosco-header h1 {
+  font-size: 1.375rem;
+  margin-bottom: 0.35rem;
+}
+
+.lab-kiosco-header p {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  margin: 0;
+}
+
+.lab-kiosco-scan {
+  margin-top: 1rem;
+  padding: 1.25rem;
+}
+
+.lab-kiosco-scan label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.lab-kiosco-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.lab-kiosco-input {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.2);
+  color: inherit;
+  font-family: ui-monospace, monospace;
+}
+
+.lab-kiosco-result {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.lab-kiosco-result i {
+  font-size: 2rem;
+}
+
+.lab-kiosco-result--ok {
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.lab-kiosco-result--ok i {
+  color: #4ade80;
+}
+
+.lab-kiosco-result--deny {
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.lab-kiosco-result--deny i {
+  color: #f87171;
+}
+
+.lab-kiosco-meta {
+  font-size: 0.8125rem;
+  opacity: 0.7;
+}
+
+.lab-kiosco-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+}
+
+.lab-kiosco-motivo {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #f87171;
+}
+

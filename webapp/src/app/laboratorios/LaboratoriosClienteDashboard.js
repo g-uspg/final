@@ -20,6 +20,7 @@ import { etiquetasAsientosReserva } from '@/lib/laboratorios/asientos'
 import SesionRemotaSimulada from './components/SesionRemotaSimulada'
 import ConexionRemotaGuacamole from './components/ConexionRemotaGuacamole'
 import { esSesionGuacamole } from '@/lib/laboratorios/remoto-config'
+import CarnetDigitalLab from './components/CarnetDigitalLab'
 
 function estadoReservaClass(estado) {
   if (estado === 'APROBADA') return 'lab-badge-activo'
@@ -197,7 +198,15 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
         </div>
         <div className="lab-stat">
           <div className="lab-stat-value">Q {cobroPendiente.total.toFixed(2)}</div>
-          <div className="lab-stat-label">Pendiente fin de mes</div>
+          <div className="lab-stat-label">
+            Pendiente fin de mes
+            {cobroPendiente.facturaMesActual && (
+              <span className="block text-xs opacity-60 mt-0.5">
+                {cobroPendiente.facturaMesActual.sesiones} sesiones ·{' '}
+                {cobroPendiente.facturaMesActual.minutos} min
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -205,6 +214,28 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
         <div className="dashboard-card lab-card mb-6 border border-amber-500/30 bg-amber-500/5">
           <p className="text-sm">
             <i className="fa fa-exclamation-triangle mr-2 text-amber-400" aria-hidden="true" />
+            {eligibility.reason}
+          </p>
+        </div>
+      )}
+
+      {eligibility.canReserve && eligibility.modoCobro === 'FACTURACION_MENSUAL' && (
+        <div className="dashboard-card lab-card mb-6 border border-emerald-500/25 bg-emerald-500/5">
+          <p className="text-sm opacity-90">
+            <i className="fa fa-id-card mr-2 text-emerald-400" aria-hidden="true" />
+            Matrícula <strong>{eligibility.semestre}</strong> verificada (Grupo 6).
+            {eligibility.carnet && (
+              <span className="ml-1 opacity-75">Carné {eligibility.carnet}</span>
+            )}
+            {' '}El uso se consolida en facturación mensual.
+          </p>
+        </div>
+      )}
+
+      {!eligibility.canReserve && eligibility.matriculaSemestreActual === false && eligibility.inscrito && (
+        <div className="dashboard-card lab-card mb-6 border border-red-500/30 bg-red-500/5">
+          <p className="text-sm">
+            <i className="fa fa-times-circle mr-2 text-red-400" aria-hidden="true" />
             {eligibility.reason}
           </p>
         </div>
@@ -259,6 +290,14 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
           {cursosLibres.length > 0 && (
             <span className="lab-tab-badge">{cursosLibres.length}</span>
           )}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          className={`lab-tab ${tab === 'carnet' ? 'active' : ''}`}
+          onClick={() => setTab('carnet')}
+        >
+          <i className="fa fa-id-card" aria-hidden="true" /> Mi carné QR
         </button>
         <button
           type="button"
@@ -418,6 +457,8 @@ export default function LaboratoriosClienteDashboard({ initialData }) {
           )}
         </div>
       )}
+
+      {tab === 'carnet' && <CarnetDigitalLab />}
 
       {tab === 'mis-reservas' && (
         <div className="lab-table-wrap lab-table-wrap--responsive">

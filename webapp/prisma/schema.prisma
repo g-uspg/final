@@ -836,9 +836,18 @@ enum EstadoReserva {
 enum TipoCobro {
   CUOTA_SEMESTRAL
   PAGO_HORA
+  FACTURACION_MENSUAL
   PAGO_DIA
   PAGO_SEMESTRE
   RESERVACION_GRUPO
+
+  @@schema("grupo3_laboratorios")
+}
+
+enum EstadoFacturaLab {
+  ABIERTA
+  CERRADA
+  PAGADA
 
   @@schema("grupo3_laboratorios")
 }
@@ -913,6 +922,7 @@ model Usuario {
   sancionado       Boolean          @default(false)
   eventoExternoRef String?          @map("evento_externo_ref")
   parqueoUserId    String?          @map("parqueo_user_id")
+  carnet           String?          @map("carnet")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
@@ -926,6 +936,8 @@ model Usuario {
   infracciones           Infraccion[]
   mantenimientos         MantenimientoEquipo[]     @relation("MantenimientoTecnico")
   inscripcionesCurso     CursoLibreInscripcion[]
+  facturasMensuales      FacturaMensualLab[]
+  blockchainAudits       BlockchainAuditLab[]
 
   @@map("usuario")
   @@schema("grupo3_laboratorios")
@@ -1109,11 +1121,13 @@ model Pago {
   estado            EstadoPago @default(PENDIENTE)
   referenciaExterna String?    @map("referencia_externa")
   notas             String?
+  facturaMensualId  String?    @map("factura_mensual_id")
   createdAt         DateTime   @default(now()) @map("created_at")
 
-  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
-  laboratorio Laboratorio? @relation(fields: [laboratorioId], references: [id])
-  reserva     Reserva?  @relation(fields: [reservaId], references: [id])
+  usuario         Usuario           @relation(fields: [usuarioId], references: [id])
+  laboratorio     Laboratorio?      @relation(fields: [laboratorioId], references: [id])
+  reserva         Reserva?          @relation(fields: [reservaId], references: [id])
+  facturaMensual  FacturaMensualLab? @relation(fields: [facturaMensualId], references: [id])
 
   @@map("pago")
   @@schema("grupo3_laboratorios")
@@ -1211,10 +1225,11 @@ model SesionUso {
   fin               DateTime?
   registroActividad Json?        @map("registro_actividad")
 
-  usuario     Usuario   @relation(fields: [usuarioId], references: [id])
-  laboratorio Laboratorio? @relation(fields: [laboratorioId], references: [id])
-  equipo      Equipo?   @relation(fields: [equipoId], references: [id])
-  infracciones Infraccion[]
+  usuario          Usuario              @relation(fields: [usuarioId], references: [id])
+  laboratorio      Laboratorio?         @relation(fields: [laboratorioId], references: [id])
+  equipo           Equipo?              @relation(fields: [equipoId], references: [id])
+  infracciones     Infraccion[]
+  blockchainAudits BlockchainAuditLab[]
 
   @@map("sesion_uso")
   @@schema("grupo3_laboratorios")
@@ -1232,6 +1247,52 @@ model Infraccion {
   sesionUso SesionUso?  @relation(fields: [sesionUsoId], references: [id])
 
   @@map("infraccion")
+  @@schema("grupo3_laboratorios")
+}
+
+model FacturaMensualLab {
+  id             String           @id @default(uuid())
+  usuarioId      String           @map("usuario_id")
+  mes            Int
+  anio           Int
+  totalSesiones  Int              @default(0) @map("total_sesiones")
+  totalMinutos   Int              @default(0) @map("total_minutos")
+  totalMonto     Decimal          @default(0) @db.Decimal(10, 2) @map("total_monto")
+  estado         EstadoFacturaLab @default(ABIERTA)
+  fechaCierre    DateTime?        @map("fecha_cierre")
+  fechaPago      DateTime?        @map("fecha_pago")
+  referenciaPago String?          @map("referencia_pago")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  pagos   Pago[]
+
+  @@unique([usuarioId, mes, anio])
+  @@index([mes, anio])
+  @@index([estado])
+  @@map("factura_mensual_lab")
+  @@schema("grupo3_laboratorios")
+}
+
+model BlockchainAuditLab {
+  id        String   @id @default(uuid())
+  sesionId  String?  @map("sesion_id")
+  usuarioId String?  @map("usuario_id")
+  action    String
+  dataHash  String   @map("data_hash")
+  txHash    String?  @map("tx_hash")
+  network   String   @default("polygon-amoy")
+  status    String   @default("CONFIRMED")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  sesionUso SesionUso? @relation(fields: [sesionId], references: [id])
+  usuario   Usuario?   @relation(fields: [usuarioId], references: [id])
+
+  @@index([sesionId])
+  @@index([usuarioId])
+  @@index([createdAt])
+  @@map("blockchain_audit_lab")
   @@schema("grupo3_laboratorios")
 }
 

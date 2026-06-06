@@ -22,7 +22,12 @@ function createClient() {
 }
 
 function clientHasLabModels(client) {
-  return Boolean(client?.asientoLaboratorio?.count && client?.cursoLibre?.findMany);
+  return Boolean(
+    client?.asientoLaboratorio?.findMany &&
+      client?.cursoLibre?.findMany &&
+      client?.facturaMensualLab?.findUnique &&
+      client?.blockchainAuditLab?.create
+  );
 }
 
 function getClient() {

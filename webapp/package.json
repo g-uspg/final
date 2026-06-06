@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "node prisma/seed.js",
+    "seed:lab-estudiantes": "node scripts/seed-lab-estudiantes.mjs",
     "db:reset": "npx prisma migrate reset --force && npm run seed",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",

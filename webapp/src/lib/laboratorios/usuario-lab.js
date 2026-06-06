@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma-laboratorios'
 import prismaAcademico from '@/lib/prisma-academico'
-import prismaParqueo from '@/lib/prisma'
+import { verificarElegibilidadInstitucional } from '@/lib/laboratorios/integracion-grupo6'
 
 function mapJwtRoleToLab(jwtRole) {
   if (jwtRole === 'ADMIN') return { rol: 'ADMINISTRADOR', categoria: 'CATEDRATICO' }
@@ -32,12 +32,14 @@ export async function getOrCreateLabUsuario(jwtUser) {
     const { rol, categoria } = mapJwtRoleToLab(jwtUser.role)
 
     let carrera = null
+    let carnet = null
     if (jwtUser.role === 'STUDENT') {
       const alumno = await prismaAcademico.alumno.findFirst({
         where: { OR: [{ parqueo_user_id: jwtUser.sub }, { email }] },
         include: { carrera: true },
       })
       carrera = alumno?.carrera?.nombre ?? null
+      carnet = alumno?.carnet ?? null
     }
 
     usuario = await prisma.usuario.create({
@@ -48,6 +50,7 @@ export async function getOrCreateLabUsuario(jwtUser) {
         rol,
         categoria,
         carrera,
+        carnet,
         parqueoUserId: jwtUser.sub,
         activo: true,
       },
@@ -74,7 +77,7 @@ export async function getLabEligibility(jwtUser, labUsuario) {
     return { canReserve: false, reason: 'Tu cuenta está suspendida por sanciones.', inscrito: false, modoCobro: null }
   }
 
-  const cuotaSemestral = await prisma.pago.findFirst({
+  const cuotaSemestralLab = await prisma.pago.findFirst({
     where: {
       usuarioId: labUsuario.id,
       tipoCobro: 'CUOTA_SEMESTRAL',
@@ -83,36 +86,62 @@ export async function getLabEligibility(jwtUser, labUsuario) {
     orderBy: { createdAt: 'desc' },
   })
 
-  const modoCobro = cuotaSemestral ? 'INCLUIDO' : 'PAGO_HORA'
-
   if (labUsuario.categoria === 'ESTUDIANTE_UNIVERSITARIO' || jwtUser.role === 'STUDENT') {
-    const alumno = await prismaAcademico.alumno.findFirst({
-      where: { OR: [{ parqueo_user_id: jwtUser.sub }, { email: jwtUser.email?.toLowerCase() }] },
-    })
+    const instit = await verificarElegibilidadInstitucional({ jwtUser, labUsuario })
 
-    let inscrito = !!alumno
-
-    if (!inscrito && jwtUser.role === 'STUDENT') {
-      const parqueoUser = await prismaParqueo.user.findUnique({ where: { id: jwtUser.sub } })
-      inscrito = !!parqueoUser?.is_active && parqueoUser.role === 'STUDENT'
-    }
-
-    if (!inscrito) {
+    if (!instit.inscrito) {
       return {
         canReserve: false,
-        reason: 'Debes estar inscrito en la universidad para reservar laboratorios.',
+        reason: 'Debes estar inscrito en la universidad (Grupo 1 — Académico).',
         inscrito: false,
-        modoCobro,
-        cuotaSemestralPagada: !!cuotaSemestral,
+        modoCobro: null,
+        carnet: instit.carnet,
+        semestre: instit.semestreEtiqueta,
+        matriculaSemestreActual: false,
+        solvente: false,
       }
     }
+
+    if (!instit.matriculaSemestreActual) {
+      return {
+        canReserve: false,
+        reason: `Matrícula del semestre ${instit.semestreEtiqueta} no confirmada (Grupo 6 — Pagos).`,
+        inscrito: true,
+        modoCobro: null,
+        carnet: instit.carnet,
+        semestre: instit.semestreEtiqueta,
+        matriculaSemestreActual: false,
+        solvente: instit.solvente,
+      }
+    }
+
+    if (!instit.solvente) {
+      return {
+        canReserve: false,
+        reason: instit.motivoSolvencia,
+        inscrito: true,
+        modoCobro: null,
+        carnet: instit.carnet,
+        semestre: instit.semestreEtiqueta,
+        matriculaSemestreActual: true,
+        solvente: false,
+        cuotasPendientes: instit.cuotasPendientes,
+      }
+    }
+
+    const modoCobro = cuotaSemestralLab ? 'INCLUIDO' : 'FACTURACION_MENSUAL'
 
     return {
       canReserve: true,
       reason: null,
       inscrito: true,
       modoCobro,
-      cuotaSemestralPagada: !!cuotaSemestral,
+      carnet: instit.carnet,
+      semestre: instit.semestreEtiqueta,
+      matriculaSemestreActual: true,
+      solvente: true,
+      cuotaSemestralPagada: !!cuotaSemestralLab,
+      matriculaGrupo6Id: instit.matricula?.id_matricula ?? null,
     }
   }
 

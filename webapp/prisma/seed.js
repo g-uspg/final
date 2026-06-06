@@ -596,6 +596,75 @@ async function seedAcademico() {
   console.log('  carnet: 2600002  / pass: USPG-2600002  (Ing. Sistemas)');
   console.log('  carnet: 2600003  / pass: USPG-2600003  (Administración)');
   console.log('═══════════════════════════════════════\n');
+
+  await seedParqueoAlumnosEnAcademico(q, ing.id);
+}
+
+/** Enlaza est001/est002/est003 del parqueo con grupo1 + matrícula grupo6. */
+async function seedParqueoAlumnosEnAcademico(q, carreraId) {
+  console.log('\n🔗 Vinculando estudiantes demo parqueo → académico + pagos...');
+
+  const poolMain = new pg.Pool({
+    connectionString: process.env.DATABASE_URL.replace('sslmode=require', 'sslmode=no-verify'),
+    ssl: { rejectUnauthorized: false },
+  });
+  const client = await poolMain.connect();
+
+  const demo = [
+    { email: 'est001@uspg.edu.gt', carnet: '2021-0001', nombre: 'Carlos', apellido: 'Pérez' },
+    { email: 'est002@uspg.edu.gt', carnet: '2021-0002', nombre: 'Ana', apellido: 'García' },
+    { email: 'est003@uspg.edu.gt', carnet: '2022-0003', nombre: 'Luis', apellido: 'Herrera' },
+  ];
+
+  const anio = new Date().getFullYear();
+  const ciclo = new Date().getMonth() < 6 ? 'I' : 'II';
+
+  try {
+    let idFormaPago;
+    const fp = await client.query('SELECT id_forma_pago FROM grupo6_pago_alumnos.forma_pago ORDER BY 1 LIMIT 1');
+    if (fp.rows[0]) {
+      idFormaPago = fp.rows[0].id_forma_pago;
+    } else {
+      const ins = await client.query(`INSERT INTO grupo6_pago_alumnos.forma_pago (nombre) VALUES ('Efectivo') RETURNING id_forma_pago`);
+      idFormaPago = ins.rows[0].id_forma_pago;
+    }
+
+    for (const est of demo) {
+      const { rows: users } = await client.query(
+        `SELECT id FROM auth."User" WHERE LOWER(email) = LOWER($1) AND deleted_at IS NULL LIMIT 1`,
+        [est.email]
+      );
+      if (!users[0]) continue;
+
+      await q(
+        `INSERT INTO "Alumno"(carnet,nombre,apellido,email,"carreraId",parqueo_user_id)
+         VALUES($1,$2,$3,$4,$5,$6)
+         ON CONFLICT (carnet) DO UPDATE SET
+           nombre = EXCLUDED.nombre,
+           apellido = EXCLUDED.apellido,
+           email = EXCLUDED.email,
+           parqueo_user_id = COALESCE(EXCLUDED.parqueo_user_id, "Alumno".parqueo_user_id)`,
+        [est.carnet, est.nombre, est.apellido, est.email, carreraId, users[0].id]
+      );
+
+      const mat = await client.query(
+        `SELECT id_matricula FROM grupo6_pago_alumnos.matricula WHERE carnet=$1 AND ciclo=$2 AND anio=$3`,
+        [est.carnet, ciclo, anio]
+      );
+      if (!mat.rows[0]) {
+        await client.query(
+          `INSERT INTO grupo6_pago_alumnos.matricula (carnet,ciclo,anio,fecha_pago,precio,id_forma_pago,estado)
+           VALUES ($1,$2,$3,CURRENT_DATE,4500,$4,'Confirmado')`,
+          [est.carnet, ciclo, anio, idFormaPago]
+        );
+      }
+
+      console.log(`  ✅ ${est.email} → carnet ${est.carnet}, matrícula ${ciclo}-${anio}`);
+    }
+  } finally {
+    client.release();
+    await poolMain.end();
+  }
 }
 
 main()

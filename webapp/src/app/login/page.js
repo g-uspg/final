@@ -7,7 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, Mail, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import LoginQrPanel from "./LoginQrPanel";
+import "./login-qr.css";
 
 const Pupil = ({ 
   size = 12, 
@@ -150,8 +153,10 @@ const EyeBall = ({
   );
 };
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [loginMode, setLoginMode] = useState("email");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -269,6 +274,12 @@ export default function LoginPage() {
   const blackPos = calculatePosition(blackRef);
   const yellowPos = calculatePosition(yellowRef);
   const orangePos = calculatePosition(orangeRef);
+
+  useEffect(() => {
+    if (searchParams.get("mode") === "qr") setLoginMode("qr");
+  }, [searchParams]);
+
+  const qrError = searchParams.get("error") || "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -475,11 +486,33 @@ export default function LoginPage() {
 
       <div className="flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-[420px]">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-bold tracking-tight mb-3 text-gray-900">Bienvenido</h1>
-            <p className="text-gray-600 text-base">Ingresa tus credenciales para continuar al sistema</p>
+            <p className="text-gray-600 text-base">Accede al portal institucional USPG</p>
           </div>
 
+          <div className="login-mode-tabs mb-8">
+            <button
+              type="button"
+              className={`login-mode-tab ${loginMode === "email" ? "active" : ""}`}
+              onClick={() => setLoginMode("email")}
+            >
+              <Mail className="size-4 inline mr-2" aria-hidden="true" />
+              Correo y contraseña
+            </button>
+            <button
+              type="button"
+              className={`login-mode-tab ${loginMode === "qr" ? "active" : ""}`}
+              onClick={() => setLoginMode("qr")}
+            >
+              <i className="fa fa-qrcode mr-2" aria-hidden="true" />
+              Carné QR
+            </button>
+          </div>
+
+          {loginMode === "qr" ? (
+            <LoginQrPanel initialError={qrError} />
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
               <Label htmlFor="email" className="text-base font-medium text-gray-700">Correo Electrónico</Label>
@@ -538,15 +571,26 @@ export default function LoginPage() {
               {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
           </form>
+          )}
 
+          {loginMode === "email" && (
           <div className="text-center text-sm text-gray-500 mt-8">
             ¿Olvidaste tu contraseña?{" "}
             <a href="#" className="text-[#800020] font-medium hover:underline">
               Recupérala aquí
             </a>
           </div>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando…</div>}>
+      <LoginPageInner />
+    </Suspense>
   );
 }

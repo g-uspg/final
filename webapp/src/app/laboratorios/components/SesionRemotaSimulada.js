@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { finalizarSesionRemota } from '../actions'
+import { finalizarSesionRemota, getLabLlmDisponible } from '../actions'
+import PracticaLLMChat from './PracticaLLMChat'
 
 function formatElapsed(ms) {
   const totalSec = Math.floor(ms / 1000)
@@ -15,6 +16,7 @@ export default function SesionRemotaSimulada({ sesion, onClose }) {
   const [terminando, setTerminando] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const [tab, setTab] = useState('escritorio')
+  const [llmDisponible, setLlmDisponible] = useState(false)
 
   const meta = sesion?.registroActividad || {}
   const host = meta.host || 'lab-pc.uspg.local'
@@ -24,6 +26,10 @@ export default function SesionRemotaSimulada({ sesion, onClose }) {
     [sesion?.inicio]
   )
   const inicioLabel = useMemo(() => new Date(inicioMs).toLocaleString('es-GT'), [inicioMs])
+
+  useEffect(() => {
+    getLabLlmDisponible().then(setLlmDisponible)
+  }, [])
 
   useEffect(() => {
     const tick = () => setElapsed(Date.now() - inicioMs)
@@ -138,29 +144,7 @@ estudiante@${host}:~$ _`}
           )}
 
           {tab === 'llm' && (
-            <div className="lab-remote-llm">
-              <h3>Práctica de inglés con LLM</h3>
-              <p className="text-sm opacity-80 mb-4">
-                Simulación del entorno de práctica conversacional avalado por USPG.
-              </p>
-              <div className="lab-remote-chat">
-                <div className="lab-remote-chat-bubble lab-remote-chat-bubble--bot">
-                  Hello! I&apos;m your USPG language tutor. Describe your engineering project in
-                  English.
-                </div>
-                <div className="lab-remote-chat-bubble lab-remote-chat-bubble--user">
-                  I am working on a remote lab access system for our university.
-                </div>
-                <div className="lab-remote-chat-bubble lab-remote-chat-bubble--bot">
-                  Great topic! How does your system ensure students only connect during approved
-                  reservation windows?
-                </div>
-              </div>
-              <p className="lab-remote-hint mt-4">
-                El LLM real correría en el servidor del laboratorio; aquí solo se ilustra la
-                experiencia del estudiante conectado remotamente.
-              </p>
-            </div>
+            <PracticaLLMChat sesionId={sesion.id} llmDisponible={llmDisponible} />
           )}
         </div>
       </div>

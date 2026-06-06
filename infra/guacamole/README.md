@@ -50,6 +50,12 @@ Reinicia `npm run dev`. Sin `LAB_GUACAMOLE_BASE`, el portal usa **simulación** 
 
 ## Producción
 
+Ver guía completa: **[GUIA_ENTORNO_REAL.md](./GUIA_ENTORNO_REAL.md)** (HTTPS, red, RDP, usuarios, seguridad e integración USPG).
+
+Diagramas: **[DIAGRAMAS.md](./DIAGRAMAS.md)**
+
+Resumen rápido:
+
 - Pon Guacamole detrás de HTTPS (nginx o Cloudflare Tunnel).
 - RDP solo desde el servidor Guacamole, no expuesto a internet.
 - Cambia contraseñas de PostgreSQL y guacadmin.
