@@ -23,6 +23,7 @@ import {
   actualizarEstadoReporte,
   actualizarEstadoEspacio,
   eliminarEspacio,
+  eliminarReservaEspacio,
   getReservasMes,
 } from './actions'
 
@@ -330,12 +331,12 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
   }
 
   const handleRechazarReserva = (id) => {
-    const motivo = window.prompt('Motivo del rechazo (opcional):')
+    const motivo = window.prompt('Motivo del rechazo (se eliminará la reserva). Escribe el motivo o deja vacío:')
     if (motivo === null) return
     startTransition(async () => {
-      const result = await resolverReservaEspacio(id, 'rechazar', motivo)
+      const result = await eliminarReservaEspacio(id)
       if (result.success) {
-        showToast('Reserva rechazada.')
+        showToast('Reserva rechazada y eliminada.')
         router.refresh()
       } else {
         showToast(result.error || 'No se pudo rechazar.', 'error')
@@ -569,16 +570,13 @@ export default function AdministracionDashboard({ initialData, userRole = 'ADMIN
                         </button>
                       )}
                       {esp.estado === 'MANTENIMIENTO' ? (
-                        <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
-                                disabled={pending}
-                                onClick={() => {
-                                  startTransition(async () => {
-                                    const r = await actualizarEstadoEspacio(esp.id, 'DISPONIBLE')
-                                    if (r.success) { showToast('Espacio marcado como disponible.'); router.refresh() }
-                                  })
-                                }}>
-                          <i className="fa fa-check" /> Disponible
-                        </button>
+                        <div
+                          className="adm-btn-ghost flex-1 justify-center text-xs opacity-40"
+                          style={{ cursor: 'not-allowed', display: 'flex', alignItems: 'center', gap: '4px' }}
+                          title="Cierra el reporte en la pestaña Mantenimiento para liberar el espacio"
+                        >
+                          <i className="fa fa-lock" /> En mantenimiento
+                        </div>
                       ) : (
                         <button type="button" className="adm-btn-ghost flex-1 justify-center text-xs"
                                 disabled={pending}

@@ -276,6 +276,16 @@ export async function crearReservaEspacio(data) {
   }
 }
 
+export async function eliminarReservaEspacio(id) {
+  try {
+    await prisma.reservaEspacio.delete({ where: { id } })
+    revalidatePath('/administracion')
+    return { success: true }
+  } catch {
+    return { success: false, error: 'No se pudo eliminar la reserva.' }
+  }
+}
+
 export async function resolverReservaEspacio(id, accion, motivo = null) {
   try {
     const estado = accion === 'aprobar' ? 'APROBADA' : 'RECHAZADA'
