@@ -513,73 +513,73 @@ function LoginPageInner() {
           {loginMode === "qr" ? (
             <LoginQrPanel initialError={qrError} />
           ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-3">
-              <Label htmlFor="email" className="text-base font-medium text-gray-700">Correo Electrónico</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="usuario@uspg.edu.gt"
-                value={email}
-                autoComplete="off"
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={() => setIsTyping(true)}
-                onBlur={() => setIsTyping(false)}
-                required
-                className="h-14 text-lg bg-white border-gray-200 focus:border-[#800020] text-gray-900 px-4"
-              />
-            </div>
+            <>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="email" className="text-base font-medium text-gray-700">Correo Electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="usuario@uspg.edu.gt"
+                    value={email}
+                    autoComplete="off"
+                    onChange={(e) => setEmail(e.target.value)}
+                    onFocus={() => setIsTyping(true)}
+                    onBlur={() => setIsTyping(false)}
+                    required
+                    className="h-14 text-lg bg-white border-gray-200 focus:border-[#800020] text-gray-900 px-4"
+                  />
+                </div>
 
-            <div className="space-y-3">
-              <Label htmlFor="password" className="text-base font-medium text-gray-700">Contraseña</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-14 text-lg pr-12 bg-white border-gray-200 focus:border-[#800020] text-gray-900 px-4"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                <div className="space-y-3">
+                  <Label htmlFor="password" className="text-base font-medium text-gray-700">Contraseña</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="h-14 text-lg pr-12 bg-white border-gray-200 focus:border-[#800020] text-gray-900 px-4"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="size-6" />
+                      ) : (
+                        <Eye className="size-6" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="p-4 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-xl">
+                    {error}
+                  </div>
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full h-14 text-lg font-semibold bg-[#800020] hover:bg-[#600018] text-white rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98]"
+                  size="lg"
+                  disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="size-6" />
-                  ) : (
-                    <Eye className="size-6" />
-                  )}
-                </button>
+                  {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+                </Button>
+              </form>
+
+              <div className="text-center text-sm text-gray-500 mt-8">
+                ¿Olvidaste tu contraseña?{" "}
+                <a href="#" className="text-[#800020] font-medium hover:underline">
+                  Recupérala aquí
+                </a>
               </div>
-            </div>
-
-            {error && (
-              <div className="p-4 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-xl">
-                {error}
-              </div>
-            )}
-
-            <Button 
-              type="submit" 
-              className="w-full h-14 text-lg font-semibold bg-[#800020] hover:bg-[#600018] text-white rounded-xl transition-all shadow-lg hover:shadow-xl active:scale-[0.98]" 
-              size="lg" 
-              disabled={isLoading}
-            >
-              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
-            </Button>
-          </form>
-          )}
-
-          {loginMode === "email" && (
-          <div className="text-center text-sm text-gray-500 mt-8">
-            ¿Olvidaste tu contraseña?{" "}
-            <a href="#" className="text-[#800020] font-medium hover:underline">
-              Recupérala aquí
-            </a>
-          </div>
+            </>
           )}
         </div>
       </div>
