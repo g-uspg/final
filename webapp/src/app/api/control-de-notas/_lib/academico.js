@@ -2,12 +2,63 @@ import prisma from "@/lib/prisma"; // Conectado al schema 'notas'
 
 export const NOTA_APROBACION = 61;
 
+<<<<<<< HEAD
 // Rutas APIs Grupo 1 (REST)
 const API_BASE = {
   ALUMNOS: "/api/alumnos",       // GET lista completa
   CURSOS: "/api/cursos",         // GET lista completa
   SOLVENCIA: "/api/solvencia",   // Grupo 6
   MORA: "/api/mora"              // Grupo 6
+=======
+// ── Helpers de error ─────────────────────────────────────────────────────────
+export function crearError(message, status = 500) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+// ── Catálogos Grupo 1 ────────────────────────────────────────────────────────
+export async function obtenerCatalogos(origin) {
+  const [alumnos, cursos] = await Promise.all([
+    fetchApi(`${origin}${API_BASE.ALUMNOS}`),
+    fetchApi(`${origin}${API_BASE.CURSOS}`),
+  ]);
+  return {
+    alumnos: Array.isArray(alumnos) ? alumnos : [],
+    cursos:  Array.isArray(cursos)  ? cursos  : [],
+  };
+}
+
+export function buscarAlumnoPorCarnet(alumnos, carnet) {
+  return alumnos.find(a => a.carnet === carnet) ?? null;
+}
+
+export function buscarCursoPorParametro(cursos, param) {
+  return cursos.find(c =>
+    c.codigo === param ||
+    String(c.id) === String(param)
+  ) ?? null;
+}
+
+export function obtenerIdAlumno(alumno) {
+  return alumno?.id ? Number(alumno.id) : null;
+}
+
+export function obtenerIdCurso(curso) {
+  return curso?.id ? Number(curso.id) : null;
+}
+
+export function obtenerCodigoCurso(curso, idCurso) {
+  return curso?.codigo ?? String(idCurso);
+}
+
+// Rutas APIs Grupo 1 (REST)
+const API_BASE = {
+  ALUMNOS: "/api/sistema-academico/alumnos",  // GET lista completa — Grupo 1
+  CURSOS: "/api/sistema-academico/cursos",    // GET lista completa — Grupo 1
+  SOLVENCIA: "/api/solvencia",                // Grupo 6
+  MORA: "/api/mora"                           // Grupo 6
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
 };
 
 // Helper fetch

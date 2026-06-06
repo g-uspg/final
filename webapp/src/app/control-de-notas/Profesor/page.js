@@ -85,6 +85,7 @@ function ModalNotasAlumno({ alumno, onCerrar }) {
 }
 
 // ── Modal Editar Notas ─────────────────────────────────────────────────────
+<<<<<<< HEAD
 function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -128,11 +129,20 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
     };
     cargarDatos();
   }, [alumno.carnet]);
+=======
+function ModalEditarNotas({ alumno, onCerrar }) {
+  const [cursos, setCursos] = useState([
+    { id: 1, curso: "MAT101", nombre: "Matemática I", zona: 28, examenFinal: 35 },
+    { id: 2, curso: "SIS201", nombre: "Programación II", zona: 32, examenFinal: 40 },
+  ]);
+  const [guardando, setGuardando] = useState(false);
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
 
   const handleChange = (id, campo, valor) => {
     setCursos(prev => prev.map(c => c.id === id ? { ...c, [campo]: Number(valor) } : c));
   };
 
+<<<<<<< HEAD
   const guardar = async () => {
     setGuardando(true);
     try {
@@ -180,6 +190,17 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
 
   if (cargando) return <div>Cargando...</div>;
 
+=======
+  const guardar = () => {
+    setGuardando(true);
+    setTimeout(() => {
+      alert(`✅ Notas guardadas para ${alumno.nombre}`);
+      onCerrar();
+      setGuardando(false);
+    }, 800);
+  };
+
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "780px", maxHeight: "90vh", overflow: "auto" }}>
@@ -189,9 +210,13 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
         </div>
         <div style={{ padding: "20px 24px" }}>
           <table className="table">
+<<<<<<< HEAD
             <thead>
               <tr><th>Curso</th><th>Zona</th><th>Examen Final</th><th>Nota Final</th></tr>
             </thead>
+=======
+            <thead><tr><th>Curso</th><th>Zona</th><th>Examen Final</th><th>Nota Final</th></tr></thead>
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
             <tbody>
               {cursos.map(c => (
                 <tr key={c.id}>
@@ -216,6 +241,7 @@ function ModalEditarNotas({ alumno, onCerrar, onGuardar }) {
 }
 
 // ── Modal Asistencias ─────────────────────────────────────────────────────
+<<<<<<< HEAD
 function ModalAsistencias({ alumno, onCerrar, cursoSeleccionado }) {
   const [asistencias, setAsistencias] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -238,11 +264,21 @@ function ModalAsistencias({ alumno, onCerrar, cursoSeleccionado }) {
     };
     cargar();
   }, [alumno.carnet, cursoSeleccionado]);
+=======
+function ModalAsistencias({ alumno, onCerrar }) {
+  const [asistencias, setAsistencias] = useState([
+    { fecha: "2026-05-10", presente: true },
+    { fecha: "2026-05-17", presente: false },
+    { fecha: "2026-05-24", presente: true },
+    { fecha: "2026-05-31", presente: true },
+  ]);
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
 
   const toggle = (index) => {
     setAsistencias(prev => prev.map((a, i) => i === index ? { ...a, presente: !a.presente } : a));
   };
 
+<<<<<<< HEAD
   const guardar = async () => {
     setGuardando(true);
     try {
@@ -270,12 +306,17 @@ function ModalAsistencias({ alumno, onCerrar, cursoSeleccionado }) {
 
   if (cargando) return <div style={{ padding: "40px", textAlign: "center" }}>Cargando asistencias...</div>;
 
+=======
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "12px", width: "100%", maxWidth: "600px" }}>
         <div style={{ padding: "20px 24px", borderBottom: "2px solid #ff9800" }}>
           <h5>📅 Asistencias — {alumno.nombre}</h5>
+<<<<<<< HEAD
           {cursoSeleccionado && <p style={{ margin: 0, fontSize: "13px", color: "#888" }}>Curso: {cursoSeleccionado}</p>}
+=======
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
         </div>
         <div style={{ padding: "20px 24px" }}>
           <table className="table">
@@ -294,11 +335,16 @@ function ModalAsistencias({ alumno, onCerrar, cursoSeleccionado }) {
             </tbody>
           </table>
         </div>
+<<<<<<< HEAD
         <div style={{ padding: "15px 24px", textAlign: "right", borderTop: "1px solid #eee" }}>
           <button onClick={onCerrar}>Cancelar</button>
           <button onClick={guardar} disabled={guardando} style={{ background: "#ff9800", color: "white", padding: "10px 20px", marginLeft: "10px" }}>
             {guardando ? "Guardando..." : "💾 Guardar Asistencias"}
           </button>
+=======
+        <div style={{ padding: "15px 24px", textAlign: "right" }}>
+          <button onClick={onCerrar} style={{ background: "#ff9800", color: "white" }}>Guardar Asistencias</button>
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
         </div>
       </div>
     </div>
@@ -310,22 +356,39 @@ export default function ProfesorPage() {
   const [usuario, setUsuario] = useState(null);
   const [tabActiva, setTabActiva] = useState("mis-alumnos");
   const [busqueda, setBusqueda] = useState("");
+<<<<<<< HEAD
   const [alumnos, setAlumnos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [modalAlumno, setModalAlumno] = useState(null);
   const [modalEditarNotas, setModalEditarNotas] = useState(null);
   const [modalAsistencias, setModalAsistencias] = useState(null);
   const [cursoAsistencias, setCursoAsistencias] = useState(null);
+=======
+  const [modalAlumno, setModalAlumno] = useState(null);
+  const [modalEditarNotas, setModalEditarNotas] = useState(null);
+  const [modalAsistencias, setModalAsistencias] = useState(null);
+
+  const alumnosMock = [
+    { carnet: "2021001", nombre: "Carlos Andrés Pérez López", carrera: "Ingeniería en Sistemas" },
+    { carnet: "2021002", nombre: "María Fernanda García Ramos", carrera: "Administración de Empresas" },
+    { carnet: "2019003", nombre: "José Roberto Méndez Cruz", carrera: "Ingeniería en Sistemas" },
+    { carnet: "2020004", nombre: "Ana Lucía Rodríguez Vásquez", carrera: "Contaduría Pública" },
+    { carnet: "2018005", nombre: "Luis Enrique Torres Molina", carrera: "Ingeniería en Sistemas" },
+  ];
+
+  const [notasPorAlumno, setNotasPorAlumno] = useState({});
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("cn_usuario");
-    if (!raw) { window.location.href = "/control-de-notas"; return; }
+    const raw = localStorage.getItem("user");
+    if (!raw) { window.location.href = "/login"; return; }
     const u = JSON.parse(raw);
-    if (u.rol !== "CATEDRATICO") { window.location.href = "/control-de-notas"; return; }
+    if (u.role !== "TEACHER") { window.location.href = "/login"; return; }
     setUsuario(u);
     cargarAlumnos();
   }, []);
 
+<<<<<<< HEAD
   const cargarAlumnos = async () => {
     try {
       const res = await fetch("/api/sistema-academico/alumnos");
@@ -344,6 +407,10 @@ export default function ProfesorPage() {
     [a.carnet, a.nombre, a.apellido, a.carrera?.nombre].some(v => 
       String(v || "").toLowerCase().includes(busqueda.toLowerCase())
     )
+=======
+  const alumnosFiltrados = alumnosMock.filter(a =>
+    [a.carnet, a.nombre, a.carrera].some(v => v.toLowerCase().includes(busqueda.toLowerCase()))
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
   );
 
   if (cargando) return <div style={{ padding: "80px", textAlign: "center" }}>Cargando...</div>;
@@ -351,8 +418,13 @@ export default function ProfesorPage() {
   return (
     <>
       {modalAlumno && <ModalNotasAlumno alumno={modalAlumno} onCerrar={() => setModalAlumno(null)} />}
+<<<<<<< HEAD
       {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} onGuardar={() => cargarAlumnos()} />}
       {modalAsistencias && <ModalAsistencias alumno={modalAsistencias} onCerrar={() => setModalAsistencias(null)} cursoSeleccionado={cursoAsistencias} />}
+=======
+      {modalEditarNotas && <ModalEditarNotas alumno={modalEditarNotas} onCerrar={() => setModalEditarNotas(null)} />}
+      {modalAsistencias && <ModalAsistencias alumno={modalAsistencias} onCerrar={() => setModalAsistencias(null)} />}
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
 
       <div className="row clearfix">
         <div className="col-lg-12">
@@ -390,6 +462,7 @@ export default function ProfesorPage() {
                     {alumnosFiltrados.map(a => (
                       <tr key={a.carnet}>
                         <td>{a.carnet}</td>
+<<<<<<< HEAD
                         <td>{a.nombre} {a.apellido}</td>
                         <td>{a.carrera?.nombre || "—"}</td>
                         <td>
@@ -399,6 +472,14 @@ export default function ProfesorPage() {
                             setCursoAsistencias("MAT101"); // Seleccionar curso
                             setModalAsistencias(a);
                           }}>Asistencias</button>
+=======
+                        <td>{a.nombre}</td>
+                        <td>{a.carrera}</td>
+                        <td>
+                          <button onClick={() => setModalAlumno(a)}>Ver Notas</button>
+                          <button onClick={() => setModalEditarNotas(a)}>Editar Notas</button>
+                          <button onClick={() => setModalAsistencias(a)}>Asistencias</button>
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
                         </td>
                       </tr>
                     ))}
@@ -410,15 +491,23 @@ export default function ProfesorPage() {
                 <table className="table">
                   <thead><tr><th>Carnet</th><th>Alumno</th><th>Acción</th></tr></thead>
                   <tbody>
+<<<<<<< HEAD
                     {alumnosFiltrados.map(a => (
                       <tr key={a.carnet}>
                         <td>{a.carnet}</td>
                         <td>{a.nombre} {a.apellido}</td>
+=======
+                    {alumnosMock.map(a => (
+                      <tr key={a.carnet}>
+                        <td>{a.carnet}</td>
+                        <td>{a.nombre}</td>
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
                         <td><button onClick={() => setModalEditarNotas(a)}>Editar Notas</button></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+<<<<<<< HEAD
               )}
 
               {tabActiva === "asistencias" && (
@@ -442,6 +531,24 @@ export default function ProfesorPage() {
                   </table>
                 </div>
               )}
+=======
+              )}
+
+              {tabActiva === "asistencias" && (
+                <table className="table">
+                  <thead><tr><th>Carnet</th><th>Alumno</th><th>Acción</th></tr></thead>
+                  <tbody>
+                    {alumnosMock.map(a => (
+                      <tr key={a.carnet}>
+                        <td>{a.carnet}</td>
+                        <td>{a.nombre}</td>
+                        <td><button onClick={() => setModalAsistencias(a)}>Gestionar Asistencias</button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
             </div>
           </div>
         </div>

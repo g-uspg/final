@@ -91,6 +91,7 @@ export default function EstudiantePage() {
   const [toastVisible, setToastVisible] = useState({ solvencia: false });
 
   useEffect(() => {
+<<<<<<< HEAD
     const raw = sessionStorage.getItem("cn_usuario");
     if (!raw) { 
       window.location.href = "/control-de-notas"; 
@@ -103,6 +104,12 @@ export default function EstudiantePage() {
       return; 
     }
     
+=======
+    const raw = localStorage.getItem("user");
+    if (!raw) { window.location.href = "/login"; return; }
+    const u = JSON.parse(raw);
+    if (u.role !== "STUDENT") { window.location.href = "/login"; return; }
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
     setUsuario(u);
     cargarDatos(u.carnet ?? u.id);
   }, []);
@@ -171,11 +178,16 @@ export default function EstudiantePage() {
   );
 
   if (error) return (
+<<<<<<< HEAD
     <div style={{ textAlign: "center", padding: "80px" }}>
       <p style={{ fontSize: "18px", color: "#c62828" }}>❌ Error: {error}</p>
       <button onClick={() => window.location.reload()} style={{ marginTop: "20px", padding: "10px 20px", background: "#1976d2", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}>
         Reintentar
       </button>
+=======
+    <div style={{ textAlign: "center", padding: "60px" }}>
+      <p style={{ color: "#c62828", fontSize: "16px" }}>⚠️ {error}</p>
+>>>>>>> 6d184056691181342bd3d7ea4ec4fda0633c5733
     </div>
   );
 
@@ -217,7 +229,6 @@ export default function EstudiantePage() {
               >
                 {solvGeneral ? "✅" : "⚠️"} Solvencia
               </button>
-              <a href="/control-de-notas" style={{ color: "#888", fontSize: "13px" }}>🚪 Salir</a>
             </div>
           </div>
 
